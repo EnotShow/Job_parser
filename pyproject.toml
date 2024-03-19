@@ -16,6 +16,8 @@ sqlalchemy = "^2.0.28"
 alembic = "^1.13.1"
 asyncpg = "^0.29.0"
 beautifulsoup4 = "^4.12.3"
+sqladmin = "^0.16.1"
+requests = "^2.31.0"
 
 
 [build-system]
