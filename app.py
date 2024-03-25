@@ -1,3 +1,4 @@
+import argparse
 import asyncio
 import logging
 from contextlib import asynccontextmanager
@@ -14,6 +15,7 @@ from core.config.proj_settings import settings
 from core.db.db_helper import db_helper
 from parsers.helper import get_parser
 from src.admin_views import add_admin_views
+from src.auth.admin import authentication_backend
 from src.handlers import new_offer, send_notification
 from src.middlewares.owner import OwnersMiddleware
 from src.repositories.application_repository import ApplicationRepository
@@ -62,7 +64,13 @@ def get_application() -> FastAPI:
 app = get_application()
 
 # Register admin
-admin = Admin(app, engine=db_helper.engine, session_maker=db_helper.session_factory)
+admin = Admin(
+    app,
+    engine=db_helper.engine,
+    session_maker=db_helper.session_factory,
+    authentication_backend=authentication_backend
+)
+
 add_admin_views(admin)
 
 # Register middlewares
@@ -76,6 +84,11 @@ register_bot_routes(dp)
 async def bot_webhook(update: dict):
     telegram_update = types.Update(**update)
     await dp.feed_update(bot=bot, update=telegram_update)
+
+
+@app.get("/", include_in_schema=False)
+async def root():
+    return {"message": "Ok"}
 
 
 async def processing():
@@ -95,7 +108,8 @@ async def processing():
                         message = new_offer(job.title, job.url, search.title)
                         await send_notification(bot, settings_bot.owners, message)
                 await application_repository.create_multiple(application_to_create)
-            await asyncio.sleep(60*10)
+            await asyncio.sleep(60 * 10)
+
 
 if __name__ == "__main__":
     logging.basicConfig(
