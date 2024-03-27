@@ -1,6 +1,6 @@
 from sqladmin import ModelView
 
-from src.models.models import Search
+from src.models.search import Search
 
 
 class SearchAdmin(ModelView, model=Search):

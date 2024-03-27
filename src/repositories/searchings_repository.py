@@ -1,12 +1,10 @@
-from fastapi import Depends
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound, IntegrityError
 
-from core.shared.errors import NoRowsFoundError
 from core.shared.repository_dependencies import IAsyncSession
 from src.dtos.application_dto import ApplicationDTO
-from src.dtos.search_dto import SearchDTO, SearchCreateDTO
-from src.models.models import Search
+from src.dtos.search_dto import SearchCreateDTO, SearchDTO
+from src.models.search import Search
 
 
 class SearchingRepository:
@@ -35,4 +33,4 @@ class SearchingRepository:
         return self._get_dto(instance)
 
     def _get_dto(self, row):
-        return ApplicationDTO(**row.__dict__)
+        return SearchDTO(**row.__dict__)

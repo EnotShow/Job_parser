@@ -1,10 +1,9 @@
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound, IntegrityError
+from src.models.user import User
 
 from core.shared.repository_dependencies import IAsyncSession
-from src.dtos.application_dto import ApplicationDTO, ApplicationCreateDTO
 from src.dtos.user_dto import UserCreateDTO, UserDTO
-from src.models.models import Application, User
 
 
 class UserRepository:
@@ -22,6 +21,15 @@ class UserRepository:
                 return [self._get_dto(row) for row in rows]
             except (NoResultFound, AttributeError):
                 return None
+
+    async def get_by_email(self, email: str) -> UserDTO:
+        stmt = select(self.model).where(self.model.email == email)
+        try:
+            result = await self._session.execute(stmt)
+            row = result.scalars().first()
+            return self._get_dto(row)
+        except (NoResultFound, AttributeError):
+            return None
 
     async def get_by_email_password(self, email: str, password: str) -> UserDTO:
         stmt = select(self.model).where(self.model.email == email, self.model.password == password)

@@ -19,6 +19,7 @@ beautifulsoup4 = "^4.12.3"
 sqladmin = "^0.16.1"
 requests = "^2.31.0"
 itsdangerous = "^2.1.2"
+googletrans = "^3.0.0"
 
 
 [build-system]

@@ -3,7 +3,7 @@ from sqlalchemy.exc import NoResultFound, IntegrityError
 
 from core.shared.repository_dependencies import IAsyncSession
 from src.dtos.application_dto import ApplicationDTO, ApplicationCreateDTO
-from src.models.models import Application
+from src.models.application import Application
 
 
 class ApplicationRepository:
@@ -22,6 +22,15 @@ class ApplicationRepository:
             except (NoResultFound, AttributeError):
                 return None
 
+    async def get_by_id(self, id: int) -> ApplicationDTO:
+        stmt = select(self.model).where(self.model.id == id)
+        try:
+            result = await self._session.execute(stmt)
+            row = result.scalars().first()
+            return self._get_dto(row)
+        except (NoResultFound, AttributeError):
+            return None
+
     async def get_by_url(self, url: str) -> ApplicationDTO:
         stmt = select(self.model).where(self.model.url == url)
         try:
@@ -30,6 +39,16 @@ class ApplicationRepository:
             return self._get_dto(row)
         except (NoResultFound, AttributeError):
             return None
+
+    async def create(self, dto: ApplicationCreateDTO):
+        instance = self.model(**dto.model_dump())
+        self._session.add(instance)
+        try:
+            await self._session.commit()
+        except IntegrityError as e:
+            raise Exception(str(e))
+        await self._session.refresh(instance)
+        return self._get_dto(instance)
 
     async def create_multiple(self, dtos: [ApplicationCreateDTO]):
         for dto in dtos:

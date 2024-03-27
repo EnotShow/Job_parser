@@ -1,10 +1,9 @@
 from jwt import PyJWTError, ExpiredSignatureError, InvalidSignatureError
-from sqladmin import Admin
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 
 from core.config.jwt import settings_bot
-from src.auth.service import auth_service
+from src.admin.auth.service import auth_service
 
 
 class AdminAuth(AuthenticationBackend):
@@ -26,7 +25,7 @@ class AdminAuth(AuthenticationBackend):
         if not token:
             return False
         try:
-            auth_service.decode_token(token)
+            await auth_service.decode_token(token)
         except (ExpiredSignatureError, PyJWTError, InvalidSignatureError):
             return False
         return True
