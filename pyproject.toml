@@ -20,6 +20,7 @@ sqladmin = "^0.16.1"
 requests = "^2.31.0"
 itsdangerous = "^2.1.2"
 googletrans = "^3.0.0"
+pyvirtualdisplay = "^3.0"
 
 
 [build-system]
