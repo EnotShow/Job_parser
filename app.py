@@ -1,9 +1,9 @@
-import asyncio
 import logging
 import sys
 from contextlib import asynccontextmanager
 
 import uvicorn
+import flet.fastapi as flet_fastapi
 from fastapi import FastAPI
 from sqladmin import Admin
 from starlette.middleware.cors import CORSMiddleware
@@ -17,6 +17,7 @@ from src.admin.auth.admin import authentication_backend
 from src.background_tasks import processing
 from src.bot.middlewares.setup import register_middlewares
 from src.routers import register_bot_routes
+from src.web.routes import add_web_routes
 
 logger = logging.getLogger(__name__)
 
@@ -24,11 +25,13 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print('Bot is starting...')
-    asyncio.create_task(processing())
-    await set_webhook()
+    # asyncio.create_task(processing())
+    await flet_fastapi.app_manager.start()
+    # await set_webhook()
 
     yield
-    await delete_webhook()
+    # await delete_webhook()
+    await flet_fastapi.app_manager.shutdown()
     print('Bot is stopping...')
 
 
@@ -39,7 +42,7 @@ def get_application() -> FastAPI:
         version=settings.version,
         lifespan=lifespan
     )
-    # application.include_router(get_apps_router())
+    add_web_routes(application)
 
     application.add_middleware(
         CORSMiddleware,
@@ -53,19 +56,13 @@ def get_application() -> FastAPI:
 
 app = get_application()
 
-
-@app.post(WEBHOOK_PATH, include_in_schema=False)
-async def bot_webhook(update: dict):
-    await bot_update(update)
-
-
 # Register admin
 admin = Admin(
     app,
     engine=db_helper.engine,
     session_maker=db_helper.session_factory,
     authentication_backend=authentication_backend,
-    base_url='/'
+    base_url='/admin'
 )
 
 add_admin_views(admin)
@@ -75,6 +72,12 @@ register_middlewares(dp)
 
 # Register routes
 register_bot_routes(dp)
+
+
+@app.post(WEBHOOK_PATH, include_in_schema=False)
+async def bot_webhook(update: dict):
+    await bot_update(update)
+
 
 if __name__ == "__main__":
     execute_command(sys.argv)
