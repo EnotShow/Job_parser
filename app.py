@@ -16,7 +16,7 @@ from src.admin.admin_routers import add_admin_views
 from src.admin.auth.admin import authentication_backend
 from src.background_tasks import processing
 from src.bot.middlewares.setup import register_middlewares
-from src.routers import register_bot_routes
+from src.bot.routers import register_bot_routes
 
 logger = logging.getLogger(__name__)
 

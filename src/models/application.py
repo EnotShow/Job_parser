@@ -12,6 +12,7 @@ class Application(Base):
     description = mapped_column(String(10000))
     application_link = mapped_column(String(1000))
     url = mapped_column(String(1000))
+    # owner = relationship("User", back_populates="searches")
 
     def __repr__(self) -> str:
         return f"Application(id={self.id!r}, title={self.title!r}"

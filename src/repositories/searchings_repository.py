@@ -2,12 +2,11 @@ from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound, IntegrityError
 
 from core.shared.repository_dependencies import IAsyncSession
-from src.dtos.application_dto import ApplicationDTO
 from src.dtos.search_dto import SearchCreateDTO, SearchDTO
 from src.models.search import Search
 
 
-class SearchingRepository:
+class SearchRepository:
     model = Search
 
     def __init__(self, db_session: IAsyncSession):
