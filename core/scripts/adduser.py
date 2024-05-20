@@ -2,8 +2,8 @@ import getpass
 
 from core.db.db_helper import db_helper
 from src.admin.auth.service import auth_service
-from src.dtos.user_dto import UserCreateDTO
-from src.repositories.user_repository import UserRepository
+from src.api.dtos.user_dto import UserCreateDTO
+from src.api.repositories.user_repository import UserRepository
 
 
 async def add_user():

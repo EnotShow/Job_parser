@@ -9,8 +9,8 @@ from parsers.helper import get_parser
 from src.bot.handlers.base import send_notification
 from src.bot.handlers.reply import new_offer
 from src.bot.keyboards.reply_keyboard_buttons import ReplyCallbackButtons
-from src.repositories.application_repository import ApplicationRepository
-from src.repositories.searchings_repository import SearchRepository
+from src.api.repositories.application_repository import ApplicationRepository
+from src.api.repositories.searchings_repository import SearchRepository
 
 
 async def processing():

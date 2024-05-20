@@ -4,7 +4,7 @@ from dependency_injector import containers, providers
 from dependency_injector.wiring import Provide
 
 from core.db.db_helper import db_helper
-from src.repositories.application_repository import ApplicationRepository
+from src.api.repositories.application_repository import ApplicationRepository
 
 
 class IApplicationContainer(containers.DeclarativeContainer):

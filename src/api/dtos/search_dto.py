@@ -10,3 +10,4 @@ class SearchDTO(BaseDTO):
 class SearchCreateDTO(BaseDTO):
     title: str
     url: str
+    owner: int

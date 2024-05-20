@@ -6,7 +6,7 @@ from aiogram.utils.markdown import hlink, hbold
 from core.db.db_helper import db_helper
 from src.bot.filters.callbackquery_filter import ReplyCallback, ReplyType
 from src.bot.keyboards.reply_keyboard_buttons import ReplyCallbackButtons
-from src.repositories.application_repository import ApplicationRepository
+from src.api.repositories.application_repository import ApplicationRepository
 
 router = Router()
 

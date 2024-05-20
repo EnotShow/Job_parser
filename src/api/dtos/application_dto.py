@@ -14,3 +14,4 @@ class ApplicationCreateDTO(BaseDTO):
     description: str
     application_link: str
     url: str
+    owner: int
