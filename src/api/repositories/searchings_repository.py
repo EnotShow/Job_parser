@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.shared.async_session_container import AsyncSessionContainer
 from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
-from src.api.dtos.search_dto import SearchCreateDTO, SearchDTO
+from src.api.dtos.search_dto import SearchCreateDTO, SearchDTO, SearchFilterDTO
 from src.api.models import Search
 
 
@@ -19,7 +19,7 @@ class SearchRepository(BaseRepository):
     def __init__(self, db_session: AsyncSession = Provide[AsyncSessionContainer.db_session]) -> None:
         self._db_session = db_session
 
-    async def get_all(self) -> list[SearchDTO]:
+    async def get(self) -> list[SearchDTO]:
         stmt = select(self.model)
         try:
             result = await self._session.execute(stmt)
@@ -28,7 +28,7 @@ class SearchRepository(BaseRepository):
         except (NoResultFound, AttributeError):
             raise NoRowsFoundError(f"{self.model.__name__} no found")
 
-    async def get(self, id: int) -> SearchDTO:
+    async def get_single(self, id: int) -> SearchDTO:
         stmt = select(self.model).where(self.model.id == id)
         try:
             result = await self._session.execute(stmt)
@@ -46,8 +46,8 @@ class SearchRepository(BaseRepository):
         await self._session.refresh(instance)
         return self._get_dto(instance)
 
-    async def update(self, dto: SearchDTO, filters: dict) -> SearchDTO:
-        stmt = update(self.model).filter_by(**filters).values(**dto.model_dump()).returning(self.model)
+    async def update(self, dto: SearchDTO, filters: SearchFilterDTO) -> SearchDTO:
+        stmt = update(self.model).filter_by(**filters.to_dict()).values(**dto.model_dump()).returning(self.model)
         result = await self._session.execute(stmt)
         await self._session.commit()
         try:

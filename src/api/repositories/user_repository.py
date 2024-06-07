@@ -1,5 +1,5 @@
 import contextlib
-from typing import AsyncContextManager
+from typing import AsyncContextManager, List
 
 from dependency_injector.wiring import Provide, inject
 from sqlalchemy import select, update
@@ -11,16 +11,17 @@ from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
 from src.api.models import User
 
-from src.api.dtos.user_dto import UserCreateDTO, UserDTO
+from src.api.dtos.user_dto import UserCreateDTO, UserDTO, UserFilterDTO
 
 
 class UserRepository(BaseRepository):
     model = User
 
+    @inject
     def __init__(self, db_session: AsyncSession = Provide[AsyncSessionContainer.db_session]):
         self._session = db_session
 
-    async def get_all(self):
+    async def get(self):
         stmt = select(self.model)
         try:
             result = await self._session.execute(stmt)
@@ -47,7 +48,7 @@ class UserRepository(BaseRepository):
         except (NoResultFound, AttributeError):
             raise Exception(f"User with email {email} not found")
 
-    async def get_by_id(self, user_id: int) -> UserDTO:
+    async def get_single(self, user_id: int) -> UserDTO:
         stmt = select(self.model).where(self.model.id == user_id)
         try:
             result = await self._session.execute(stmt)
@@ -56,15 +57,17 @@ class UserRepository(BaseRepository):
         except (NoResultFound, AttributeError):
             raise Exception(f"User with id {user_id} not found")
 
-    async def get_by_telegram_id(self, telegram_id: int) -> UserDTO:
-        stmt = select(self.model).where(self.model.telegram_id == telegram_id)
+    async def get_filtered(self, filters: UserFilterDTO, get_single: bool = False) -> [List[UserDTO], UserDTO]:
+        stmt = select(self.model).where(**filters.to_dict())
         try:
             result = await self._session.execute(stmt)
-            row = result.scalars().first()
-            return self._get_dto(row)
+            if get_single:
+                row = result.scalars().first()
+                return self._get_dto(row)
+            rows = result.scalars().all()
+            return [self._get_dto(row) for row in rows]
         except (NoResultFound, AttributeError):
-            raise Exception(f"User with telegram id {telegram_id} not found")
-
+            raise Exception(f"User objects not found")
 
     async def create(self, dto: UserCreateDTO):
         instance = self.model(**dto.model_dump())
@@ -76,8 +79,8 @@ class UserRepository(BaseRepository):
         await self._session.refresh(instance)
         return self._get_dto(instance)
     
-    async def update(self, dto: UserDTO, filters: dict):
-        stmt = update(self.model).filter_by(**filters).values(**dto.model_dump()).returning(self.model)
+    async def update(self, dto: UserDTO, filters: UserFilterDTO):
+        stmt = update(self.model).filter_by(**filters.to_dict()).values(**dto.model_dump()).returning(self.model)
         result = await self._session.execute(stmt)
         await self._session.commit()
         try:

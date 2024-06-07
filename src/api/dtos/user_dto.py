@@ -7,7 +7,14 @@ class UserDTO(BaseDTO):
     id: int
     email: Optional[str]
     telegram_id: Optional[str]
-    language_code: Optional[int]
+    language_code: Optional[str]
+
+
+class UserFilterDTO(BaseDTO):
+    id: Optional[int] = None
+    email: Optional[str] = None
+    telegram_id: Optional[str] = None
+    language_code: Optional[int] = None
 
 
 class UserCreateDTO(BaseDTO):

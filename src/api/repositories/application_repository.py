@@ -19,17 +19,16 @@ class ApplicationRepository(BaseRepository):
     def __init__(self, db_session: AsyncSession = Provide[AsyncSessionContainer.db_session]):
         self._session = db_session
 
-    async def get_all(self):
-        with self._session as session:
-            stmt = select(self.model)
-            try:
-                result = await session.execute(stmt)
-                rows = result.scalars().all()
-                return [self._get_dto(row) for row in rows]
-            except (NoResultFound, AttributeError):
-                return None
+    async def get(self):
+        stmt = select(self.model)
+        try:
+            result = await self._session.execute(stmt)
+            rows = result.scalars().all()
+            return [self._get_dto(row) for row in rows]
+        except (NoResultFound, AttributeError):
+            return None
 
-    async def get_by_id(self, id: int) -> ApplicationDTO:
+    async def get_single(self, id: int) -> ApplicationDTO:
         stmt = select(self.model).where(self.model.id == id)
         try:
             result = await self._session.execute(stmt)
