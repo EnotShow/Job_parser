@@ -39,17 +39,8 @@ class DatabaseHelper:
         finally:
             await session.close()
 
-    async def get_session(self):
-        from sqlalchemy import exc
-
-        session: AsyncSession = self.session_factory()
-        try:
-            yield session
-        except exc.SQLAlchemyError as error:
-            await session.rollback()
-            raise
-        finally:
-            await session.close()
+    async def get_session(self) -> AsyncSession:
+        return self.session_factory()
 
 
 db_helper = DatabaseHelper(settings_db.database_url, settings_db.DB_ECHO_LOG)

@@ -1,16 +1,22 @@
+from typing import AsyncContextManager
+
+from dependency_injector.wiring import Provide, inject
 from sqlalchemy import select, update, delete
 from sqlalchemy.exc import NoResultFound, IntegrityError
+from sqlalchemy.ext.asyncio import AsyncSession
 
+from core.shared.async_session_container import AsyncSessionContainer
+from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
-from core.shared.repository_dependencies import IAsyncSession
 from src.api.dtos.application_dto import ApplicationDTO, ApplicationCreateDTO
 from src.api.models import Application
 
 
-class ApplicationRepository:
+class ApplicationRepository(BaseRepository):
     model = Application
 
-    def __init__(self, db_session: IAsyncSession):
+    @inject
+    def __init__(self, db_session: AsyncSession = Provide[AsyncSessionContainer.db_session]):
         self._session = db_session
 
     async def get_all(self):
