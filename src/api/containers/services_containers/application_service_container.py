@@ -11,5 +11,5 @@ class ApplicationServiceContainer(containers.DeclarativeContainer):
 
     application_service = providers.Factory(
         ApplicationService,
-        repository=repository_container.user_repository,
+        repository=repository_container.application_repository,
     )

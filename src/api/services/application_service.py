@@ -8,18 +8,24 @@ from src.api.repositories.application_repository import ApplicationRepository
 class ApplicationService:
 
     @inject
-    def __init__(self, repository: ApplicationRepository = Provide[ApplicationRepositoryContainer.application_repository]):
+    def __init__(self,
+                 repository: ApplicationRepository = Provide[ApplicationRepositoryContainer.application_repository]):
         self._repository = repository
 
     async def get_all_applications(self):
         return await self._repository.get()
 
     async def get_application(self, id: int):
-        return await self._repository.get_single(id)
+        try:
+            return await self._repository.get_single(id)
+        except Exception as e:
+            return None
 
     async def create_application(self, dto: ApplicationCreateDTO):
-        return await self._repository.create(dto)
-
+        try:
+            return await self._repository.create(dto)
+        except Exception as e:
+            return None
     async def update_application(self, dto: ApplicationDTO, filters: ApplicationFilterDTO):
         return await self._repository.update(dto, filters)
 

@@ -15,13 +15,25 @@ class SearchService:
         return await self._repository.get()
 
     async def get_search(self, id: int):
-        return await self._repository.get_single(id)
+        try:
+            return await self._repository.get_single(id)
+        except Exception as e:
+            return None
 
     async def create_search(self, dto: SearchCreateDTO):
-        return await self._repository.create(dto)
+        try:
+            return await self._repository.create(dto)
+        except Exception as e:
+            return None
 
     async def update_search(self, dto: SearchDTO, filters: SearchFilterDTO) -> SearchDTO:
-        return await self._repository.update(dto, filters)
+        try:
+            return await self._repository.update(dto, filters)
+        except Exception as e:
+            return None
 
     async def delete_search(self, id: int):
-        return await self._repository.delete(id)
+        try:
+            return await self._repository.delete(id)
+        except Exception as e:
+            return None

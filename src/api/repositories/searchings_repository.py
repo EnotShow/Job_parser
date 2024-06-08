@@ -46,8 +46,8 @@ class SearchRepository(BaseRepository):
         await self._session.refresh(instance)
         return self._get_dto(instance)
 
-    async def update(self, dto: SearchDTO, filters: SearchFilterDTO) -> SearchDTO:
-        stmt = update(self.model).filter_by(**filters.to_dict()).values(**dto.model_dump()).returning(self.model)
+    async def update(self, dto: SearchDTO) -> SearchDTO:
+        stmt = update(self.model).where(self.model.id == dto.id).values(**dto.model_dump()).returning(self.model)
         result = await self._session.execute(stmt)
         await self._session.commit()
         try:
