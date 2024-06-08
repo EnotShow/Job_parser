@@ -6,8 +6,8 @@ from jwt import encode, get_unverified_header, decode, ExpiredSignatureError, Py
 from core.config.jwt import JWTSettings, settings_bot
 from core.db.db_helper import db_helper
 from src.admin.auth.dto import AccessTokenDTO
-from src.dtos.user_dto import UserDTO
-from src.repositories.user_repository import UserRepository
+from src.api.dtos.user_dto import UserDTO
+from src.api.repositories.user_repository import UserRepository
 
 
 class AuthService:

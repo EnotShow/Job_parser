@@ -1,9 +1,7 @@
-import asyncio
-
 import requests
 from bs4 import BeautifulSoup
 
-from src.dtos.application_dto import ApplicationCreateDTO
+from src.api.dtos.application_dto import ApplicationCreateDTO
 
 
 class PracujParser:

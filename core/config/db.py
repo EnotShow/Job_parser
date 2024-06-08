@@ -22,7 +22,15 @@ class ConfigDataBase(BaseSettings):
             f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}@"
             f"{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         )
+"""
+POSTGRES_DB=job_parser
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=492949
+POSTGRES_HOST=localhost
+POSTGRES_PORT=5432
 
+postgresql+asyncpg://postgres:492949@localhost:5432/job_parser
+"""
 
 settings_db = ConfigDataBase(
     POSTGRES_USER=os.getenv("POSTGRES_USER"),
