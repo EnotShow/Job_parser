@@ -6,8 +6,7 @@ from bot_create import bot
 from core.config.bot import settings_bot
 from core.db.db_helper import db_helper
 from parsers.helper import get_parser
-from src.bot.handlers.base import send_notification
-from src.bot.handlers.reply import new_offer
+from src.bot.handlers.base import send_notification, new_offer
 from src.bot.keyboards.reply_keyboard_buttons import ReplyCallbackButtons
 from src.api.repositories.application_repository import ApplicationRepository
 from src.api.repositories.searchings_repository import SearchRepository

@@ -21,6 +21,22 @@ class ApplicationService:
         except Exception as e:
             return None
 
+    async def get_applications_by_user_id(self, user_id: int):
+        try:
+            filter = ApplicationFilterDTO(user_id=user_id)
+            return await self._repository.get_filtered(filter, get_single=False)
+        except Exception as e:
+            return None
+
+    async def get_applications_by_telegram_id(self, telegram_id: int, count: bool = False):
+        try:
+            filter = ApplicationFilterDTO(telegram_id=telegram_id)
+            if count:
+                return await self._repository.get_filtered(filter, get_single=False, count=True)
+            return await self._repository.get_filtered(filter, get_single=False)
+        except Exception as e:
+            return None
+
     async def create_application(self, dto: ApplicationCreateDTO):
         try:
             return await self._repository.create(dto)
