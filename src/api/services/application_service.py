@@ -21,6 +21,13 @@ class ApplicationService:
         except Exception as e:
             return None
 
+    async def get_application_by_url(self, url: str):
+        try:
+            filter = ApplicationFilterDTO(url=url)
+            return await self._repository.get_filtered(filter, get_single=True)
+        except Exception as e:
+            return None
+
     async def get_applications_by_user_id(self, user_id: int):
         try:
             filter = ApplicationFilterDTO(user_id=user_id)
@@ -42,8 +49,8 @@ class ApplicationService:
             return await self._repository.create(dto)
         except Exception as e:
             return None
-    async def update_application(self, dto: ApplicationDTO, filters: ApplicationFilterDTO):
-        return await self._repository.update(dto, filters)
+    async def update_application(self, dto: ApplicationDTO):
+        return await self._repository.update(dto)
 
     async def delete_application(self, id: int):
         return await self._repository.delete(id)

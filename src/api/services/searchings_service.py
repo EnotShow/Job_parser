@@ -1,3 +1,5 @@
+from typing import List
+
 from dependency_injector.wiring import inject, Provide
 
 from src.api.containers.repositories_containers.search_repository_container import SearchRepositoryContainer
@@ -14,7 +16,7 @@ class SearchService:
     def __init__(self, repository: SearchRepository = Provide[SearchRepositoryContainer.search_repository]):
         self._repository = repository
 
-    async def get_all_searches(self):
+    async def get_all_searches(self) -> List[SearchDTO]:
         return await self._repository.get()
 
     async def get_search(self, id: int):

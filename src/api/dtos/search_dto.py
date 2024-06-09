@@ -7,6 +7,7 @@ class SearchDTO(BaseDTO):
     id: int
     title: str
     url: str
+    owner_id: int
 
 
 class SearchFilterDTO(BaseDTO):
