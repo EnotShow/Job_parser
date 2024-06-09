@@ -69,7 +69,7 @@ admin = Admin(
     app,
     engine=db_helper.engine,
     session_maker=db_helper.session_factory,
-    authentication_backend=authentication_backend,
+    # authentication_backend=authentication_backend,
     base_url='/'
 )
 

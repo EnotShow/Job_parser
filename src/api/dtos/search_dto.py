@@ -10,13 +10,13 @@ class SearchDTO(BaseDTO):
 
 
 class SearchFilterDTO(BaseDTO):
-    id: Optional[int]
-    title: Optional[str]
-    url: Optional[str]
-    owner: Optional[str]
+    id: Optional[int] = None
+    title: Optional[str] = None
+    url: Optional[str] = None
+    owner_id: Optional[int] = None
 
 
 class SearchCreateDTO(BaseDTO):
     title: str
     url: str
-    owner: int
+    owner_id: int

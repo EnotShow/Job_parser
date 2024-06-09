@@ -1,4 +1,4 @@
-from typing import AsyncContextManager
+from typing import AsyncContextManager, List
 
 from dependency_injector.wiring import Provide, inject
 from sqlalchemy import select, update, delete
@@ -17,7 +17,7 @@ class SearchRepository(BaseRepository):
 
     @inject
     def __init__(self, db_session: AsyncSession = Provide[AsyncSessionContainer.db_session]) -> None:
-        self._db_session = db_session
+        self._session = db_session
 
     async def get(self) -> list[SearchDTO]:
         stmt = select(self.model)
@@ -35,6 +35,18 @@ class SearchRepository(BaseRepository):
             return self._get_dto(result.scalar_one())
         except NoResultFound:
             raise NoRowsFoundError(f"{self.model.__name__} no found")
+
+    async def get_filtered(self, filters: SearchFilterDTO, get_single: bool = False) -> [List[SearchDTO], SearchDTO]:
+        stmt = select(self.model).where(*filters.to_orm_parameters(self.model))
+        try:
+            result = await self._session.execute(stmt)
+            if get_single:
+                row = result.scalars().first()
+                return self._get_dto(row)
+            rows = result.scalars().all()
+            return [self._get_dto(row) for row in rows]
+        except (NoResultFound, AttributeError):
+            raise Exception(f"Search objects not found")
 
     async def create(self, dto: SearchCreateDTO):
         instance = self.model(**dto.model_dump())
