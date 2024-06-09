@@ -9,7 +9,7 @@ from sqladmin import Admin
 from starlette.middleware.cors import CORSMiddleware
 
 from bot_create import dp, WEBHOOK_PATH, bot_update, set_webhook, delete_webhook
-from core.config.proj_settings import settings
+from core.config.proj_settings import settings, development_settings
 from core.db.db_helper import db_helper
 from core.scripts.command_list import execute_command
 from src.admin.admin_routers import add_admin_views
@@ -24,7 +24,8 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print('Bot is starting...')
-    await asyncio.create_task(processing())
+    if development_settings.background_tasks:
+        await asyncio.create_task(processing())
     await set_webhook()
 
     yield

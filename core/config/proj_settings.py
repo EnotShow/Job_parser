@@ -14,4 +14,10 @@ class Settings(BaseSettings):
     version: str = "0.1"
 
 
+class DevelopmentSettings(Settings):
+    background_tasks: bool = os.environ.get("BACKGROUND_TASKS")
+    available_cores: int = os.environ.get("AVAILABLE_CORES")
+
+
 settings = Settings()
+development_settings = DevelopmentSettings()
