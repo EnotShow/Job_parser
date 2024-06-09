@@ -108,7 +108,12 @@ class ChangeSearch:
             search_service: SearchService = Provide[SearchServiceContainer.search_service],
     ):
         data = await state.get_data()
-        search_obj = SearchDTO(id=data['search_id'], title=message.text, url=message.text)
+        search_obj = SearchDTO(
+            id=data['search_id'],
+            title=message.text,
+            url=message.text,
+            owner_id=message.from_user.id
+        )
         await search_service.update_search(search_obj)
         await state.clear()
         await message.answer('Запись обновленна!')

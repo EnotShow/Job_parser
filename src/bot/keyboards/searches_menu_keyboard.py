@@ -35,9 +35,9 @@ def get_searches_list_menu_keyboard(search_id: int) -> InlineKeyboardMarkup:
             text="Изменить поисковой запрос", callback_data=SearchesCallbackData(
                 callback="change_search", search_id=search_id).pack()
         ),
-        "search_delete": InlineKeyboardButton(
+        "delete_search": InlineKeyboardButton(
             text="🗑", callback_data=SearchesCallbackData(
-                callback="search_delete", search_id=search_id).pack()
+                callback="delete_search", search_id=search_id).pack()
         ),
     }
 

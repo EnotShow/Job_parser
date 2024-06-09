@@ -16,7 +16,7 @@ class Settings(BaseSettings):
 
 class DevelopmentSettings(Settings):
     background_tasks: bool = os.environ.get("BACKGROUND_TASKS")
-    available_cores: int = os.environ.get("AVAILABLE_CORES")
+    available_cpu_cores: int = os.environ.get("AVAILABLE_CPU_CORES")
 
 
 settings = Settings()

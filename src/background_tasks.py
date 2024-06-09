@@ -5,6 +5,7 @@ from dependency_injector.wiring import inject, Provide
 
 from bot_create import bot
 from parsers.helper import get_parser
+from src.api.containers.services_containers.application_service_container import ApplicationServiceContainer
 from src.api.containers.services_containers.search_service_container import SearchServiceContainer
 from src.api.services.application_service import ApplicationService
 from src.api.services.searchings_service import SearchService
@@ -14,8 +15,8 @@ from src.bot.keyboards.reply_keyboard_buttons import ReplyCallbackButtons
 
 @inject
 async def processing(
-        searching_service: SearchService = Provide[SearchServiceContainer.searching_service],
-        application_service: ApplicationService = Provide[SearchServiceContainer.application_service]
+        searching_service: SearchService = Provide[SearchServiceContainer.search_service],
+        application_service: ApplicationService = Provide[ApplicationServiceContainer.application_service]
 ):
     while True:
         searches = await searching_service.get_all_searches()
