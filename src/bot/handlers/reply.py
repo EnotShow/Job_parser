@@ -1,14 +1,16 @@
 from aiogram import types, Router, F
 from aiogram.filters import Command
 from aiogram.types import InlineKeyboardMarkup
+from dependency_injector.wiring import Provide
 
-from core.db.db_helper import db_helper
-from src.api.repositories.application_repository import ApplicationRepository
+from src.api.containers.services_containers.application_service_container import ApplicationServiceContainer
+from src.api.services.application_service import ApplicationService
 from src.bot.filters.callbackquery_filter import ReplyCallback, ReplyType
 from src.bot.handlers.base import offer_description, offer_title
 from src.bot.keyboards.reply_keyboard_buttons import ReplyCallbackButtons
 
 router = Router()
+
 
 @router.message(Command('help'))
 async def help_command(message: types.Message):
@@ -16,10 +18,12 @@ async def help_command(message: types.Message):
 
 
 @router.callback_query(ReplyCallback.filter(F.type == ReplyType.DESCRIPTION))
-async def description_reply(query: types.CallbackQuery, callback_data: ReplyCallback):
-    async with db_helper.get_db_session() as session:
-        application_repository = ApplicationRepository(session)
-        application = await application_repository.get_by_id(callback_data.application_id)
+async def description_reply(
+        query: types.CallbackQuery,
+        callback_data: ReplyCallback,
+        application_service: ApplicationService = Provide[ApplicationServiceContainer.application_service],
+):
+    application = await application_service.get_application(callback_data.application_id)
     reply_keyboard = InlineKeyboardMarkup(resize_keyboard=True, inline_keyboard=[[
         ReplyCallbackButtons.button_title(
             callback_data.application_id, callback_data.search_title),
@@ -33,10 +37,12 @@ async def description_reply(query: types.CallbackQuery, callback_data: ReplyCall
 
 
 @router.callback_query(ReplyCallback.filter(F.type == ReplyType.TITLE))
-async def title_reply(query: types.CallbackQuery, callback_data: ReplyCallback):
-    async with db_helper.get_db_session() as session:
-        application_repository = ApplicationRepository(session)
-        application = await application_repository.get_by_id(callback_data.application_id)
+async def title_reply(
+        query: types.CallbackQuery,
+        callback_data: ReplyCallback,
+        application_service: ApplicationService = Provide[ApplicationServiceContainer.application_service],
+):
+    application = await application_service.get_application(callback_data.application_id)
     reply_keyboard = InlineKeyboardMarkup(resize_keyboard=True, inline_keyboard=[[
         ReplyCallbackButtons.button_description(
             callback_data.application_id, callback_data.search_title),
