@@ -17,6 +17,13 @@ class UserFilterDTO(BaseDTO):
     language_code: Optional[int] = None
 
 
+class UserUpdateDTO(BaseDTO):
+    id: int
+    email: Optional[str] = None
+    telegram_id: Optional[int] = None
+    language_code: Optional[int] = None
+
+
 class UserCreateDTO(BaseDTO):
     email: Optional[str]
     telegram_id: Optional[int]

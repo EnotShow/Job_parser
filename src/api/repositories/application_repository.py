@@ -8,7 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.shared.async_session_container import AsyncSessionContainer
 from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
-from src.api.dtos.application_dto import ApplicationDTO, ApplicationCreateDTO, ApplicationFilterDTO
+from src.api.dtos.application_dto import ApplicationDTO, ApplicationCreateDTO, ApplicationFilterDTO, \
+    ApplicationUpdateDTO
 from src.api.models import Application
 
 
@@ -39,7 +40,7 @@ class ApplicationRepository(BaseRepository):
 
     async def get_filtered(self, filters: ApplicationFilterDTO, get_single: bool = False, count: bool = False
                            ) -> [List[ApplicationDTO], ApplicationDTO, int]:
-        stmt = select(self.model).where(*filters.to_orm_parameters(self.model))
+        stmt = select(self.model).where(*filters.to_orm_expressions(self.model))
         try:
             result = await self._session.execute(stmt)
             if get_single:
@@ -82,8 +83,8 @@ class ApplicationRepository(BaseRepository):
         except IntegrityError as e:
             raise Exception(str(e))
 
-    async def update(self, dto: ApplicationDTO):
-        stmt = update(self.model).where(self.model.id == dto.id).values(**dto.model_dump()).returning(self.model)
+    async def update(self, dto: ApplicationUpdateDTO):
+        stmt = update(self.model).where(self.model.id == dto.id).values(**dto.to_orm_values()).returning(self.model)
         result = await self._session.execute(stmt)
         await self._session.commit()
         try:

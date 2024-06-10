@@ -8,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.shared.async_session_container import AsyncSessionContainer
 from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
-from src.api.dtos.search_dto import SearchCreateDTO, SearchDTO, SearchFilterDTO
+from src.api.dtos.search_dto import SearchCreateDTO, SearchDTO, SearchFilterDTO, SearchUpdateDTO
 from src.api.models import Search
 
 
@@ -37,7 +37,7 @@ class SearchRepository(BaseRepository):
             raise NoRowsFoundError(f"{self.model.__name__} no found")
 
     async def get_filtered(self, filters: SearchFilterDTO, get_single: bool = False) -> [List[SearchDTO], SearchDTO]:
-        stmt = select(self.model).where(*filters.to_orm_parameters(self.model))
+        stmt = select(self.model).where(*filters.to_orm_expressions(self.model))
         try:
             result = await self._session.execute(stmt)
             if get_single:
@@ -58,14 +58,19 @@ class SearchRepository(BaseRepository):
         await self._session.refresh(instance)
         return self._get_dto(instance)
 
-    async def update(self, dto: SearchDTO) -> SearchDTO:
-        stmt = update(self.model).where(self.model.id == dto.id).values(**dto.model_dump()).returning(self.model)
+    async def update(self, dto: SearchUpdateDTO) -> SearchDTO:
+        print(dto.to_orm_expressions(self.model))
+        stmt = (update(self.model)
+                .where(self.model.id == dto.id)
+                .values(**dto.to_orm_values())
+                .returning(self.model))
         result = await self._session.execute(stmt)
+        print(result)
         await self._session.commit()
-        try:
-            return SearchDTO.model_validate(result.scalar_one())
-        except NoResultFound:
-            raise NoRowsFoundError(f"{self.model.__name__} no found")
+        # try:
+        return SearchDTO.model_validate(result.scalar_one())
+        # except NoResultFound:
+        #     raise NoRowsFoundError(f"{self.model.__name__} no found")
 
     async def delete(self, id: int):
         stmt = delete(self.model).where(self.model.id == id)

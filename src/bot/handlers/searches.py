@@ -6,7 +6,7 @@ from dependency_injector.wiring import inject, Provide
 
 from parsers import base_urls
 from src.api.containers.services_containers.search_service_container import SearchServiceContainer
-from src.api.dtos.search_dto import SearchDTO
+from src.api.dtos.search_dto import SearchDTO, SearchUpdateDTO
 from src.api.services.searchings_service import SearchService
 from src.bot.keyboards.searches_menu_keyboard import get_searches_menu_keyboard, SearchesCallbackData, \
     get_searches_list_menu_keyboard
@@ -108,11 +108,9 @@ class ChangeSearch:
             search_service: SearchService = Provide[SearchServiceContainer.search_service],
     ):
         data = await state.get_data()
-        search_obj = SearchDTO(
+        search_obj = SearchUpdateDTO(
             id=data['search_id'],
-            title=message.text,
             url=message.text,
-            owner_id=message.from_user.id
         )
         await search_service.update_search(search_obj)
         await state.clear()

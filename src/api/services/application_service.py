@@ -1,7 +1,8 @@
 from dependency_injector.wiring import inject, Provide
 
 from src.api.containers.repositories_containers.application_repository_container import ApplicationRepositoryContainer
-from src.api.dtos.application_dto import ApplicationCreateDTO, ApplicationDTO, ApplicationFilterDTO
+from src.api.dtos.application_dto import ApplicationCreateDTO, ApplicationDTO, ApplicationFilterDTO, \
+    ApplicationUpdateDTO
 from src.api.repositories.application_repository import ApplicationRepository
 
 
@@ -49,7 +50,7 @@ class ApplicationService:
             return await self._repository.create(dto)
         except Exception as e:
             return None
-    async def update_application(self, dto: ApplicationDTO):
+    async def update_application(self, dto: ApplicationUpdateDTO):
         return await self._repository.update(dto)
 
     async def delete_application(self, id: int):

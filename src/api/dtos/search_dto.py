@@ -17,6 +17,12 @@ class SearchFilterDTO(BaseDTO):
     owner_id: Optional[int] = None
 
 
+class SearchUpdateDTO(BaseDTO):
+    id: int
+    title: Optional[str] = None
+    url: Optional[str] = None
+
+
 class SearchCreateDTO(BaseDTO):
     title: str
     url: str

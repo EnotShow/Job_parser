@@ -4,7 +4,7 @@ from dependency_injector.wiring import inject, Provide
 
 from src.api.containers.repositories_containers.search_repository_container import SearchRepositoryContainer
 from src.api.containers.repositories_containers.user_repository_container import UserRepositoryContainer
-from src.api.dtos.search_dto import SearchCreateDTO, SearchDTO, SearchFilterDTO
+from src.api.dtos.search_dto import SearchCreateDTO, SearchDTO, SearchFilterDTO, SearchUpdateDTO
 from src.api.dtos.user_dto import UserFilterDTO
 from src.api.repositories.searchings_repository import SearchRepository
 from src.api.repositories.user_repository import UserRepository
@@ -66,7 +66,7 @@ class SearchService:
         except Exception as e:
             return None
 
-    async def update_search(self, dto: SearchDTO) -> [SearchDTO, None]:
+    async def update_search(self, dto: SearchUpdateDTO) -> [SearchDTO, None]:
         try:
             return await self._repository.update(dto)
         except Exception as e:

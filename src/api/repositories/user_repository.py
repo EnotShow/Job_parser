@@ -11,7 +11,7 @@ from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
 from src.api.models import User
 
-from src.api.dtos.user_dto import UserCreateDTO, UserDTO, UserFilterDTO
+from src.api.dtos.user_dto import UserCreateDTO, UserDTO, UserFilterDTO, UserUpdateDTO
 
 
 class UserRepository(BaseRepository):
@@ -58,7 +58,7 @@ class UserRepository(BaseRepository):
             raise Exception(f"User with id {user_id} not found")
 
     async def get_filtered(self, filters: UserFilterDTO, get_single: bool = False) -> [List[UserDTO], UserDTO]:
-        stmt = select(self.model).where(*filters.to_orm_parameters(self.model))
+        stmt = select(self.model).where(*filters.to_orm_expressions(self.model))
         try:
             result = await self._session.execute(stmt)
             if get_single:
@@ -79,8 +79,8 @@ class UserRepository(BaseRepository):
         await self._session.refresh(instance)
         return self._get_dto(instance)
     
-    async def update(self, dto: UserDTO):
-        stmt = update(self.model).where(self.model.id == dto.id).values(**dto.model_dump()).returning(self.model)
+    async def update(self, dto: UserUpdateDTO):
+        stmt = update(self.model).where(self.model.id == dto.id).values(**dto.to_orm_values()).returning(self.model)
         result = await self._session.execute(stmt)
         await self._session.commit()
         try:
