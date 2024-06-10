@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from core.shared.base_dto import BaseDTO
@@ -8,6 +9,7 @@ class UserDTO(BaseDTO):
     email: Optional[str]
     telegram_id: Optional[int]
     language_code: Optional[str]
+    created_at: Optional[datetime]
 
 
 class UserFilterDTO(BaseDTO):

@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 
 from core.shared.base_dto import BaseDTO
@@ -8,6 +9,7 @@ class SearchDTO(BaseDTO):
     id: int
     title: str
     url: JobResourceURL
+    created_at: datetime
     owner_id: int
 
 

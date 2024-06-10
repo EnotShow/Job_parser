@@ -1,8 +1,8 @@
 """init
 
-Revision ID: 1cdf7b082c39
+Revision ID: 3bf531644366
 Revises: 
-Create Date: 2024-06-08 12:45:56.914628
+Create Date: 2024-06-10 20:08:51.646002
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '1cdf7b082c39'
+revision: str = '3bf531644366'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -26,14 +26,22 @@ def upgrade() -> None:
     sa.Column('telegram_id', sa.BigInteger(), nullable=True),
     sa.Column('language_code', sa.String(length=200), nullable=False),
     sa.Column('password', sa.String(length=200), nullable=True),
-    sa.PrimaryKeyConstraint('id')
+    sa.Column('paused', sa.Boolean(), nullable=False),
+    sa.Column('membership', sa.DateTime(), nullable=False),
+    sa.Column('links_limit', sa.Integer(), nullable=True),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
+    sa.Column('refer_id', sa.BigInteger(), nullable=False),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('email'),
+    sa.UniqueConstraint('telegram_id')
     )
     op.create_table('applications',
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
-    sa.Column('title', sa.String(length=1000), nullable=False),
-    sa.Column('description', sa.String(length=10000), nullable=False),
-    sa.Column('application_link', sa.String(length=1000), nullable=False),
-    sa.Column('url', sa.String(length=1000), nullable=False),
+    sa.Column('title', sa.String(length=200), nullable=False),
+    sa.Column('description', sa.String(length=200), nullable=False),
+    sa.Column('application_link', sa.String(length=200), nullable=False),
+    sa.Column('url', sa.String(length=200), nullable=False),
+    sa.Column('created_at', sa.DateTime(), nullable=False),
     sa.Column('owner_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
@@ -42,6 +50,7 @@ def upgrade() -> None:
     sa.Column('id', sa.Integer(), autoincrement=True, nullable=False),
     sa.Column('title', sa.String(length=200), nullable=False),
     sa.Column('url', sa.String(length=200), nullable=False),
+    sa.Column('created_at', sa.TIMESTAMP(timezone=True), nullable=False),
     sa.Column('owner_id', sa.Integer(), nullable=False),
     sa.ForeignKeyConstraint(['owner_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
