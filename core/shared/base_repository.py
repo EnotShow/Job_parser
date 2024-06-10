@@ -9,5 +9,8 @@ class BaseRepository:
         self._session = db_session
 
     def __del__(self):
-        loop = asyncio.get_event_loop()
-        loop.create_task(self._session.close())
+        if self._session is not None:
+            loop = asyncio.get_event_loop()
+            if loop.is_closed():
+                loop = asyncio.new_event_loop()
+            loop.create_task(self._session.close())

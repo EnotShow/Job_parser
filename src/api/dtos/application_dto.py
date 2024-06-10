@@ -19,6 +19,13 @@ class ApplicationFilterDTO(BaseDTO):
     url: Optional[str]
     owner_id: Optional[int]
 
+class ApplicationUpdateDTO(BaseDTO):
+    id: int
+    title: Optional[str] = None
+    description: Optional[str] = None
+    application_link: Optional[str] = None
+    url: Optional[str] = None
+
 
 class ApplicationCreateDTO(BaseDTO):
     title: str

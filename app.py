@@ -7,15 +7,12 @@ import uvicorn
 from fastapi import FastAPI
 from sqladmin import Admin
 from starlette.middleware.cors import CORSMiddleware
-import src
 
 from bot_create import dp, WEBHOOK_PATH, bot_update, set_webhook, delete_webhook
-from core.config.proj_settings import settings
+from core.config.proj_settings import settings, development_settings
 from core.db.db_helper import db_helper
 from core.scripts.command_list import execute_command
 from src.admin.admin_routers import add_admin_views
-from src.admin.auth.admin import authentication_backend
-
 from src.api.containers.containers_builder import build_containers
 from src.background_tasks import processing
 from src.bot.middlewares.setup import register_middlewares
@@ -27,7 +24,8 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print('Bot is starting...')
-    # asyncio.create_task(processing())
+    if development_settings.background_tasks:
+        await asyncio.create_task(processing())
     await set_webhook()
 
     yield
@@ -69,7 +67,7 @@ admin = Admin(
     app,
     engine=db_helper.engine,
     session_maker=db_helper.session_factory,
-    authentication_backend=authentication_backend,
+    # authentication_backend=authentication_backend,
     base_url='/'
 )
 

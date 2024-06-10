@@ -2,7 +2,7 @@ from aiogram import types
 from dependency_injector.wiring import Provide, inject
 
 from src.api.containers.repositories_containers.user_repository_container import UserRepositoryContainer
-from src.api.dtos.user_dto import UserFilterDTO, UserCreateDTO, UserDTO
+from src.api.dtos.user_dto import UserFilterDTO, UserCreateDTO, UserDTO, UserUpdateDTO
 from src.api.repositories.user_repository import UserRepository
 
 
@@ -58,8 +58,8 @@ class UserService:
         )
         return await self._repository.create(user_data)
 
-    async def update_user(self, user: UserDTO, filters: UserFilterDTO):
+    async def update_user(self, user: UserUpdateDTO):
         try:
-            return await self._repository.update(user, filters)
+            return await self._repository.update(user)
         except Exception as e:
             return None

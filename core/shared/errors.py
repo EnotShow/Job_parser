@@ -16,3 +16,7 @@ class AlreadyExistError(Exception):
 
 class TokenError(Exception):
     pass
+
+
+class ResourceError(Exception):
+    pass
