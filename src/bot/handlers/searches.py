@@ -4,7 +4,8 @@ from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from dependency_injector.wiring import inject, Provide
 
-from parsers import base_urls
+from core.shared.errors import ResourceError
+from core.shared.validators import JobResourceURL
 from src.api.containers.services_containers.search_service_container import SearchServiceContainer
 from src.api.dtos.search_dto import SearchDTO, SearchUpdateDTO
 from src.api.services.searchings_service import SearchService
@@ -60,17 +61,14 @@ class AddSearch:
     @staticmethod
     @searches_router.message(FSMSearchAddState.url)
     async def get_url(message: types.Message, state: FSMContext):
-        resource_finded = False
-        for i in base_urls:
-            if message.text.startswith(i):
-                resource_finded = True
-                break
-        if resource_finded:
-            await state.update_data(url=message.text)
-            await message.answer('Напиши название поискового запроса')
-            await state.set_state(FSMSearchAddState.title)
-        else:
-            await message.answer('Данный ресурс не поддерживается')
+        try:
+            resource_validate = JobResourceURL.validate(message.text)
+            if resource_validate:
+                await state.update_data(url=message.text)
+                await message.answer('Напиши название поискового запроса')
+                await state.set_state(FSMSearchAddState.title)
+        except ResourceError as e:
+            await message.answer('Данный ресурс не поддерживается! Попробуйте еще раз.')
 
     @staticmethod
     @searches_router.message(FSMSearchAddState.title)
@@ -107,37 +105,16 @@ class ChangeSearch:
             state: FSMContext,
             search_service: SearchService = Provide[SearchServiceContainer.search_service],
     ):
-        data = await state.get_data()
-        search_obj = SearchUpdateDTO(
-            id=data['search_id'],
-            url=message.text,
-        )
-        await search_service.update_search(search_obj)
-        await state.clear()
-        await message.answer('Запись обновленна!')
-
-# class DeleteSearch:
-#
-#     @staticmethod
-#     async def start(message: types.Message, state: FSMContext):
-#         await message.answer('Отправь id или название поискового запроса для удаления из базы данных')
-#
-#     @staticmethod
-#     async def process_deleting(message: types.Message, state: FSMContext):
-#         try:
-#             if message.text.isdigit():
-#                 return await DeleteSearch._delete_request_by_id(int(message.text))
-#             else:
-#                 return await DeleteSearch._delete_request_by_title(message.text)
-#         except Exception:
-#             await message.answer('Такого поискового запроса нет в базе данных')
-#
-#     @staticmethod
-#     async def _delete_request_by_id(search_id: int):
-#         pass
-#         # TODO database transaction
-#
-#     @staticmethod
-#     async def _delete_request_by_title(title: str):
-#         pass
-#         # TODO database transaction
+        try:
+            resource_validate = JobResourceURL.validate(message.text)
+            if resource_validate:
+                data = await state.get_data()
+                search_obj = SearchUpdateDTO(
+                    id=data['search_id'],
+                    url=message.text,
+                )
+                await search_service.update_search(search_obj)
+                await state.clear()
+                await message.answer('Запись обновленна!')
+        except ResourceError as e:
+            await message.answer('Данный ресурс не поддерживается! Попробуйте еще раз.')
