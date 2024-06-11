@@ -1,4 +1,4 @@
-version: "3.11"
+version: "3.8"
 services:
   db:
     image: postgres:latest
@@ -16,6 +16,26 @@ services:
       timeout: 5s
       retries: 5
 
+  mqbroker:
+    image: rabbitmq:management
+    container_name: mqbroker
+    restart: always
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    expose:
+      - 5672
+      - 15672
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
   web:
     container_name: backend
     restart: always
@@ -31,9 +51,26 @@ services:
     env_file:
       - .env
     depends_on:
+      mqbroker:
+        condition: service_healthy
       db:
         condition: service_healthy
     command: "sh -c 'alembic upgrade head && uvicorn app:app --host 0.0.0.0 --port 8000 --reload --log-level debug'"
 
+  flower:
+    build: ./
+    restart: always
+    command: celery_worker -A tasks flower
+    volumes:
+      - ./examples:/data
+    working_dir: /data
+    ports:
+      - 5555:5555
+    env_file:
+      - .env
+    depends_on:
+      - redis
+
 volumes:
   pg_data:
+  rabbitmq_data:
