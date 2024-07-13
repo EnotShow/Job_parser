@@ -17,7 +17,3 @@ celery_app.conf.update(
     enable_utc=True,
     autodiscover_tasks=True,
 )
-
-@celery_app.task
-def test_task_to_be_shown():
-    print('some')

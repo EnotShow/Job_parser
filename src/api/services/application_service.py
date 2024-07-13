@@ -1,5 +1,9 @@
-from dependency_injector.wiring import inject, Provide
+from typing import List, Union
 
+from dependency_injector.wiring import inject, Provide
+from sqlalchemy.exc import NoResultFound
+
+from core.shared.errors import NoRowsFoundError
 from src.api.containers.repositories_containers.application_repository_container import ApplicationRepositoryContainer
 from src.api.dtos.application_dto import ApplicationCreateDTO, ApplicationDTO, ApplicationFilterDTO, \
     ApplicationUpdateDTO
@@ -29,6 +33,12 @@ class ApplicationService:
         except Exception as e:
             return None
 
+    async def get_applications_if_exists(self, filters: List[ApplicationFilterDTO]):
+        try:
+            return await self._repository.get_filtered_multiple_applications(filters)
+        except (NoResultFound, AttributeError) as e:
+            return NoRowsFoundError
+
     async def get_applications_by_user_id(self, user_id: int):
         try:
             filter = ApplicationFilterDTO(user_id=user_id)
@@ -50,6 +60,13 @@ class ApplicationService:
             return await self._repository.create(dto)
         except Exception as e:
             return None
+
+    async def create_multiple_applications(self, dtos: List[ApplicationCreateDTO]):
+        try:
+            return await self._repository.create_multiple(dtos)
+        except Exception as e:
+            return None
+
     async def update_application(self, dto: ApplicationUpdateDTO):
         return await self._repository.update(dto)
 

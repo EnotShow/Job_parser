@@ -59,18 +59,16 @@ class SearchRepository(BaseRepository):
         return self._get_dto(instance)
 
     async def update(self, dto: SearchUpdateDTO) -> SearchDTO:
-        print(dto.to_orm_expressions(self.model))
         stmt = (update(self.model)
                 .where(self.model.id == dto.id)
                 .values(**dto.to_orm_values())
                 .returning(self.model))
         result = await self._session.execute(stmt)
-        print(result)
         await self._session.commit()
-        # try:
-        return SearchDTO.model_validate(result.scalar_one())
-        # except NoResultFound:
-        #     raise NoRowsFoundError(f"{self.model.__name__} no found")
+        try:
+            return SearchDTO.model_validate(result.scalar_one())
+        except NoResultFound:
+            raise NoRowsFoundError(f"{self.model.__name__} no found")
 
     async def delete(self, id: int):
         stmt = delete(self.model).where(self.model.id == id)

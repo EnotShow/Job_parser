@@ -1,3 +1,7 @@
+from typing import Annotated
+
+from pydantic import AnyUrl, TypeAdapter
+
 from core.shared.errors import ResourceError
 from parsers import base_urls
 
@@ -17,3 +21,6 @@ class JobResourceURL(str):
 
     def __repr__(self):
         return f'JobResourceURL({super().__repr__()})'
+
+
+JobResourceURL = Annotated[str, JobResourceURL]
