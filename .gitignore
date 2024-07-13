@@ -153,5 +153,3 @@ dmypy.json
 cython_debug/
 
 .idea/
-json_helper.py
-test.py
