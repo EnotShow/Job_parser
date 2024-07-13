@@ -1,5 +1,5 @@
-from parsers.olx import OlxParser
-from parsers.pracuj import PracujParser
+from src.parsers.olx import OlxParser
+from src.parsers.pracuj import PracujParser
 
 
 async def get_parser(url: str):

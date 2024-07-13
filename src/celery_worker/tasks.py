@@ -1,9 +1,10 @@
 import asyncio
 from typing import List
 
-from celery.worker.state import requests
+import requests
 
-from parsers.helper import get_parser
+from core.config.proj_settings import settings
+from src.parsers.helper import get_parser
 from src.api.dtos.application_dto import ApplicationCreateDTO
 from src.api.dtos.search_dto import SearchFilterDTO
 from src.celery_worker.celery import celery_app
@@ -11,8 +12,9 @@ from src.celery_worker.celery import celery_app
 
 @celery_app.task
 def add_parsing_job(searches: [List[SearchFilterDTO], dict]):
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(parsing_job(searches))
+    if isinstance(searches[0], dict):
+        searches = [SearchFilterDTO(**search) for search in searches]
+    asyncio.run(parsing_job(searches))
 
 
 async def parsing_job(searches: [List[SearchFilterDTO], dict]):
@@ -23,7 +25,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
         for job in result:
             to_search.append(job.model_dump(exclude_none=True))
 
-        find = requests.post("http://127.0.0.1:8000/application/find_multiple/", json=to_search).json()
+        find = requests.post(f"{settings.base_url}/application/find_multiple/", json=to_search).json()
 
         existing_urls = [f['url'] for f in find]
         to_add = []
@@ -38,6 +40,8 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 )
                 to_add.append(model.model_dump())
 
-        add_results = requests.post("http://127.0.0.1:8000/application/create_multiple/", json=to_add).json()
+        add_results = requests.post(f"{settings.base_url}/application/create_multiple/", json=to_add).json()
+
+        #send_notifications()
 
         return True

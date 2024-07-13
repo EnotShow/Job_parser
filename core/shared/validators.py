@@ -1,9 +1,7 @@
 from typing import Annotated
 
-from pydantic import AnyUrl, TypeAdapter
-
 from core.shared.errors import ResourceError
-from parsers import base_urls
+from src.parsers import base_urls
 
 
 class JobResourceURL(str):

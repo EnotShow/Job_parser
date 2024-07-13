@@ -32,7 +32,7 @@ services:
         condition: service_healthy
 
   worker:
-    container_name: backend
+    container_name: worker
     restart: always
     build:
       context: ././

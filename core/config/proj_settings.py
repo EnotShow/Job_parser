@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     secret_key: str = os.environ.get("SECRET_KEY")
     cors_allowed_origins: str = os.environ.get("CORS_ALLOWED_ORIGINS")
     version: str = "0.1"
+    base_url: str = os.environ.get("BASE_URL")
 
 
 class DevelopmentSettings(Settings):

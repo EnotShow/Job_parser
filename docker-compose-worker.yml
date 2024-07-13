@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   worker:
-    container_name: backend
+    container_name: worker
     restart: always
     build:
       context: ././

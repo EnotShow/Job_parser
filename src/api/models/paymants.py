@@ -17,4 +17,4 @@ class Payment(Base):
     owner: Mapped["User"] = relationship("User", back_populates="payments")
 
     def __repr__(self):
-        return f"<Payment(id={self.id})>"
+        return f"Payment(id={self.id})"
