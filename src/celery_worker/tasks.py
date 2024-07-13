@@ -2,12 +2,15 @@ import asyncio
 from typing import List
 
 import requests
+from celery.exceptions import TaskError
 
 from core.config.proj_settings import settings
-from src.parsers.helper import get_parser
 from src.api.dtos.application_dto import ApplicationCreateDTO
+from src.api.dtos.notification_dto import NotificationDTO
 from src.api.dtos.search_dto import SearchFilterDTO
+from src.bot.handlers.base import new_offer
 from src.celery_worker.celery import celery_app
+from src.parsers.helper import get_parser
 
 
 @celery_app.task
@@ -40,8 +43,24 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 )
                 to_add.append(model.model_dump())
 
-        add_results = requests.post(f"{settings.base_url}/application/create_multiple/", json=to_add).json()
+        add_results = requests.post(f"{settings.base_url}/application/create_multiple/", json=to_add)
+        if add_results.status_code != 200:
+            raise TaskError(f"Failed to add jobs to database: {add_results.text}")
 
-        #send_notifications()
+        send_notifications = requests.post(f"{settings.base_url}/notification/notify_multiple", json=to_add)
+        if send_notifications.status_code != 200:
+            raise TaskError(f"Failed to send notifications: {send_notifications.text}")
+
+        for job in result:
+            notification = NotificationDTO(
+                owner_id=job.owner_id,
+                message=new_offer(
+                        job.title,
+                        job.url,
+                        search.title
+                    ),
+                social_network=job.social_network,
+                social_network_id=job.social_network_id
+            )
 
         return True

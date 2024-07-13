@@ -15,8 +15,3 @@ class NotificationDTO(BaseModel):
     social_network: SocialNetworkEnum = SocialNetworkEnum.telegram
     social_network_id: str
     message: str
-
-
-class NotificationControllerDTO(BaseModel):
-    application: ApplicationCreateDTO
-    notification: NotificationDTO

@@ -1,5 +1,4 @@
 from aiogram import Router, Bot
-from aiogram.filters import CommandStart
 from aiogram.utils.markdown import hlink, hbold
 
 router = Router()
