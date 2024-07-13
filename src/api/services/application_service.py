@@ -1,4 +1,5 @@
 from typing import List, Union
+from uuid import UUID
 
 from dependency_injector.wiring import inject, Provide
 from sqlalchemy.exc import NoResultFound
@@ -32,6 +33,20 @@ class ApplicationService:
             return await self._repository.get_filtered(filter, get_single=True)
         except Exception as e:
             return None
+
+    async def get_application_by_short_id(self, short_id: UUID) -> ApplicationDTO:
+        try:
+            filter = ApplicationFilterDTO(short_id=short_id)
+            return await self._repository.get_filtered(filter, get_single=True)
+        except Exception as e:
+            return NoRowsFoundError
+
+    async def get_user_applied_applications(self, user_id: int):
+        try:
+            filter = ApplicationFilterDTO(applied=True, owner_id=user_id)
+            return await self._repository.get_filtered(filter, get_single=False)
+        except Exception as e:
+            return NoRowsFoundError
 
     async def get_applications_if_exists(self, filters: List[ApplicationFilterDTO]):
         try:
