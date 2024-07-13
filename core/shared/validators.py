@@ -1,5 +1,7 @@
+from typing import Annotated
+
 from core.shared.errors import ResourceError
-from parsers import base_urls
+from src.parsers import base_urls
 
 
 class JobResourceURL(str):
@@ -17,3 +19,6 @@ class JobResourceURL(str):
 
     def __repr__(self):
         return f'JobResourceURL({super().__repr__()})'
+
+
+JobResourceURL = Annotated[str, JobResourceURL]

@@ -13,3 +13,15 @@
     ```
     alembic upgrade head
     ```
+
+## Celery workers
+
+### Flower
+   ```
+   python -m flower --broker=amqp://rabbitmq:rabbitmq@localhost:5672/ flower
+   ```
+
+### Celery
+   ```
+   celery -A src.celery_worker worker --loglevel=INFO
+   ```

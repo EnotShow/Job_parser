@@ -1,5 +1,6 @@
 import src
 from core.shared.async_session_container import AsyncSessionContainer
+from src.api.containers.bots_containers.telegram_container import TelegramServiceContainer
 from src.api.containers.repositories_containers.application_repository_container import ApplicationRepositoryContainer
 from src.api.containers.repositories_containers.search_repository_container import SearchRepositoryContainer
 from src.api.containers.repositories_containers.user_repository_container import UserRepositoryContainer
@@ -9,6 +10,7 @@ from src.api.containers.services_containers.user_service_container import UserSe
 
 container_list = [
     AsyncSessionContainer,
+    TelegramServiceContainer,
 
     ApplicationRepositoryContainer,
     SearchRepositoryContainer,

@@ -1,0 +1,54 @@
+version: "3.8"
+services:
+  mqbroker:
+    image: rabbitmq:management
+    container_name: mqbroker
+    restart: always
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .env
+    environment:
+      RABBITMQ_DEFAULT_PASS: rabbitmq
+      RABBITMQ_DEFAULT_USER: rabbitmq
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  flower:
+    image: mher/flower
+    command: [ "python", "-m", "flower", "--broker=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}//", "flower" ]
+    ports:
+      - 5555:5555
+    env_file:
+      - .env
+    depends_on:
+      mqbroker:
+        condition: service_healthy
+
+  worker:
+    container_name: worker
+    restart: always
+    build:
+      context: ././
+      dockerfile: Dockerfile
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      mqbroker:
+        condition: service_healthy
+    command: "celery -A src.celery_worker worker --loglevel=INFO"
+
+volumes:
+  rabbitmq_data:

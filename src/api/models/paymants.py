@@ -1,7 +1,6 @@
 from datetime import datetime
 
-from aiogram.types import DateTime
-from sqlalchemy import String, ForeignKey, Float
+from sqlalchemy import String, ForeignKey, Float, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from core.shared.models import Base
@@ -18,4 +17,4 @@ class Payment(Base):
     owner: Mapped["User"] = relationship("User", back_populates="payments")
 
     def __repr__(self):
-        return f"<Payment(id={self.id})>"
+        return f"Payment(id={self.id})"

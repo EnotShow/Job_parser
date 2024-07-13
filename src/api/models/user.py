@@ -29,4 +29,4 @@ class User(Base):
     payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="owner")
 
     def __repr__(self) -> str:
-        return f"User(id={self.id!r}, username={self.email!r}"
+        return f"User(id={self.id!r}, username={self.email!r})"

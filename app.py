@@ -14,6 +14,7 @@ from core.db.db_helper import db_helper
 from core.scripts.command_list import execute_command
 from src.admin.admin_routers import add_admin_views
 from src.api.containers.containers_builder import build_containers
+from src.api.routes import get_apps_router
 from src.background_tasks import processing
 from src.bot.middlewares.setup import register_middlewares
 from src.bot.routers import register_bot_routes
@@ -42,7 +43,7 @@ def get_application() -> FastAPI:
         version=settings.version,
         lifespan=lifespan
     )
-    # application.include_router(get_apps_router())
+    application.include_router(get_apps_router())
 
     application.add_middleware(
         CORSMiddleware,
@@ -68,7 +69,6 @@ admin = Admin(
     engine=db_helper.engine,
     session_maker=db_helper.session_factory,
     # authentication_backend=authentication_backend,
-    base_url='/'
 )
 
 add_admin_views(admin)

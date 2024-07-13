@@ -8,7 +8,7 @@ WEBHOOK_URL = settings_bot.webhook_url + WEBHOOK_PATH
 
 storage = MemoryStorage()
 
-bot = Bot(token=settings_bot.token, parse_mode="HTML")
+bot = Bot(token=settings_bot.token)
 dp = Dispatcher(storage=storage)
 
 

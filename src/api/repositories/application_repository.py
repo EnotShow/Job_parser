@@ -1,7 +1,9 @@
-from typing import AsyncContextManager, List
+from datetime import datetime
+from operator import or_
+from typing import List, Union
 
 from dependency_injector.wiring import Provide, inject
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, and_
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -55,6 +57,46 @@ class ApplicationRepository(BaseRepository):
         except (NoResultFound, AttributeError):
             raise Exception(f"Application objects not found")
 
+    async def get_filtered_multiple_applications(
+            self,
+            filters: Union[ApplicationFilterDTO,List[ApplicationFilterDTO]]
+    ):
+        if isinstance(filters, list) and len(filters) > 1:
+            def recursive_or_conditions(filters: List[ApplicationFilterDTO]):
+                if len(filters) == 1:
+                    or_condition = and_(
+                        Application.url == filters[0].url,
+                        Application.owner_id == filters[0].owner_id
+                    )
+                    return or_condition
+                else:
+                    or_condition = and_(
+                        Application.url == filters[-1].url,
+                        Application.owner_id == filters[-1].owner_id
+                    )
+                    filters.pop()
+                    return or_(or_condition, recursive_or_conditions(filters))
+            start = datetime.utcnow()
+            or_conditions = recursive_or_conditions(filters)
+            end = datetime.utcnow()
+            print("operation time: ", end - start)
+
+            stmt = select(self.model).where(or_conditions)
+        else:
+            stmt = select(self.model).where(
+                and_(
+                    Application.url == filters.url,
+                    Application.owner_id == filters.owner_id
+                )
+            )
+
+        try:
+            result = await self._session.execute(stmt)
+            rows = result.scalars().all()
+            return [self._get_dto(row) for row in rows]
+        except (NoResultFound, AttributeError) as e:
+            return str(e)
+
     async def get_by_url(self, url: str) -> ApplicationDTO:
         stmt = select(self.model).where(self.model.url == url)
         try:
@@ -74,12 +116,16 @@ class ApplicationRepository(BaseRepository):
         await self._session.refresh(instance)
         return self._get_dto(instance)
 
-    async def create_multiple(self, dtos: [ApplicationCreateDTO]):
+    async def create_multiple(self, dtos: Union[ApplicationCreateDTO, List[ApplicationCreateDTO]]):
         for dto in dtos:
             instance = self.model(**dto.model_dump())
             self._session.add(instance)
+        # instance = [self.model(**dtos[0].model_dump())]
         try:
-            await self._session.commit()
+            c = await self._session.commit()
+
+            print(c)
+            print("created")
         except IntegrityError as e:
             raise Exception(str(e))
 
@@ -91,7 +137,7 @@ class ApplicationRepository(BaseRepository):
             return self._get_dto(result.scalar_one())
         except NoResultFound:
             raise NoRowsFoundError(f"{self.model.__name__} no found")
-        
+
     async def delete(self, id: int):
         stmt = delete(self.model).where(self.model.id == id)
         res = await self._session.execute(stmt)

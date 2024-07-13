@@ -1,0 +1,17 @@
+version: "3.8"
+services:
+  worker:
+    container_name: worker
+    restart: always
+    build:
+      context: ././
+      dockerfile: Dockerfile
+    expose:
+      - 8000
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    command: "celery -A src.celery_worker worker --loglevel=INFO"
