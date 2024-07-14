@@ -30,4 +30,5 @@ class UserCreateDTO(BaseDTO):
     email: Optional[str]
     telegram_id: Optional[int]
     password: Optional[str]
-    language_code: str
+    language_code: Optional[str] = None
+    refer_id: Optional[int] = None

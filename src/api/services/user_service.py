@@ -49,12 +49,13 @@ class UserService:
         except Exception as e:
             return None
 
-    async def create_user_from_telegram(self, message: types.Message):
+    async def create_user_from_telegram(self, message: types.Message, ref: str = None):
         user_data = UserCreateDTO(
             email=None,
             password=None,
             telegram_id=message.from_user.id,
             language_code=message.from_user.language_code,
+            refer_id=ref
         )
         return await self._repository.create(user_data)
 

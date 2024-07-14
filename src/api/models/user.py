@@ -17,7 +17,7 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[Optional[str]] = mapped_column(String(200), nullable=True, unique=True)
     telegram_id: Mapped[Optional[BigInteger]] = mapped_column(BigInteger, nullable=True, unique=True)
-    language_code: Mapped[str] = mapped_column(String(200))
+    language_code: Mapped[Optional[str]] = mapped_column(String(200))
     password: Mapped[Optional[str]] = mapped_column(String(200))
     paused: Mapped[bool] = mapped_column(Boolean, default=False)
     membership: Mapped[datetime] = mapped_column(DateTime, default=datetime_plus_3_days)
