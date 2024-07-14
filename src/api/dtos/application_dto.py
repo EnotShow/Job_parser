@@ -53,3 +53,7 @@ class ApplicationCreateDTO(BaseDTO):
     application_link: AnyUrl
     url: AnyUrl
     owner_id: int
+
+    @property
+    def short_url(self) -> Url:
+        return f"{self.settings.base_url}/applications/{self.short_id}"
