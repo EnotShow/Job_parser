@@ -19,6 +19,3 @@ class JobResourceURL(str):
 
     def __repr__(self):
         return f'JobResourceURL({super().__repr__()})'
-
-
-JobResourceURL = Annotated[str, JobResourceURL]

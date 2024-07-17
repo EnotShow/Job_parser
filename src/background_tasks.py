@@ -19,6 +19,7 @@ async def processing(
         def to_celery_primitive(objects: List[T]) -> List[T]:
             return [obj.model_dump() for obj in objects]
 
+        print('Processing...')
         searches = await searching_service.get_all_searches()
         searches = to_celery_primitive(searches)
         for i in range(0, len(searches), 100):
