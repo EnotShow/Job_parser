@@ -57,13 +57,22 @@ class UserRepository(BaseRepository):
         except (NoResultFound, AttributeError):
             raise Exception(f"User with id {user_id} not found")
 
-    async def get_filtered(self, filters: UserFilterDTO, get_single: bool = False) -> [List[UserDTO], UserDTO]:
+    async def get_filtered(
+            self,
+            filters: UserFilterDTO,
+            get_single: bool = False,
+            count: bool = False
+    ) -> [List[UserDTO], UserDTO]:
         stmt = select(self.model).where(*filters.to_orm_expressions(self.model))
         try:
             result = await self._session.execute(stmt)
             if get_single:
+                if count:
+                    raise Exception("Single object can't be counted")
                 row = result.scalars().first()
                 return self._get_dto(row)
+            if count:
+                return result.scalars().all().count(self.model)
             rows = result.scalars().all()
             return [self._get_dto(row) for row in rows]
         except (NoResultFound, AttributeError):

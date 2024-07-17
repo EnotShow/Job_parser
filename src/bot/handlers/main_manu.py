@@ -44,6 +44,17 @@ async def get_ref_link(
     await message.answer(ref_link)
 
 
+@main_manu_router.message(Command('referrals'))
+@inject
+async def get_referrals(
+        message: types.Message,
+        user_service: UserService = Provide[UserServiceContainer.user_service],
+):
+    user = await user_service.get_user_by_telegram_id(message.from_user.id)
+    referrals_count = await user_service.get_user_referrals(refer_id=user.id, count=True)
+    await message.answer(f"Количество вашых рефералов: {referrals_count}")
+
+
 @main_manu_router.message(TextFilter(text="Статистика"))
 @inject
 async def statistics(

@@ -43,6 +43,12 @@ class UserService:
         except Exception as e:
             return None
 
+    async def get_user_referrals(self, refer_id: int, count: bool = False):
+        try:
+            return await self._repository.get_filtered(UserFilterDTO(refer_id=refer_id), get_single=False, count=count)
+        except Exception as e:
+            return None
+
     async def create_user(self, user: UserCreateDTO):
         try:
             return await self._repository.create(user)
