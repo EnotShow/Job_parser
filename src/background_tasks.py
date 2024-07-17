@@ -6,7 +6,7 @@ from dependency_injector.wiring import inject, Provide
 from core.shared.base_dto import BaseDTO
 from src.api.containers.services_containers.search_service_container import SearchServiceContainer
 from src.api.services.searchings_service import SearchService
-from src.celery_worker.tasks import add_parsing_job, parsing_job, add
+from src.celery_worker.tasks import add_parsing_job
 
 T = TypeVar("T", bound=BaseDTO)
 

@@ -17,6 +17,8 @@ class UserFilterDTO(BaseDTO):
     email: Optional[str] = None
     telegram_id: Optional[int] = None
     language_code: Optional[int] = None
+    created_at: Optional[datetime] = None
+    refer_id: Optional[int] = None
 
 
 class UserUpdateDTO(BaseDTO):
@@ -30,4 +32,5 @@ class UserCreateDTO(BaseDTO):
     email: Optional[str]
     telegram_id: Optional[int]
     password: Optional[str]
-    language_code: str
+    language_code: Optional[str] = None
+    refer_id: Optional[int] = None
