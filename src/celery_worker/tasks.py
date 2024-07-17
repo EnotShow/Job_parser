@@ -47,20 +47,23 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
         if add_results.status_code != 200:
             raise TaskError(f"Failed to add jobs to database: {add_results.text}")
 
-        send_notifications = requests.post(f"{settings.base_url}/notification/notify_multiple", json=to_add)
-        if send_notifications.status_code != 200:
-            raise TaskError(f"Failed to send notifications: {send_notifications.text}")
+        notifications = []
 
         for job in result:
             notification = NotificationDTO(
                 owner_id=job.owner_id,
                 message=new_offer(
                         job.title,
-                        job.url,
+                        job.short_url,
                         search.title
                     ),
                 social_network=job.social_network,
                 social_network_id=job.social_network_id
             )
+            notifications.append(notification.model_dump())
+
+        send_notifications = requests.post(f"{settings.base_url}/notification/notify_multiple", json=notifications)
+        if send_notifications.status_code != 200:
+            raise TaskError(f"Failed to send notifications: {send_notifications.text}")
 
         return True
