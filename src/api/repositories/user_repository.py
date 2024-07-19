@@ -1,5 +1,4 @@
-import contextlib
-from typing import AsyncContextManager, List
+from typing import List
 
 from dependency_injector.wiring import Provide, inject
 from sqlalchemy import select, update
@@ -9,9 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.shared.async_session_container import AsyncSessionContainer
 from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
+from src.api.dtos.user_dto import UserCreateDTO, UserDTO, UserFilterDTO, UserUpdateDTO, UserSettingsDTO
 from src.api.models import User
-
-from src.api.dtos.user_dto import UserCreateDTO, UserDTO, UserFilterDTO, UserUpdateDTO
 
 
 class UserRepository(BaseRepository):
@@ -87,7 +85,7 @@ class UserRepository(BaseRepository):
             raise Exception(str(e))
         await self._session.refresh(instance)
         return self._get_dto(instance)
-    
+
     async def update(self, dto: UserUpdateDTO):
         stmt = update(self.model).where(self.model.id == dto.id).values(**dto.to_orm_values()).returning(self.model)
         result = await self._session.execute(stmt)
@@ -96,6 +94,18 @@ class UserRepository(BaseRepository):
             return self._get_dto(result.scalar_one())
         except NoResultFound:
             raise NoRowsFoundError(f"{self.model.__name__} no found")
+
+    async def get_user_settings(self, user_id: int):
+        stmt = select(
+            self.model
+        ).where(self.model.telegram_id == user_id)
+        try:
+            result = await self._session.execute(stmt)
+            row = result.scalars().first()
+            return UserSettingsDTO(**row.__dict__)
+        except (NoResultFound, AttributeError) as e:
+            print(e)
+            raise Exception(f"User with id {user_id} not found")
 
     def _get_dto(self, row):
         return UserDTO(**row.__dict__)

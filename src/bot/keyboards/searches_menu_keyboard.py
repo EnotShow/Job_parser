@@ -10,7 +10,8 @@ class SearchesCallbackData(CallbackData, prefix="searches"):
     search_id: Optional[int] = None
 
 
-def get_searches_menu_keyboard(lang: str) -> InlineKeyboardMarkup:
+def get_searches_menu_keyboard(
+        lang: str = None, return_buttons_list: bool = False, button: str = None) -> [InlineKeyboardMarkup, str]:
     translate = {
         "ru": {
             "searches_list": InlineKeyboardButton(
@@ -37,6 +38,12 @@ def get_searches_menu_keyboard(lang: str) -> InlineKeyboardMarkup:
             ),
         },
     }
+    if return_buttons_list:
+        button_list = []
+        for lang_code, lang_buttons in translate.items():
+            if button in lang_buttons:
+                button_list.append(lang_buttons[button].text)
+        return button_list
 
     keyboard_builder = InlineKeyboardBuilder()
     keyboard_builder.add(
@@ -47,7 +54,12 @@ def get_searches_menu_keyboard(lang: str) -> InlineKeyboardMarkup:
     return keyboard_builder.as_markup(resize_keyboard=True)
 
 
-def get_searches_list_menu_keyboard(search_id: int, lang: str) -> InlineKeyboardMarkup:
+def get_searches_list_menu_keyboard(
+        search_id: int = None,
+        lang: str = None,
+        return_buttons_list: bool = False,
+        button: str = None
+) -> [InlineKeyboardMarkup, str]:
     translate = {
         "ru": {
             "search_update": InlineKeyboardButton(
@@ -79,8 +91,13 @@ def get_searches_list_menu_keyboard(search_id: int, lang: str) -> InlineKeyboard
                     callback="delete_search", search_id=search_id).pack()
             ),
         },
-
     }
+    if return_buttons_list:
+        button_list = []
+        for lang_code, lang_buttons in translate.items():
+            if button in lang_buttons:
+                button_list.append(lang_buttons[button].text)
+        return button_list
 
     keyboard_builder = InlineKeyboardBuilder()
     keyboard_builder.add(*translate[lang].values())

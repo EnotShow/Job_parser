@@ -34,3 +34,11 @@ class UserCreateDTO(BaseDTO):
     password: Optional[str]
     language_code: Optional[str] = None
     refer_id: Optional[int] = None
+
+
+class UserSettingsDTO(BaseDTO):
+    id: int
+    language_code: Optional[str]
+    selected_language: Optional[str]
+    paused: bool
+    links_limit: Optional[int]

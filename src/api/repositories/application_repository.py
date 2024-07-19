@@ -76,10 +76,7 @@ class ApplicationRepository(BaseRepository):
                     )
                     filters.pop()
                     return or_(or_condition, recursive_or_conditions(filters))
-            start = datetime.utcnow()
             or_conditions = recursive_or_conditions(filters)
-            end = datetime.utcnow()
-            print("operation time: ", end - start)
 
             stmt = select(self.model).where(or_conditions)
         else:
@@ -120,6 +117,7 @@ class ApplicationRepository(BaseRepository):
         for dto in dtos:
             instance = self.model(**dto.model_dump())
             self._session.add(instance)
+        # TODO !
         # instance = [self.model(**dtos[0].model_dump())]
         try:
             c = await self._session.commit()

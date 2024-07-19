@@ -7,10 +7,12 @@ from dependency_injector.wiring import inject, Provide
 from bot_create import bot
 from src.api.containers.services_containers.application_service_container import ApplicationServiceContainer
 from src.api.containers.services_containers.user_service_container import UserServiceContainer
+from src.api.dtos.user_dto import UserSettingsDTO
 from src.api.services.application_service import ApplicationService
 from src.api.services.user_service import UserService
 from src.bot.filters.text_filter import TextFilter
 from src.bot.keyboards.main_menu_keyboard_buttons import get_main_manu_keyboard
+from src.bot.localization.languages import get_main_manu_lang, get_referrals_lang, get_statistics_lang
 
 main_manu_router = Router()
 
@@ -20,6 +22,7 @@ main_manu_router = Router()
 async def main_manu(
         message: types.Message,
         command: CommandObject,
+        settings: UserSettingsDTO,
         user_service: UserService = Provide[UserServiceContainer.user_service]
 ):
     user = await user_service.get_user_by_telegram_id(message.from_user.id)
@@ -30,40 +33,58 @@ async def main_manu(
             if payload.startswith("ref="):
                 ref = payload.split("=")[1]
         await user_service.create_user_from_telegram(message, ref)
-    await message.answer(f"Hello, {message.from_user.full_name}!", reply_markup=get_main_manu_keyboard())
+    await message.answer(
+        text=get_main_manu_lang(
+            settings.selected_language or settings.language_code if settings else message.from_user.language_code,
+            'command_start',
+            message
+        ),
+        reply_markup=get_main_manu_keyboard(
+            settings.selected_language or settings.language_code if settings else message.from_user.language_code
+        )
+    )
 
 
 @main_manu_router.message(Command('ref'))
 @inject
 async def get_ref_link(
         message: types.Message,
+        settings: UserSettingsDTO,
         user_service: UserService = Provide[UserServiceContainer.user_service],
 ):
     user = await user_service.get_user_by_telegram_id(message.from_user.id)
     ref_link = await create_start_link(bot, f"ref={user.id}", encode=True)
-    await message.answer(ref_link)
+    await message.answer(
+        text=get_referrals_lang(settings.language_code, 'referral_link', ref_link),
+        reply_markup=get_main_manu_keyboard(settings.selected_language or settings.language_code)
+    )
 
 
 @main_manu_router.message(Command('referrals'))
 @inject
 async def get_referrals(
         message: types.Message,
+        settings: UserSettingsDTO,
         user_service: UserService = Provide[UserServiceContainer.user_service],
 ):
     user = await user_service.get_user_by_telegram_id(message.from_user.id)
     referrals_count = await user_service.get_user_referrals(refer_id=user.id, count=True)
-    await message.answer(f"Количество вашых рефералов: {referrals_count}")
+    await message.answer(
+        text=get_referrals_lang(settings.language_code, 'referrals_count', referrals_count),
+        reply_markup=get_main_manu_keyboard(settings.selected_language or settings.language_code)
+    )
 
 
-@main_manu_router.message(TextFilter(text="Статистика"))
+@main_manu_router.message(TextFilter(text_list=get_main_manu_keyboard(return_buttons_list=True, button='statistics')))
 @inject
 async def statistics(
         message: types.Message,
+        settings: UserSettingsDTO,
         application_service: ApplicationService = Provide[ApplicationServiceContainer.application_service]
 ):
     jobs_counter = await application_service.get_applications_by_telegram_id(telegram_id=message.from_user.id,
                                                                              count=True)
     await message.answer(
-        f"Найденно для тебя работ: {jobs_counter}!",
-        reply_markup=get_main_manu_keyboard()
+        text=get_statistics_lang(settings.language_code, 'statistics', jobs_counter),
+        reply_markup=get_main_manu_keyboard(settings.selected_language or settings.language_code)
     )

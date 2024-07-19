@@ -61,6 +61,7 @@ class UserService:
             password=None,
             telegram_id=message.from_user.id,
             language_code=message.from_user.language_code,
+            selected_language=message.from_user.language_code,
             refer_id=ref
         )
         return await self._repository.create(user_data)
@@ -68,5 +69,11 @@ class UserService:
     async def update_user(self, user: UserUpdateDTO):
         try:
             return await self._repository.update(user)
+        except Exception as e:
+            return None
+
+    async def get_user_settings(self, user_id: int):
+        try:
+            return await self._repository.get_user_settings(user_id)
         except Exception as e:
             return None

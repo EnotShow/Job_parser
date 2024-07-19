@@ -32,13 +32,13 @@ class ReplyCallbackButtons:
         ).pack())
 
     @staticmethod
-    def button_apply(application_id, search_title):
+    def button_apply(application_id: int, search_title: str, lang: str):
         translate = {
             "ru": "Подать заявку",
             "pl": "Zatwierdź zapytanie",
             "en": "Apply"
         }
-        return InlineKeyboardButton(text=translate["en"], callback_data=ReplyCallback(
+        return InlineKeyboardButton(text=translate[lang], callback_data=ReplyCallback(
             type=ReplyType.APPLY,
             application_id=application_id,
             search_title=search_title

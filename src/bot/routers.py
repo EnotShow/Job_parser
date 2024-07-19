@@ -7,7 +7,7 @@ from src.bot.handlers.searches import searches_router
 
 
 def register_bot_routes(dp: Dispatcher):
-    dp.include_router(base_router)
     dp.include_router(reply_router)
     dp.include_router(main_manu_router)
     dp.include_router(searches_router)
+    dp.include_router(base_router)
