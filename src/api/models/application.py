@@ -24,7 +24,7 @@ class Application(Base):
     application_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.utcnow)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    owner: Mapped["User"] = relationship("User", back_populates="applications")
+    owner: Mapped["User"] = relationship("User", back_populates="applications", lazy="joined")
 
     def __repr__(self) -> str:
         return f"Application(id={self.id!r}, title={self.title!r})"

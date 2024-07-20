@@ -29,7 +29,6 @@ class OlxParser:
         html = requests.get(url).text
         soup = BeautifulSoup(html, "html.parser")
         description = soup.find(class_='css-14ie0im').get_text()
-        print(description)
         application_link = 'https://www.olx.pl/oferta/praca/calzedonia-galeria-wilenska-kierownik-sklepu-CID4-ID10Qs99.html' #soup.find(class_='css-ezafkw')['href']
         # if application_link.startswith('/'):
         #     application_link = self.base_url + application_link

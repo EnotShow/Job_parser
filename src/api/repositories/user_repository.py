@@ -1,5 +1,4 @@
-import contextlib
-from typing import AsyncContextManager, List
+from typing import List
 
 from dependency_injector.wiring import Provide, inject
 from sqlalchemy import select, update
@@ -9,9 +8,8 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.shared.async_session_container import AsyncSessionContainer
 from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
-from src.api.models import User
-
 from src.api.dtos.user_dto import UserCreateDTO, UserDTO, UserFilterDTO, UserUpdateDTO
+from src.api.models import User
 
 
 class UserRepository(BaseRepository):

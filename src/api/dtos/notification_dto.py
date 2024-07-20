@@ -13,5 +13,5 @@ class NotificationDTO(BaseModel):
     """
     owner_id: int
     social_network: SocialNetworkEnum = SocialNetworkEnum.telegram
-    social_network_id: str
+    social_network_id: int
     message: str

@@ -5,7 +5,8 @@ import requests
 from celery.exceptions import TaskError
 
 from core.config.proj_settings import settings
-from src.api.dtos.application_dto import ApplicationCreateDTO
+from core.shared.enums import SocialNetworkEnum
+from src.api.dtos.application_dto import ApplicationCreateDTO, ApplicationDTO, ApplicationFullDTO
 from src.api.dtos.notification_dto import NotificationDTO
 from src.api.dtos.search_dto import SearchFilterDTO
 from src.bot.handlers.base import new_offer
@@ -28,7 +29,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
         for job in result:
             to_search.append(job.model_dump(exclude_none=True))
 
-        find = requests.post(f"{settings.base_url}/application/find_multiple/", json=to_search).json()
+        find = requests.post(f"{settings.base_url}/applications/find_multiple/", json=to_search).json()
 
         existing_urls = [f['url'] for f in find]
         to_add = []
@@ -43,10 +44,11 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 )
                 to_add.append(model.model_dump())
 
-        add_results = requests.post(f"{settings.base_url}/application/create_multiple/", json=to_add)
+        add_results = requests.post(f"{settings.base_url}/applications/create_multiple/", json=to_add)
+        print(add_results)
         if add_results.status_code != 200:
             raise TaskError(f"Failed to add jobs to database: {add_results.text}")
-
+        result = [ApplicationFullDTO(**res) for res in add_results.json()]
         notifications = []
 
         for job in result:
@@ -57,8 +59,8 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                         job.short_url,
                         search.title
                     ),
-                social_network=job.social_network,
-                social_network_id=job.social_network_id
+                social_network=SocialNetworkEnum.telegram,
+                social_network_id=job.owner.telegram_id
             )
             notifications.append(notification.model_dump())
 

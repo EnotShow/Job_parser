@@ -16,15 +16,15 @@ async def processing(
         searching_service: SearchService = Provide[SearchServiceContainer.search_service],
 ):
     while True:
-        def to_celery_primitive(objects: List[T]) -> List[T]:
-            return [obj.model_dump() for obj in objects]
+        try:
+            def to_celery_primitive(objects: List[T]) -> List[T]:
+                return [obj.model_dump() for obj in objects]
 
-        searches = await searching_service.get_all_searches()
-        searches = to_celery_primitive(searches)
-        for i in range(0, len(searches), 100):
-            batch = searches[i:i + 100]
-            add_parsing_job.apply_async((batch,))
+            searches = await searching_service.get_all_searches()
+            searches = to_celery_primitive(searches)
+            for i in range(0, len(searches), 100):
+                batch = searches[i:i + 100]
+                add_parsing_job.apply_async((batch,))
+        except Exception as e:
+            print(e)
         await asyncio.sleep(60 * 1)
-
-if __name__ == '__main__':
-    processing()
