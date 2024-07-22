@@ -17,6 +17,7 @@ class Settings(BaseSettings):
 
 class DevelopmentSettings(Settings):
     background_tasks: bool = os.environ.get("BACKGROUND_TASKS")
+    parsing_delay: int = os.environ.get("PARSING_DELAY")
     available_cpu_cores: int = os.environ.get("AVAILABLE_CPU_CORES")
 
 

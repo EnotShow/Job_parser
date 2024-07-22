@@ -3,6 +3,7 @@ from typing import TypeVar, List
 
 from dependency_injector.wiring import inject, Provide
 
+from core.config.proj_settings import settings, development_settings
 from core.shared.base_dto import BaseDTO
 from src.api.containers.services_containers.search_service_container import SearchServiceContainer
 from src.api.services.searchings_service import SearchService
@@ -27,4 +28,4 @@ async def processing(
                 add_parsing_job.apply_async((batch,))
         except Exception as e:
             print(e)
-        await asyncio.sleep(60 * 1)
+        await asyncio.sleep(60 * development_settings.parsing_delay)
