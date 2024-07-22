@@ -25,8 +25,7 @@ async def main_manu(
         settings: UserSettingsDTO,
         user_service: UserService = Provide[UserServiceContainer.user_service]
 ):
-    user = await user_service.get_user_by_telegram_id(message.from_user.id)
-    if user is None:
+    if settings is None:
         ref = None
         if command.args:
             payload = decode_payload(command.args)

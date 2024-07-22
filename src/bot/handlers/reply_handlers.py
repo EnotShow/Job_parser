@@ -6,7 +6,7 @@ from src.api.containers.services_containers.application_service_container import
 from src.api.dtos.user_dto import UserSettingsDTO
 from src.api.services.application_service import ApplicationService
 from src.bot.filters.callbackquery_filter import ReplyCallback, ReplyType
-from src.bot.handlers.base import offer_description, offer_title
+from src.bot.handlers.base_handlers import offer_description, offer_title
 from src.bot.keyboards.reply_keyboard_buttons import ReplyCallbackButtons
 
 router = Router()

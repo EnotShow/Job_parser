@@ -21,7 +21,7 @@ async def send_notification(bot: Bot, owner_id: int, message: str, *, reply_mark
 
 
 def new_offer(title, url, search_title):
-    return f"Появился новый офер:\n{title}\n{hlink('Ссылка', url)}\nЗапрос: **{search_title}**"
+    return f"Появился новый офер:\n{title}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}"
 
 
 def offer_title(title, url, search_title):

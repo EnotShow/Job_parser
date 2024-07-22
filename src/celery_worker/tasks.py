@@ -8,7 +8,7 @@ from core.config.proj_settings import settings
 from src.api.dtos.application_dto import ApplicationCreateDTO
 from src.api.dtos.notification_dto import NotificationDTO
 from src.api.dtos.search_dto import SearchFilterDTO
-from src.bot.handlers.base import new_offer
+from src.bot.handlers.base_handlers import new_offer
 from src.celery_worker.celery import celery_app
 from src.parsers.helper import get_parser
 

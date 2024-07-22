@@ -26,6 +26,9 @@ class UserUpdateDTO(BaseDTO):
     email: Optional[str] = None
     telegram_id: Optional[int] = None
     language_code: Optional[int] = None
+    selected_language: Optional[str] = None
+    paused: Optional[bool] = None
+    links_limit: Optional[int] = None
 
 
 class UserCreateDTO(BaseDTO):
