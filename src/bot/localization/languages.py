@@ -7,18 +7,21 @@ def get_main_manu_lang(lang: str, part: str, message: types.Message):
             'command_start': f'Здравствуйте, {message.from_user.full_name}, чем могу помочь вам сегодня!',
             'unsupported_command': 'Команда не поддерживается',
             'settings_menu': 'Меню настроек:',
+            'language_select': 'Выберите язык',
             'settings_changed': 'Настройки изменены!',
         },
         'pl': {
             'command_start': f'Czesc, {message.from_user.full_name}, co chcesz zrobic dzisiaj?',
             'unsupported_command': 'Ta komenda nie jest obsługiwana',
             'settings_menu': 'Menu ustawien:',
+            'language_select': 'Wybierz jezyk',
             'settings_changed': 'Ustawienia zmienione!',
         },
         'en': {
             'command_start': f'Hi, {message.from_user.full_name}, what can I help you with today?',
             'unsupported_command': 'This command is not supported',
             'settings_menu': 'Settings menu:',
+            'language_select': 'Select language',
             'settings_changed': 'Settings changed!',
         },
     }

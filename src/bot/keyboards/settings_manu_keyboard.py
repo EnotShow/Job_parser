@@ -1,4 +1,5 @@
 import enum
+from typing import Optional
 
 from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -9,11 +10,13 @@ from src.api.dtos.user_dto import UserSettingsDTO
 
 class SettingsCallbackType(enum.StrEnum):
     LANGUAGE = "language"
+    CHANGE_LANGUAGE = "change_language"
     PAUSING = "pausing"
 
 
 class SettingsCallbackData(CallbackData, prefix="settings"):
     callback: SettingsCallbackType
+    language_option: Optional[str] = None
 
 
 def get_settings_menu_keyboard(
@@ -66,4 +69,20 @@ def get_settings_menu_keyboard(
         translate[settings.selected_language]["pausing"],
     )
     keyboard_builder.adjust(1, 1)
+    return keyboard_builder.as_markup(resize_keyboard=True)
+
+
+def get_language_select_keyboard():
+    languages = {"ru": "Русский", "pl": "Polski", "en": "English"}
+    keyboard_builder = InlineKeyboardBuilder()
+    for language in languages:
+        keyboard_builder.add(
+            InlineKeyboardButton(
+                text=languages[language],
+                callback_data=SettingsCallbackData(
+                    callback=SettingsCallbackType.CHANGE_LANGUAGE, language_option=language
+                ).pack()
+            )
+        )
+    keyboard_builder.adjust(3, 3)
     return keyboard_builder.as_markup(resize_keyboard=True)
