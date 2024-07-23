@@ -10,7 +10,6 @@ from src.bot.keyboards.main_menu_keyboard_buttons import get_main_manu_keyboard
 from src.bot.keyboards.settings_manu_keyboard import get_settings_menu_keyboard, SettingsCallbackType, \
     SettingsCallbackData, get_language_select_keyboard
 from src.bot.localization.languages import get_main_manu_lang
-from src.bot.states.language_select_state import FSMLanguageSelectState
 
 settings_router = Router()
 
