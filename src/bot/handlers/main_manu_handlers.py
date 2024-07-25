@@ -44,22 +44,7 @@ async def main_manu(
     )
 
 
-@main_manu_router.message(Command('ref'))
-@inject
-async def get_ref_link(
-        message: types.Message,
-        settings: UserSettingsDTO,
-        user_service: UserService = Provide[UserServiceContainer.user_service],
-):
-    user = await user_service.get_user_by_telegram_id(message.from_user.id)
-    ref_link = await create_start_link(bot, f"ref={user.id}", encode=True)
-    await message.answer(
-        text=get_referrals_lang(settings.language_code, 'referral_link', ref_link),
-        reply_markup=get_main_manu_keyboard(settings.selected_language or settings.language_code)
-    )
-
-
-@main_manu_router.message(Command('referrals'))
+@main_manu_router.message(TextFilter(text_list=get_main_manu_keyboard(return_buttons_list=True, button='referrals')))
 @inject
 async def get_referrals(
         message: types.Message,
@@ -67,9 +52,10 @@ async def get_referrals(
         user_service: UserService = Provide[UserServiceContainer.user_service],
 ):
     user = await user_service.get_user_by_telegram_id(message.from_user.id)
+    ref_link = await create_start_link(bot, f"ref={user.id}", encode=True)
     referrals_count = await user_service.get_user_referrals(refer_id=user.id, count=True)
     await message.answer(
-        text=get_referrals_lang(settings.language_code, 'referrals_count', referrals_count),
+        text=get_referrals_lang(settings.language_code, 'referrals', ref_link, referrals_count),
         reply_markup=get_main_manu_keyboard(settings.selected_language or settings.language_code)
     )
 

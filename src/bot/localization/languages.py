@@ -43,19 +43,16 @@ def get_statistics_lang(lang: str, part: str, count: int):
     return translate[lang][part]
 
 
-def get_referrals_lang(lang: str, part: str, data: [str, int]):
+def get_referrals_lang(lang: str, part: str, ref_link: str, ref_count: int):
     translate = {
         'ru': {
-            'referrals': f'Количество вашых рефералов: {data}!',
-            'referral_link': f'Ваша реферальная ссылка: {data}',
+            'referrals': f'Количество вашых рефералов: {ref_count}!\nВаша реферальная ссылка:\n{ref_link}',
         },
         'pl': {
-            'referrals': f'Liczba twoich referencji: {data}!',
-            'referral_link': f'Twoja referencjalna linka: {data}',
+            'referrals': f'Ilosc twoich referalow: {ref_count}!\nTwoja referalowa linka:\n{ref_link}',
         },
         'en': {
-            'referrals': f'Your referrals: {data}!',
-            'referral_link': f'Your referral link: {data}',
+            'referrals': f'Number of your referrals: {ref_count}!\nYour referral link:\n{ref_link}',
         },
     }
     return translate[lang][part]

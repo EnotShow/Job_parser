@@ -6,19 +6,19 @@ def get_main_manu_keyboard(lang: str = None, return_buttons_list: bool = False, 
     translate = {
         "ru": {
             "searches": KeyboardButton(text="Поисковые запросы"),
-            "profile": KeyboardButton(text="Профиль"),
+            "referrals": KeyboardButton(text="Рефералы"),
             "statistics": KeyboardButton(text="Статистика"),
             "settings": KeyboardButton(text="⚙️")
         },
         "pl": {
             "searches": KeyboardButton(text="Wyszukiwarki"),
-            "profile": KeyboardButton(text="Profil"),
+            "referrals": KeyboardButton(text="Referencje"),
             "statistics": KeyboardButton(text="Statystyki"),
             "settings": KeyboardButton(text="⚙️")
         },
         "en": {
             "searches": KeyboardButton(text="Searches"),
-            "profile": KeyboardButton(text="Profile"),
+            "referrals": KeyboardButton(text="Referrals"),
             "statistics": KeyboardButton(text="Statistics"),
             "settings": KeyboardButton(text="⚙️")
         }
@@ -33,7 +33,7 @@ def get_main_manu_keyboard(lang: str = None, return_buttons_list: bool = False, 
     main_manu_keyboard_builder = ReplyKeyboardBuilder()
     main_manu_keyboard_builder.add(
         translate[lang]["searches"],
-        translate[lang]["profile"],
+        translate[lang]["referrals"],
         translate[lang]["statistics"],
         translate[lang]["settings"])
     main_manu_keyboard_builder.adjust(3, 3)
