@@ -55,7 +55,8 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 message=new_offer(
                         job.title,
                         job.short_url,
-                        search.title
+                        search.title,
+                        job.owner
                     ),
                 social_network=job.social_network,
                 social_network_id=job.social_network_id

@@ -20,13 +20,28 @@ async def send_notification(bot: Bot, owner_id: int, message: str, *, reply_mark
     await bot.send_message(owner_id, message, reply_markup=reply_markup)
 
 
-def new_offer(title, url, search_title):
-    return f"Появился новый офер:\n{title}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}"
+def new_offer(title, url, search_title, lang):
+    translate = {
+        'ru': f"Появился новый офер:\n{title}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}",
+        'pl': f"Został dodany nowy ofer:\n{title}\n{hlink('Ссылка', url)}\nZapytanie: {hbold(search_title)}",
+        'en': f"New offer appeared:\n{title}\n{hlink('Link', url)}\nSearch: {hbold(search_title)}",
+    }
+    return translate[lang]
 
 
-def offer_title(title, url, search_title):
-    return f"{title}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}"
+def offer_title(title, url, search_title, lang):
+    translate = {
+        'ru': f"{title}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}",
+        'pl': f"{title}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}",
+        'en': f"{title}\n{hlink('Link', url)}\nSearch: {hbold(search_title)}",
+    }
+    return translate[lang]
 
 
-def offer_description(description, url, search_title):
-    return f"{description}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}"
+def offer_description(description, url, search_title, lang):
+    translate = {
+        'ru': f"{description}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}",
+        'pl': f"{description}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}",
+        'en': f"{description}\n{hlink('Link', url)}\nSearch: {hbold(search_title)}",
+    }
+    return translate[lang]
