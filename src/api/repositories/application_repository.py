@@ -11,7 +11,7 @@ from core.shared.async_session_container import AsyncSessionContainer
 from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
 from src.api.dtos.application_dto import ApplicationDTO, ApplicationCreateDTO, ApplicationFilterDTO, \
-    ApplicationUpdateDTO
+    ApplicationUpdateDTO, ApplicationFullDTO
 from src.api.models import Application
 
 
@@ -113,17 +113,19 @@ class ApplicationRepository(BaseRepository):
         await self._session.refresh(instance)
         return self._get_dto(instance)
 
-    async def create_multiple(self, dtos: Union[ApplicationCreateDTO, List[ApplicationCreateDTO]]):
+    async def create_multiple(
+            self, dtos: List[ApplicationCreateDTO]
+    ) -> List[ApplicationFullDTO]:
+        created_instances = []
         for dto in dtos:
             instance = self.model(**dto.model_dump())
             self._session.add(instance)
-        # TODO !
-        # instance = [self.model(**dtos[0].model_dump())]
+            created_instances.append(instance)
         try:
-            c = await self._session.commit()
-
-            print(c)
-            print("created")
+            await self._session.commit()
+            for instance in created_instances:
+                await self._session.refresh(instance)
+            return [self._get_full_dto(instance) for instance in created_instances]
         except IntegrityError as e:
             raise Exception(str(e))
 
@@ -145,3 +147,6 @@ class ApplicationRepository(BaseRepository):
 
     def _get_dto(self, row):
         return ApplicationDTO(**row.__dict__)
+
+    def _get_full_dto(self, row):
+        return ApplicationFullDTO(**row.__dict__)
