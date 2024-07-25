@@ -26,8 +26,11 @@ logger = logging.getLogger(__name__)
 async def lifespan(app: FastAPI):
     print('Bot is starting...')
     if development_settings.background_tasks:
-        await asyncio.create_task(processing())
+        print('Background tasks are running...')
+        asyncio.create_task(processing())
     await set_webhook()
+    print('Webhook is set...')
+    print('Bot ready for work!')
 
     yield
     await delete_webhook()

@@ -9,7 +9,7 @@ from src.api.containers.bots_containers.notification_container import Notificati
 from src.api.dtos.notification_dto import NotificationDTO
 from src.api.services.bots_services.notification_service import NotificationService
 
-router = APIRouter(prefix="/notify", tags=["notifications"])
+router = APIRouter(prefix="/notification", tags=["notifications"])
 
 
 @router.post("/notify", status_code=status.HTTP_200_OK)

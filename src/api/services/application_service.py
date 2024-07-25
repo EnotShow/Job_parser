@@ -7,7 +7,7 @@ from sqlalchemy.exc import NoResultFound
 from core.shared.errors import NoRowsFoundError
 from src.api.containers.repositories_containers.application_repository_container import ApplicationRepositoryContainer
 from src.api.dtos.application_dto import ApplicationCreateDTO, ApplicationDTO, ApplicationFilterDTO, \
-    ApplicationUpdateDTO
+    ApplicationUpdateDTO, ApplicationFullDTO
 from src.api.repositories.application_repository import ApplicationRepository
 
 
@@ -76,7 +76,7 @@ class ApplicationService:
         except Exception as e:
             return None
 
-    async def create_multiple_applications(self, dtos: List[ApplicationCreateDTO]):
+    async def create_multiple_applications(self, dtos: List[ApplicationCreateDTO]) -> List[ApplicationFullDTO]:
         try:
             return await self._repository.create_multiple(dtos)
         except Exception as e:
