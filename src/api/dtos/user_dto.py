@@ -9,6 +9,7 @@ class UserDTO(BaseDTO):
     email: Optional[str]
     telegram_id: Optional[int]
     language_code: Optional[str]
+    selected_language: Optional[str]
     created_at: Optional[datetime]
 
 

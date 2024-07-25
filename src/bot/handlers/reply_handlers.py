@@ -33,7 +33,8 @@ async def description_reply(
         )
     ]])
     await query.message.edit_text(
-        offer_description(application.description, application.url, callback_data.search_title),
+        offer_description(
+            application.description, application.url, callback_data.search_title, settings.selected_language),
         reply_markup=reply_keyboard
     )
 
@@ -59,6 +60,7 @@ async def title_reply(
         )
     ]])
     await query.message.edit_text(
-        offer_title(application.title, application.url, callback_data.search_title),
+        offer_title(
+            application.title, application.url, callback_data.search_title, settings.selected_language),
         reply_markup=reply_keyboard
     )

@@ -59,7 +59,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                         job.title,
                         job.short_url,
                         search.title,
-                        job.owner
+                        job.owner.selected_language
                     ),
                 social_network=SocialNetworkEnum.telegram,
                 social_network_id=job.owner.telegram_id
