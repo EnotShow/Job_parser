@@ -9,7 +9,7 @@ from core.shared.enums import SocialNetworkEnum
 from src.api.dtos.application_dto import ApplicationCreateDTO, ApplicationDTO, ApplicationFullDTO
 from src.api.dtos.notification_dto import NotificationDTO
 from src.api.dtos.search_dto import SearchFilterDTO
-from src.bot.handlers.base import new_offer
+from src.bot.handlers.base_handlers import new_offer
 from src.celery_worker.celery import celery_app
 from src.parsers.helper import get_parser
 
@@ -58,7 +58,8 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 message=new_offer(
                         job.title,
                         job.short_url,
-                        search.title
+                        search.title,
+                        job.owner
                     ),
                 social_network=SocialNetworkEnum.telegram,
                 social_network_id=job.owner.telegram_id

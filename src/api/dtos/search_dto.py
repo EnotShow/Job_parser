@@ -4,7 +4,6 @@ from typing import Optional, Annotated
 from pydantic import AnyUrl, AfterValidator
 
 from core.shared.base_dto import BaseDTO
-from core.shared.validators import JobResourceURL
 
 AnyUrl = Annotated[AnyUrl, AfterValidator(str)]
 
@@ -12,7 +11,7 @@ AnyUrl = Annotated[AnyUrl, AfterValidator(str)]
 class SearchDTO(BaseDTO):
     id: int
     title: str
-    url: JobResourceURL
+    url: AnyUrl
     created_at: datetime
     owner_id: int
 
