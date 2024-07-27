@@ -5,7 +5,6 @@ import {
   cilSearch,
   cilPencil,
   cilNotes,
-  cilPuzzle,
   cilSpeedometer,
   cilStar,
 } from '@coreui/icons'
