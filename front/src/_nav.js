@@ -24,7 +24,7 @@ const _nav = [
   {
     component: CNavItem,
     name: 'My Searches',
-    to: '/theme/colors',
+    to: '/searches',
     icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,
   },
   {
