@@ -1,15 +1,17 @@
-import React from 'react'
+import React, {useState} from 'react'
 
 import {
   CButton, CButtonGroup,
   CCard,
   CCardBody,
-  CCardHeader,
-  CCol, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CFormCheck, CFormSwitch, CPagination, CPaginationItem,
+  CCol, CPagination, CPaginationItem,
   CRow, CTable,
 } from '@coreui/react'
+import DeleteModal from "src/views/_DeleteModal";
 
 const Searches = () => {
+  const [visible, setVisible] = useState(false)
+
   const columns = [
   {
     key: 'id',
@@ -53,7 +55,7 @@ const items = [
         <CButton color="primary" onClick={() => alert('Button 2 clicked')}>
         Details
         </CButton>
-        <CButton color="danger" onClick={() => alert('Button 2 clicked')}>
+        <CButton color="danger" onClick={() => setVisible(true)}>
         Delete
         </CButton>
         </CButtonGroup>
@@ -70,8 +72,14 @@ const items = [
     items.push(item)
   }
 
+  const handleDelete = () => {
+    console.log("Item deleted");
+  };
+
   return (
     <>
+      <DeleteModal model="search" visible={visible} setVisible={setVisible} onDelete={handleDelete} />
+
       <CRow>
         <CCol xs={12}>
           <CCard className="mb-4">

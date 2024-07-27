@@ -1,12 +1,23 @@
-import React from 'react'
+import React, {useState} from 'react'
 
 import {
-  CButton, CButtonGroup,
+  CButton,
+  CButtonGroup,
   CCard,
   CCardBody,
   CCardHeader,
-  CCol, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CFormCheck, CFormSwitch, CPagination, CPaginationItem,
-  CRow, CTable,
+  CCol,
+  CDropdown,
+  CDropdownItem,
+  CDropdownMenu,
+  CDropdownToggle,
+  CFormCheck,
+  CFormSwitch, CModal, CModalBody, CModalFooter,
+  CModalHeader, CModalTitle,
+  CPagination,
+  CPaginationItem,
+  CRow,
+  CTable,
 } from '@coreui/react'
 
 const Applications = () => {
@@ -47,7 +58,7 @@ const Applications = () => {
     _props: { scope: 'col' },
   },
 ]
-const items = [
+  const items = [
     {
       id: 1,
       title: 'Title',
@@ -130,7 +141,6 @@ const items = [
               </CPagination>
             </CCardBody>
           </CCard>
-
         </CCol>
       </CRow>
     </>

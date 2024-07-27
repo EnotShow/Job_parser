@@ -63,6 +63,51 @@ const _nav = [
     to: '/settings',
     icon: <CIcon icon={cilSettings} customClassName="nav-icon" />,
   },
+
+  {
+    component: CNavTitle,
+    name: 'Temporary',
+  },
+  {
+    component: CNavGroup,
+    name: 'Temporary Applications',
+    to: '/applications',
+    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Application Details',
+        to: '/applications/{application_id}',
+        icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Application Edit',
+        to: '/applications/{application_id}/edit',
+        icon: <CIcon icon={cilPencil} customClassName="nav-icon" />
+      }
+    ],
+  },
+  {
+    component: CNavGroup,
+    name: 'Temporary Searches',
+    to: '/searches',
+    icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
+    items: [
+      {
+        component: CNavItem,
+        name: 'Search Details',
+        to: '/searches/{search_id}',
+        icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+      },
+      {
+        component: CNavItem,
+        name: 'Search Edit',
+        to: '/searches/{search_id}/edit',
+        icon: <CIcon icon={cilPencil} customClassName="nav-icon" />
+      }
+    ],
+  },
 ]
 
 export default _nav
