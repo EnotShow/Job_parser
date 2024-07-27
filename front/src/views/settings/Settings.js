@@ -5,7 +5,7 @@ import {
   CCard,
   CCardBody,
   CCardHeader,
-  CCol, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CFormCheck, CFormSwitch,
+  CCol, CDropdown, CDropdownItem, CDropdownMenu, CDropdownToggle, CFormCheck, CFormSelect, CFormSwitch,
   CRow,
 } from '@coreui/react'
 
@@ -22,17 +22,17 @@ const Settings = () => {
               <CFormCheck id="flexCheckChecked" label="Checked checkbox" defaultChecked />
               <CFormSwitch label="Default switch checkbox input" id="formSwitchCheckDefault"/>
               <CFormSwitch label="Checked switch checkbox input" id="formSwitchCheckChecked" defaultChecked/>
-              <CDropdown>
-              <CDropdownToggle color={'background-color'} style={{ border: '1px solid black' }}>Selected language: English</CDropdownToggle>
-              <CDropdownMenu>
-                <CDropdownItem href="#">English</CDropdownItem>
-                <CDropdownItem href="#">Polish</CDropdownItem>
-                <CDropdownItem href="#">Russian</CDropdownItem>
-              </CDropdownMenu>
-            </CDropdown>
+              <CFormSelect id="inputState" label="State">
+                <option>Choose...</option>
+                <option>...</option>
+              </CFormSelect>
+              <CRow>
+                <CCol>
+                  <CButton color="primary">Save</CButton>
+                </CCol>
+              </CRow>
             </CCardBody>
           </CCard>
-            <CButton color="primary">Save</CButton>
         </CCol>
       </CRow>
     </>

@@ -108,6 +108,30 @@ const _nav = [
       }
     ],
   },
+  {
+    component: CNavItem,
+    name: 'Login',
+    to: '/login',
+    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: 'Sign Up',
+    to: '/register',
+    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: '404',
+    to: '/404',
+    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+  },
+  {
+    component: CNavItem,
+    name: '500',
+    to: '/500',
+    icon: <CIcon icon={cilStar} customClassName="nav-icon" />,
+  }
 ]
 
 export default _nav
