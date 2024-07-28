@@ -1,53 +1,57 @@
 from aiogram import types
 from dependency_injector.wiring import Provide, inject
 
+from core.shared.base_service import BaseService
+from core.shared.errors import NoRowsFoundError
 from src.api.containers.repositories_containers.user_repository_container import UserRepositoryContainer
 from src.api.dtos.user_dto import UserFilterDTO, UserCreateDTO, UserDTO, UserUpdateDTO
 from src.api.repositories.user_repository import UserRepository
 
 
-class UserService:
+class UserService(BaseService):
 
     @inject
     def __init__(self, repository: UserRepository = Provide[UserRepositoryContainer.user_repository]):
         self._repository = repository
 
-    async def get_all_users(self):
-        return await self._repository.get()
+    async def get_all_users(self, limit: int = 10, page: int = 1):
+        return await self._repository.get(limit=limit, page=page)
 
     async def get_user(self, user_id: int):
         try:
             return await self._repository.get_single(user_id)
         except Exception as e:
-            return None
+            raise NoRowsFoundError(f"User {user_id} not found")
 
     async def get_user_by_email(self, email: str):
         try:
             user_filter = UserFilterDTO(email=email)
-            return await self._repository.get_filtered(user_filter, get_single=False)
+            return self._unpack_items(await self._repository.get_filtered(user_filter))
         except Exception as e:
-            return None
+            raise NoRowsFoundError(f"User with email {email} not found")
 
     async def get_user_by_telegram_id(self, telegram_id: int):
         try:
             user_filter = UserFilterDTO(telegram_id=telegram_id)
-            return await self._repository.get_filtered(user_filter, get_single=True)
+            return self._unpack_items(await self._repository.get_filtered(user_filter))
         except Exception as e:
-            return None
+            raise NoRowsFoundError(f"User with telegram id {telegram_id} not found")
 
     async def get_by_email_password(self, email: str, password: str):
         try:
             # TODO password encryption
             user_filter = UserFilterDTO(email=email, password=password)
-            return await self._repository.get_filtered(user_filter, get_single=True)
+            return self._unpack_items(await self._repository.get_filtered(user_filter))
         except Exception as e:
             return None
 
     async def get_user_referrals(self, refer_id: int, count: bool = False):
         try:
-            return await self._repository.get_filtered(UserFilterDTO(refer_id=refer_id), get_single=False, count=count)
+            if count:
+                return len(await self._repository.get_filtered(UserFilterDTO(refer_id=refer_id), count=count))
+            return self._unpack_items(await self._repository.get_filtered(UserFilterDTO(refer_id=refer_id)))
         except Exception as e:
-            return None
+            return NoRowsFoundError
 
     async def create_user(self, user: UserCreateDTO):
         try:

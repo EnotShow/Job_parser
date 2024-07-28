@@ -19,14 +19,15 @@ class UserRepository(BaseRepository):
     def __init__(self, db_session: AsyncSession = Provide[AsyncSessionContainer.db_session]):
         self._session = db_session
 
-    async def get(self):
-        stmt = select(self.model)
+    async def get(self, limit: int = 10, page: int = 1) -> List[UserDTO]:
+        offset = (page - 1) * limit
+        stmt = select(self.model).limit(limit).offset(offset)
         try:
             result = await self._session.execute(stmt)
             rows = result.scalars().all()
-            return [self._get_dto(row) for row in rows]
+            return self._paginate([self._get_dto(row) for row in rows], page, len(rows))
         except (NoResultFound, AttributeError):
-            return None
+            raise NoRowsFoundError(f"{self.model.__name__} no found")
 
     async def get_by_email(self, email: str) -> UserDTO:
         stmt = select(self.model).where(self.model.email == email)
@@ -58,17 +59,17 @@ class UserRepository(BaseRepository):
     async def get_filtered(
             self,
             filters: UserFilterDTO,
-            get_single: bool = False,
-            count: bool = False
+            *,
+            count: bool = False,
+            limit: int = 10,
+            page: int = 1,
     ) -> [List[UserDTO], UserDTO]:
+        offset = (page - 1) * limit
         stmt = select(self.model).where(*filters.to_orm_expressions(self.model))
+        if not count:
+            stmt = stmt.limit(limit).offset(offset)
         try:
             result = await self._session.execute(stmt)
-            if get_single:
-                if count:
-                    raise Exception("Single object can't be counted")
-                row = result.scalars().first()
-                return self._get_dto(row)
             if count:
                 return result.scalars().all().count(self.model)
             rows = result.scalars().all()
@@ -104,7 +105,6 @@ class UserRepository(BaseRepository):
             row = result.scalars().first()
             return UserSettingsDTO(**row.__dict__)
         except (NoResultFound, AttributeError) as e:
-            print(e)
             raise Exception(f"User with id {user_id} not found")
 
     def _get_dto(self, row):

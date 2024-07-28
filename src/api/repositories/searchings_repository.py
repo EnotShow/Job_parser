@@ -19,12 +19,13 @@ class SearchRepository(BaseRepository):
     def __init__(self, db_session: AsyncSession = Provide[AsyncSessionContainer.db_session]) -> None:
         self._session = db_session
 
-    async def get(self) -> list[SearchDTO]:
-        stmt = select(self.model)
+    async def get(self, limit: int = 10, page: int = 1) -> list[SearchDTO]:
+        offset = (page - 1) * limit
+        stmt = select(self.model).limit(limit).offset(offset)
         try:
             result = await self._session.execute(stmt)
             rows = result.scalars().all()
-            return [self._get_dto(row) for row in rows]
+            return self._paginate([self._get_dto(row) for row in rows], page, len(rows))
         except (NoResultFound, AttributeError):
             raise NoRowsFoundError(f"{self.model.__name__} no found")
 
@@ -36,15 +37,14 @@ class SearchRepository(BaseRepository):
         except NoResultFound:
             raise NoRowsFoundError(f"{self.model.__name__} no found")
 
-    async def get_filtered(self, filters: SearchFilterDTO, get_single: bool = False) -> [List[SearchDTO], SearchDTO]:
-        stmt = select(self.model).where(*filters.to_orm_expressions(self.model))
+    async def get_filtered(self, filters: SearchFilterDTO, *,
+                           limit: int = 10, page: int = 1) -> [List[SearchDTO], SearchDTO]:
+        offset = (page - 1) * limit
+        stmt = select(self.model).where(*filters.to_orm_expressions(self.model)).limit(limit).offset(offset)
         try:
             result = await self._session.execute(stmt)
-            if get_single:
-                row = result.scalars().first()
-                return self._get_dto(row)
             rows = result.scalars().all()
-            return [self._get_dto(row) for row in rows]
+            return self._paginate([self._get_dto(row) for row in rows], page, len(rows))
         except (NoResultFound, AttributeError):
             raise Exception(f"Search objects not found")
 
