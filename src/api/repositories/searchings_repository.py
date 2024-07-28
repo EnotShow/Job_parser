@@ -1,4 +1,4 @@
-from typing import AsyncContextManager, List
+from typing import List
 
 from dependency_injector.wiring import Provide, inject
 from sqlalchemy import select, update, delete
@@ -25,7 +25,7 @@ class SearchRepository(BaseRepository):
         try:
             result = await self._session.execute(stmt)
             rows = result.scalars().all()
-            return self._paginate([self._get_dto(row) for row in rows], page, len(rows))
+            return[self._get_dto(row) for row in rows]
         except (NoResultFound, AttributeError):
             raise NoRowsFoundError(f"{self.model.__name__} no found")
 
@@ -44,7 +44,7 @@ class SearchRepository(BaseRepository):
         try:
             result = await self._session.execute(stmt)
             rows = result.scalars().all()
-            return self._paginate([self._get_dto(row) for row in rows], page, len(rows))
+            return [self._get_dto(row) for row in rows]
         except (NoResultFound, AttributeError):
             raise Exception(f"Search objects not found")
 
