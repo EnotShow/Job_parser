@@ -1,10 +1,13 @@
+from typing import Union, List, TypeVar
+
+from core.shared.base_dto import BaseDTO
 from src.api.dtos.pagination_dto import PaginationDTO
+
+T = TypeVar('T', bound=BaseDTO)
 
 
 class BaseService:
 
     @staticmethod
-    def _unpack_items(pagination_dto: PaginationDTO):
-        if len(pagination_dto.items) == 1:
-            return pagination_dto.items[0]
-        return pagination_dto.items
+    def _paginate(dto: Union[List[T], T], page: int, size: int):
+        return PaginationDTO(page=page, size=size, items=dto)

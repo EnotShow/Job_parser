@@ -6,6 +6,7 @@ from core.shared.base_service import BaseService
 from core.shared.errors import NoRowsFoundError
 from src.api.containers.repositories_containers.search_repository_container import SearchRepositoryContainer
 from src.api.containers.repositories_containers.user_repository_container import UserRepositoryContainer
+from src.api.dtos.pagination_dto import PaginationDTO
 from src.api.dtos.search_dto import SearchCreateDTO, SearchDTO, SearchFilterDTO, SearchUpdateDTO
 from src.api.dtos.user_dto import UserFilterDTO
 from src.api.repositories.searchings_repository import SearchRepository
@@ -18,19 +19,21 @@ class SearchService(BaseService):
     def __init__(self, repository: SearchRepository = Provide[SearchRepositoryContainer.search_repository]):
         self._repository = repository
 
-    async def get_all_searches(self, limit: int = 10, page: int = 1) -> List[SearchDTO]:
-        return await self._repository.get(limit, page)
+    async def get_all_searches(self, limit: int = 10, page: int = 1) -> PaginationDTO[SearchDTO]:
+        response_objects = await self._repository.get(limit, page)
+        return self._paginate(response_objects, page, len(response_objects))
 
-    async def get_search(self, id: int):
+    async def get_search(self, id: int) -> SearchDTO:
         try:
             return await self._repository.get_single(id)
         except Exception as e:
             raise NoRowsFoundError
 
-    async def get_user_searches(self, user_id: int):
+    async def get_user_searches(self, user_id: int, limit: int = 10, page: int = 1) -> PaginationDTO[SearchDTO]:
         try:
             filter = SearchFilterDTO(owner_id=user_id)
-            return await self._repository.get_filtered(filter)
+            response_objects = await self._repository.get_filtered(filter, limit=limit, page=page)
+            return self._paginate(response_objects, page, len(response_objects))
         except Exception as e:
             raise NoRowsFoundError
 
@@ -38,16 +41,20 @@ class SearchService(BaseService):
     async def get_telegram_user_searches(
             self,
             telegram_id: int,
+            limit: int = 10,
+            page: int = 1,
             user_repository: UserRepository = Provide[UserRepositoryContainer.user_repository]
-    ):
+    ) -> PaginationDTO[SearchDTO]:
         try:
             find_user_filter = UserFilterDTO(telegram_id=telegram_id)
-            user = self._unpack_items(await user_repository.get_filtered(find_user_filter, limit=1, page=1))
-            return await self.get_user_searches(user["id"])
+            user = await user_repository.get_filtered(find_user_filter, limit=1, page=1)
+            response_objects = await self._repository.get_filtered(
+                SearchFilterDTO(owner_id=user.id), limit=limit, page=page)
+            return self._paginate(response_objects, page, len(response_objects))
         except Exception as e:
             raise NoRowsFoundError
 
-    async def create_search(self, dto: SearchCreateDTO):
+    async def create_search(self, dto: SearchCreateDTO) -> SearchDTO:
         try:
             return await self._repository.create(dto)
         except Exception as e:
@@ -59,7 +66,7 @@ class SearchService(BaseService):
             data: dict,
             telegram_id: int,
             user_repository: UserRepository = Provide[UserRepositoryContainer.user_repository]
-    ):
+    ) -> SearchDTO:
         try:
             user_obj = UserFilterDTO(telegram_id=telegram_id)
             user = await user_repository.get_filtered(user_obj, get_single=True)
@@ -68,13 +75,13 @@ class SearchService(BaseService):
         except Exception as e:
             raise e
 
-    async def update_search(self, dto: SearchUpdateDTO) -> [SearchDTO, None]:
+    async def update_search(self, dto: SearchUpdateDTO) -> SearchDTO:
         try:
             return await self._repository.update(dto)
         except Exception as e:
             raise e
 
-    async def delete_search(self, id: int):
+    async def delete_search(self, id: int) -> None:
         try:
             return await self._repository.delete(id)
         except Exception as e:

@@ -1,5 +1,5 @@
 from operator import or_
-from typing import List, Union
+from typing import List
 
 from dependency_injector.wiring import Provide, inject
 from sqlalchemy import select, update, delete, and_
@@ -11,7 +11,6 @@ from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
 from src.api.dtos.application_dto import ApplicationDTO, ApplicationCreateDTO, ApplicationFilterDTO, \
     ApplicationUpdateDTO, ApplicationFullDTO
-from src.api.dtos.pagination_dto import PaginationDTO
 from src.api.models import Application
 
 
@@ -22,15 +21,15 @@ class ApplicationRepository(BaseRepository):
     def __init__(self, db_session: AsyncSession = Provide[AsyncSessionContainer.db_session]):
         self._session = db_session
 
-    async def get(self, limit: int = 10, page: int = 1) -> PaginationDTO[ApplicationDTO]:
+    async def get(self, limit: int = 10, page: int = 1) -> List[ApplicationDTO]:
         offset = (page - 1) * limit
         stmt = select(self.model).limit(limit).offset(offset)
         try:
             result = await self._session.execute(stmt)
             rows = result.scalars().all()
-            return self._paginate([self._get_dto(row) for row in rows], page, len(rows))
+            return [self._get_dto(row) for row in rows]
         except (NoResultFound, AttributeError):
-            return self._paginate([], page, 0)
+            raise NoRowsFoundError(f"{self.model.__name__} no found")
 
     async def get_single(self, id: int) -> ApplicationDTO:
         stmt = select(self.model).where(self.model.id == id)
@@ -43,15 +42,15 @@ class ApplicationRepository(BaseRepository):
 
     async def get_filtered(self, filters: ApplicationFilterDTO,
                            *, limit: int = 10, page: int = 1
-                           ) -> [List[ApplicationDTO], ApplicationDTO, int]:
+                           ) -> [List[ApplicationDTO], ApplicationDTO]:
         offset = (page - 1) * limit
         stmt = select(self.model).where(*filters.to_orm_expressions(self.model)).limit(limit).offset(offset)
         try:
             result = await self._session.execute(stmt)
             rows = result.scalars().all()
-            return self._paginate([self._get_dto(row) for row in rows], len(rows), limit)
+            return [self._get_dto(row) for row in rows]
         except (NoResultFound, AttributeError):
-            return self._paginate([], page, 0)
+            raise NoRowsFoundError(f"{self.model.__name__} no found")
 
     async def get_filtered_multiple_applications(
             self,
@@ -76,12 +75,8 @@ class ApplicationRepository(BaseRepository):
                 return or_(or_condition, recursive_or_conditions(filters))
 
         offset = (page - 1) * limit
-        stmt = select(self.model).where(
-            and_(
-                Application.url == filters.url,
-                Application.owner_id == filters.owner_id
-            )
-        ).limit(limit).offset(offset)
+        or_conditions = recursive_or_conditions(filters)
+        stmt = select(self.model).where(or_conditions).limit(limit).offset(offset)
         try:
             result = await self._session.execute(stmt)
             rows = result.scalars().all()
@@ -106,7 +101,7 @@ class ApplicationRepository(BaseRepository):
         except IntegrityError as e:
             raise Exception(str(e))
         await self._session.refresh(instance)
-        return self._get_dto(instance)
+        return self._get_full_dto(instance)
 
     async def create_multiple(
             self, dtos: List[ApplicationCreateDTO]
