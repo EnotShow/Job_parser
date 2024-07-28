@@ -26,6 +26,7 @@ class UserUpdateDTO(BaseDTO):
     id: int
     email: Optional[str] = None
     telegram_id: Optional[int] = None
+    password: Optional[str] = None
     language_code: Optional[int] = None
     selected_language: Optional[str] = None
     paused: Optional[bool] = None
@@ -39,6 +40,11 @@ class UserCreateDTO(BaseDTO):
     language_code: Optional[str] = None
     selected_language: Optional[str] = None
     refer_id: Optional[int] = None
+
+
+class ChangePasswordDTO(BaseDTO):
+    old_password: str
+    new_password: str
 
 
 class UserSettingsDTO(BaseDTO):

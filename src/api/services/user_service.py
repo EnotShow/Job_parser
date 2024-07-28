@@ -41,9 +41,7 @@ class UserService(BaseService):
 
     async def get_by_email_password(self, email: str, password: str) -> UserDTO:
         try:
-            # TODO password encryption
-            user_filter = UserFilterDTO(email=email, password=password)
-            return await self._repository.get_filtered(user_filter)
+            return await self._repository.get_by_email_password(email, password)
         except Exception as e:
             raise NoRowsFoundError(f"User with email {email} not found")
 

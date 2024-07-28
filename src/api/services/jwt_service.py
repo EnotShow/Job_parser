@@ -4,16 +4,19 @@ from datetime import datetime, timedelta
 from jwt import encode, get_unverified_header, decode, ExpiredSignatureError, PyJWTError, InvalidSignatureError
 
 from core.config.jwt import JWTSettings, settings_bot
-from core.db.db_helper import db_helper
-from src.admin.auth.dto import AccessTokenDTO
+from src.api.dtos.auth_dto import AccessTokenDTO, RefreshTokenDTO, TokenDTO
 from src.api.dtos.user_dto import UserDTO
-from src.api.repositories.user_repository import UserRepository
 
 
-class AuthService:
+class JwtService:
 
     def __init__(self, config: JWTSettings):
         self.config = config
+
+    async def create_tokens(self, dto: UserDTO) -> TokenDTO:
+        access_token = await self.generate_access_token(dto)
+        refresh_token = await self.generate_refresh_token(dto)
+        return TokenDTO(access_token=access_token.token, refresh_token=refresh_token.token)
 
     async def encode_password(self, password: str) -> str:
         hash_object = hashlib.sha256()
@@ -21,23 +24,29 @@ class AuthService:
         hash_password = hash_object.hexdigest()
         return hash_password
 
-    async def login(self, email: str, password: str) -> AccessTokenDTO:
-        async with db_helper.get_db_session() as session:
-            password = await self.encode_password(password)
-            user = await UserRepository(session).get_by_email_password(email, password)
-            if user:
-                return await self.generate_access_token(user)
-
     async def generate_access_token(self, dto: UserDTO):
         expire = datetime.utcnow() + timedelta(seconds=self.config.ACCESS_TOKEN_LIFETIME)
         payload = {
             "token_type": "access",
             "user": {"user_id": str(dto.id), "user_email": str(dto.email)},
+            # "user_permissions": [permission.codename for permission in dto.permissions],
             "exp": expire,
             "iat": datetime.utcnow(),
         }
         token = await self.encode_token(payload)
         return AccessTokenDTO(token=token)
+
+    async def generate_refresh_token(self, dto: UserDTO) -> RefreshTokenDTO:
+        expire = datetime.utcnow() + timedelta(seconds=self.config.REFRESH_TOKEN_LIFETIME)
+        payload = {
+            "token_type": "refresh",
+            "user": {"user_id": str(dto.id), "user_email": str(dto.email)},
+            # "user_permissions": [permission.codename for permission in dto.permissions],
+            "exp": expire,
+            "iat": datetime.utcnow(),
+        }
+        token = await self.encode_token(payload)
+        return RefreshTokenDTO(token=token)
 
     async def encode_token(self, payload):
         return encode(payload, self.config.SECRET_KEY, algorithm="HS256")
@@ -58,4 +67,4 @@ class AuthService:
             raise Exception("Token is invalid")
 
 
-auth_service = AuthService(config=settings_bot)
+jwt_service = JwtService(config=settings_bot)
