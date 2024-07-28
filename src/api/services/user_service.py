@@ -1,61 +1,67 @@
 from aiogram import types
 from dependency_injector.wiring import Provide, inject
 
+from core.shared.base_service import BaseService
+from core.shared.errors import NoRowsFoundError
 from src.api.containers.repositories_containers.user_repository_container import UserRepositoryContainer
+from src.api.dtos.pagination_dto import PaginationDTO
 from src.api.dtos.user_dto import UserFilterDTO, UserCreateDTO, UserDTO, UserUpdateDTO
 from src.api.repositories.user_repository import UserRepository
 
 
-class UserService:
+class UserService(BaseService):
 
     @inject
     def __init__(self, repository: UserRepository = Provide[UserRepositoryContainer.user_repository]):
         self._repository = repository
 
-    async def get_all_users(self):
-        return await self._repository.get()
+    async def get_all_users(self, limit: int = 10, page: int = 1) -> PaginationDTO[UserDTO]:
+        response_objects = await self._repository.get(limit=limit, page=page)
+        return self._paginate(response_objects, page, len(response_objects))
 
-    async def get_user(self, user_id: int):
+    async def get_user(self, user_id: int) -> UserDTO:
         try:
             return await self._repository.get_single(user_id)
         except Exception as e:
-            return None
+            raise NoRowsFoundError(f"User {user_id} not found")
 
-    async def get_user_by_email(self, email: str):
+    async def get_user_by_email(self, email: str) -> UserDTO:
         try:
             user_filter = UserFilterDTO(email=email)
-            return await self._repository.get_filtered(user_filter, get_single=False)
+            return await self._repository.get_filtered(user_filter)
         except Exception as e:
-            return None
+            raise NoRowsFoundError(f"User with email {email} not found")
 
-    async def get_user_by_telegram_id(self, telegram_id: int):
+    async def get_user_by_telegram_id(self, telegram_id: int) -> UserDTO:
         try:
             user_filter = UserFilterDTO(telegram_id=telegram_id)
-            return await self._repository.get_filtered(user_filter, get_single=True)
+            return await self._repository.get_filtered(user_filter)
         except Exception as e:
-            return None
+            raise NoRowsFoundError(f"User with telegram id {telegram_id} not found")
 
-    async def get_by_email_password(self, email: str, password: str):
+    async def get_by_email_password(self, email: str, password: str) -> UserDTO:
         try:
             # TODO password encryption
             user_filter = UserFilterDTO(email=email, password=password)
-            return await self._repository.get_filtered(user_filter, get_single=True)
+            return await self._repository.get_filtered(user_filter)
         except Exception as e:
-            return None
+            raise NoRowsFoundError(f"User with email {email} not found")
 
-    async def get_user_referrals(self, refer_id: int, count: bool = False):
+    async def get_user_referrals(self, refer_id: int, count: bool = False) -> [UserDTO, int]:
         try:
-            return await self._repository.get_filtered(UserFilterDTO(refer_id=refer_id), get_single=False, count=count)
+            if count:
+                return len(await self._repository.get_filtered(UserFilterDTO(refer_id=refer_id), count=count))
+            return await self._repository.get_filtered(UserFilterDTO(refer_id=refer_id))
         except Exception as e:
-            return None
+            return NoRowsFoundError
 
-    async def create_user(self, user: UserCreateDTO):
+    async def create_user(self, user: UserCreateDTO) -> UserDTO:
         try:
             return await self._repository.create(user)
         except Exception as e:
-            return None
+            raise e
 
-    async def create_user_from_telegram(self, message: types.Message, ref: str = None):
+    async def create_user_from_telegram(self, message: types.Message, ref: str = None) -> UserDTO:
         user_data = UserCreateDTO(
             email=None,
             password=None,
@@ -66,14 +72,14 @@ class UserService:
         )
         return await self._repository.create(user_data)
 
-    async def update_user(self, user: UserUpdateDTO):
+    async def update_user(self, user: UserUpdateDTO) -> UserDTO:
         try:
             return await self._repository.update(user)
         except Exception as e:
-            return None
+            raise e
 
-    async def get_user_settings(self, user_id: int):
+    async def get_user_settings(self, user_id: int) -> UserDTO:
         try:
             return await self._repository.get_user_settings(user_id)
         except Exception as e:
-            return None
+            raise e

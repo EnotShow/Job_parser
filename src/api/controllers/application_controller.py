@@ -12,9 +12,23 @@ from core.shared.errors import NoRowsFoundError
 from src.api.containers.services_containers.application_service_container import ApplicationServiceContainer
 from src.api.dtos.application_dto import ApplicationFilterDTO, ApplicationDTO, ApplicationUpdateDTO, \
     ApplicationCreateDTO, ApplicationFullDTO
+from src.api.dtos.pagination_dto import PaginationDTO
 from src.api.services.application_service import ApplicationService
 
 router = APIRouter(prefix="/applications", tags=["application"])
+
+
+@router.get("/", status_code=status.HTTP_200_OK)
+@inject
+async def get_all_applications(
+        limit: int = 10,
+        page: int = 1,
+        application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
+) -> PaginationDTO[ApplicationDTO]:
+    try:
+        return await application_service.get_all_applications(limit=limit, page=page)
+    except NoRowsFoundError:
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
 @router.post("/", status_code=status.HTTP_200_OK)
@@ -33,11 +47,15 @@ async def create_application(
 @inject
 async def get_applications_if_exists(
         data: Union[ApplicationFilterDTO, List[ApplicationFilterDTO]],
+        limit: int = 10,
+        page: int = 1,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ) -> List[ApplicationDTO]:
     try:
         return await application_service.get_applications_if_exists(
-            data if isinstance(data, list) else [data]
+            data if isinstance(data, list) else [data],
+            limit=limit,
+            page=page
         )
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
@@ -60,10 +78,12 @@ async def create_multiple_applications(
 @router.get("/user_application/{user_id}", status_code=status.HTTP_200_OK)
 async def get_user_applied_applications(
         user_id: int,
+        limit: int = 10,
+        page: int = 1,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ):
     try:
-        return await application_service.get_user_applied_applications(user_id)
+        return await application_service.get_user_applied_applications(user_id, limit=limit, page=page)
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 

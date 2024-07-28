@@ -14,6 +14,7 @@ from core.db.db_helper import db_helper
 from core.scripts.command_list import execute_command
 from src.admin.admin_routers import add_admin_views
 from src.api.containers.containers_builder import build_containers
+from src.api.middleware.pagination_limit_middleware import LimitPaginationMiddleware
 from src.api.routes import get_apps_router
 from src.background_tasks import processing
 from src.bot.middlewares.setup import register_middlewares
@@ -55,6 +56,7 @@ def get_application() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    application.add_middleware(LimitPaginationMiddleware)
     return application
 
 
