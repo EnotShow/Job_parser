@@ -1,10 +1,10 @@
 import asyncio
 import sys
 
-from core.scripts.adduser import add_user
+# from core.scripts.adduser import add_user
 
 command_list = {
-    "adduser": add_user
+    # "adduser": add_user
 }
 
 

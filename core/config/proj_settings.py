@@ -20,6 +20,7 @@ class DevelopmentSettings(Settings):
     parsing_delay: int = os.environ.get("PARSING_DELAY")
     available_cpu_cores: int = os.environ.get("AVAILABLE_CPU_CORES")
     pagination_limit: int = os.environ.get("PAGINATION_LIMIT")
+    service_api_token: str = os.environ.get("SERVICE_API_TOKEN")
 
 
 settings = Settings()
