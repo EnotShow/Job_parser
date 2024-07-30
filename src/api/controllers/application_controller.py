@@ -5,10 +5,13 @@ from uuid import UUID
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, APIRouter, HTTPException
 from starlette import status
+from starlette.requests import Request
 from starlette.responses import RedirectResponse
 from starlette.status import HTTP_400_BAD_REQUEST
 
 from core.shared.errors import NoRowsFoundError
+from core.shared.permissions.permission_decorator import permission_required
+from core.shared.permissions.permissions import IsAuthenticated, IsService
 from src.api.containers.services_containers.application_service_container import ApplicationServiceContainer
 from src.api.dtos.application_dto import ApplicationFilterDTO, ApplicationDTO, ApplicationUpdateDTO, \
     ApplicationCreateDTO, ApplicationFullDTO
@@ -19,8 +22,10 @@ router = APIRouter(prefix="/applications", tags=["application"])
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
+@permission_required([IsAuthenticated, IsService])
 @inject
 async def get_all_applications(
+        request: Request,
         limit: int = 10,
         page: int = 1,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
@@ -32,9 +37,11 @@ async def get_all_applications(
 
 
 @router.post("/", status_code=status.HTTP_200_OK)
+@permission_required([IsService])
 @inject
 async def create_application(
         data: ApplicationCreateDTO,
+        request: Request,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ):
     try:
@@ -44,13 +51,15 @@ async def create_application(
 
 
 @router.post("/find_multiple", status_code=status.HTTP_200_OK)
+@permission_required([IsService])
 @inject
 async def get_applications_if_exists(
         data: Union[ApplicationFilterDTO, List[ApplicationFilterDTO]],
+        request: Request,
         limit: int = 10,
         page: int = 1,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
-) -> List[ApplicationDTO]:
+) -> PaginationDTO[ApplicationDTO]:
     try:
         return await application_service.get_applications_if_exists(
             data if isinstance(data, list) else [data],
@@ -62,9 +71,11 @@ async def get_applications_if_exists(
 
 
 @router.post("/create_multiple", status_code=status.HTTP_200_OK)
+@permission_required([IsService])
 @inject
 async def create_multiple_applications(
         data: Union[ApplicationFilterDTO, List[ApplicationFilterDTO]],
+        request: Request,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ) -> List[ApplicationFullDTO]:
     try:
@@ -76,8 +87,11 @@ async def create_multiple_applications(
 
 
 @router.get("/user_application/{user_id}", status_code=status.HTTP_200_OK)
+@permission_required([IsAuthenticated, IsService])
+@inject
 async def get_user_applied_applications(
         user_id: int,
+        request: Request,
         limit: int = 10,
         page: int = 1,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),

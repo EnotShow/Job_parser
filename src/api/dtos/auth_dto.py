@@ -2,11 +2,11 @@ from core.shared.base_dto import BaseDTO
 
 
 class AccessTokenDTO(BaseDTO):
-    token: str
+    access_token: str
 
 
 class RefreshTokenDTO(BaseDTO):
-    token: str
+    refresh_token: str
 
 
 class TokenDTO(BaseDTO):

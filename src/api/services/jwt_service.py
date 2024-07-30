@@ -16,7 +16,7 @@ class JwtService:
     async def create_tokens(self, dto: UserDTO) -> TokenDTO:
         access_token = await self.generate_access_token(dto)
         refresh_token = await self.generate_refresh_token(dto)
-        return TokenDTO(access_token=access_token.token, refresh_token=refresh_token.token)
+        return TokenDTO(access_token=access_token.access_token, refresh_token=refresh_token.refresh_token)
 
     async def encode_password(self, password: str) -> str:
         hash_object = hashlib.sha256()
@@ -29,24 +29,22 @@ class JwtService:
         payload = {
             "token_type": "access",
             "user": {"user_id": str(dto.id), "user_email": str(dto.email)},
-            # "user_permissions": [permission.codename for permission in dto.permissions],
             "exp": expire,
             "iat": datetime.utcnow(),
         }
         token = await self.encode_token(payload)
-        return AccessTokenDTO(token=token)
+        return AccessTokenDTO(access_token=token)
 
     async def generate_refresh_token(self, dto: UserDTO) -> RefreshTokenDTO:
         expire = datetime.utcnow() + timedelta(seconds=self.config.REFRESH_TOKEN_LIFETIME)
         payload = {
             "token_type": "refresh",
             "user": {"user_id": str(dto.id), "user_email": str(dto.email)},
-            # "user_permissions": [permission.codename for permission in dto.permissions],
             "exp": expire,
             "iat": datetime.utcnow(),
         }
         token = await self.encode_token(payload)
-        return RefreshTokenDTO(token=token)
+        return RefreshTokenDTO(refresh_token=token)
 
     async def encode_token(self, payload):
         return encode(payload, self.config.SECRET_KEY, algorithm="HS256")

@@ -1,5 +1,6 @@
 from typing import List
 
+from asyncpg import UniqueViolationError
 from dependency_injector.wiring import Provide, inject
 from sqlalchemy import select, update
 from sqlalchemy.exc import NoResultFound, IntegrityError
@@ -7,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.shared.async_session_container import AsyncSessionContainer
 from core.shared.base_repository import BaseRepository
-from core.shared.errors import NoRowsFoundError
+from core.shared.errors import NoRowsFoundError, AlreadyExistError
 from src.api.dtos.user_dto import UserCreateDTO, UserDTO, UserFilterDTO, UserUpdateDTO, UserSettingsDTO
 from src.api.models import User
 
@@ -82,10 +83,12 @@ class UserRepository(BaseRepository):
         self._session.add(instance)
         try:
             await self._session.commit()
+            await self._session.refresh(instance)
+            return self._get_dto(instance)
         except IntegrityError as e:
-            raise Exception(str(e))
-        await self._session.refresh(instance)
-        return self._get_dto(instance)
+            raise e
+        except UniqueViolationError as e:
+            raise AlreadyExistError(f"User with email this already exist")
 
     async def update(self, dto: UserUpdateDTO):
         stmt = update(self.model).where(self.model.id == dto.id).values(**dto.to_orm_values()).returning(self.model)
