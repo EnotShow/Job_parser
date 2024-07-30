@@ -5,7 +5,7 @@ from core.shared.base_service import BaseService
 from core.shared.errors import AlreadyExistError
 from src.api.containers.services_containers.user_service_container import UserServiceContainer
 from src.api.dtos.auth_dto import TokenDTO, RefreshTokenDTO, AccessTokenDTO
-from src.api.dtos.user_dto import UserCreateDTO, UserRegisterDTO
+from src.api.dtos.user_dto import UserCreateDTO, UserRegisterDTO, UserUpdateDTO, UserFilterDTO
 from src.api.services.jwt_service import jwt_service, JwtService
 from src.api.services.user_service import UserService
 
@@ -38,10 +38,15 @@ class AuthService(BaseService):
             raise AlreadyExistError("User with this email already exists")
         return await self._jwt_service.create_tokens(user)
 
-    async def change_password(self, old_password: str, new_password: str) -> TokenDTO:
-        pass
-        # old_password_encoded = await self._jwt_service.encode_password(old_password)
-        # user = await self._user_service.get_by_email_password(email=user.email, password=old_password_encoded)
-        # user = await self._user_service.update_user(user_dto)
-        # user_dto = UserUpdateDTO(password=password)
-        # return await self._jwt_service.generate_access_token(user)
+    async def change_password(
+            self,
+            user_email,
+            old_password: str,
+            new_password: str,
+    ) -> TokenDTO:
+        old_password_encoded = await self._jwt_service.encode_password(old_password)
+        new_password = await self._jwt_service.encode_password(new_password)
+        user = await self._user_service.get_by_email_password(user_email, old_password_encoded)
+        user_dto = UserUpdateDTO(id=user.id, password=new_password)
+        user = await self._user_service.update_user(user_dto)
+        return await self._jwt_service.create_tokens(user)

@@ -45,12 +45,12 @@ async def change_user_password(
     request: Request,
     auth_service: AuthService = Depends(Provide[AuthServiceContainer.auth_service])
 ):
-    await auth_service.change_password(dto.old_password, dto.new_password)
+    await auth_service.change_password(request.state.user["user"]["user_email"], dto.old_password, dto.new_password)
     return {"message": "Password changed!"}
 
 
-@router.get("/logout", status_code=status.HTTP_200_OK)
-@permission_required([IsAuthenticated])
-@inject
-async def logout_user():
-    pass
+# @router.get("/logout", status_code=status.HTTP_200_OK)
+# @permission_required([IsAuthenticated])
+# @inject
+# async def logout_user():
+#     pass
