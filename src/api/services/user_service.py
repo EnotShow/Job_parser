@@ -1,10 +1,8 @@
 from aiogram import types
-from asyncpg import UniqueViolationError
 from dependency_injector.wiring import Provide, inject
-from sqlalchemy.exc import IntegrityError
 
 from core.shared.base_service import BaseService
-from core.shared.errors import NoRowsFoundError, AlreadyExistError
+from core.shared.errors import NoRowsFoundError
 from src.api.containers.repositories_containers.user_repository_container import UserRepositoryContainer
 from src.api.dtos.pagination_dto import PaginationDTO
 from src.api.dtos.user_dto import UserFilterDTO, UserCreateDTO, UserDTO, UserUpdateDTO
@@ -43,7 +41,9 @@ class UserService(BaseService):
 
     async def get_by_email_password(self, email: str, password: str) -> UserDTO:
         try:
-            return await self._repository.get_by_email_password(email, password)
+            # TODO password encryption
+            user_filter = UserFilterDTO(email=email, password=password)
+            return await self._repository.get_filtered(user_filter)
         except Exception as e:
             raise NoRowsFoundError(f"User with email {email} not found")
 
@@ -58,8 +58,8 @@ class UserService(BaseService):
     async def create_user(self, user: UserCreateDTO) -> UserDTO:
         try:
             return await self._repository.create(user)
-        except (IntegrityError, UniqueViolationError) as e:
-            raise AlreadyExistError(f"User with email this already exist")
+        except Exception as e:
+            raise e
 
     async def create_user_from_telegram(self, message: types.Message, ref: str = None) -> UserDTO:
         user_data = UserCreateDTO(

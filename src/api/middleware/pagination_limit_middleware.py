@@ -3,7 +3,9 @@ from urllib.parse import urlencode
 
 from fastapi import Request, FastAPI
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
-from starlette.responses import Response, JSONResponse
+from starlette.responses import Response
+
+from core.config.proj_settings import development_settings
 
 
 class LimitPaginationMiddleware(BaseHTTPMiddleware):
@@ -21,7 +23,7 @@ class LimitPaginationMiddleware(BaseHTTPMiddleware):
                 if limit > self.max_limit:
                     query_params['limit'] = str(self.max_limit)
             except ValueError:
-                return JSONResponse(status_code=400, content={'message': 'Invalid limit value'})
+                query_params['limit'] = str(0)
 
             # Construct the new query string
             new_query_string = urlencode(query_params)
