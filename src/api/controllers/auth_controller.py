@@ -6,8 +6,7 @@ from starlette.requests import Request
 from core.shared.permissions.permission_decorator import permission_required
 from core.shared.permissions.permissions import IsAuthenticated
 from src.api.containers.services_containers.auth_service_container import AuthServiceContainer
-from src.api.dtos.auth_dto import RefreshTokenDTO, AccessTokenDTO
-from src.api.dtos.user_dto import ChangePasswordDTO, UserRegisterDTO, UserLoginDTO
+from src.api.dtos.auth_dto import RefreshTokenDTO, AccessTokenDTO, UserRegisterDTO, UserLoginDTO, ChangePasswordDTO
 from src.api.services.auth_service import AuthService
 
 router = APIRouter(prefix="", tags=["Auth"])
@@ -45,7 +44,7 @@ async def change_user_password(
     request: Request,
     auth_service: AuthService = Depends(Provide[AuthServiceContainer.auth_service])
 ):
-    await auth_service.change_password(request.state.user["user"]["user_email"], dto.old_password, dto.new_password)
+    await auth_service.change_password(request.state.token.user.email, dto.old_password, dto.new_password)
     return {"message": "Password changed!"}
 
 

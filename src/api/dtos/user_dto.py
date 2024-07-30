@@ -13,6 +13,11 @@ class UserDTO(BaseDTO):
     created_at: Optional[datetime]
 
 
+class UserShortDTO(BaseDTO):
+    id: int
+    email: Optional[str]
+
+
 class UserFilterDTO(BaseDTO):
     id: Optional[int] = None
     email: Optional[str] = None
@@ -40,23 +45,6 @@ class UserCreateDTO(BaseDTO):
     language_code: Optional[str] = None
     selected_language: Optional[str] = None
     refer_id: Optional[int] = None
-
-
-class UserLoginDTO(BaseDTO):
-    email: str
-    password: str
-
-
-class UserRegisterDTO(BaseDTO):
-    email: str
-    password: str
-    language_code: str
-    refer_id: int = 0
-
-
-class ChangePasswordDTO(BaseDTO):
-    old_password: str
-    new_password: str
 
 
 class UserSettingsDTO(BaseDTO):

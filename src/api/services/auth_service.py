@@ -4,8 +4,8 @@ from sqlalchemy.exc import IntegrityError
 from core.shared.base_service import BaseService
 from core.shared.errors import AlreadyExistError
 from src.api.containers.services_containers.user_service_container import UserServiceContainer
-from src.api.dtos.auth_dto import TokenDTO, RefreshTokenDTO, AccessTokenDTO
-from src.api.dtos.user_dto import UserCreateDTO, UserRegisterDTO, UserUpdateDTO, UserFilterDTO
+from src.api.dtos.auth_dto import TokenDTO, RefreshTokenDTO, AccessTokenDTO, UserRegisterDTO
+from src.api.dtos.user_dto import UserCreateDTO, UserUpdateDTO, UserFilterDTO
 from src.api.services.jwt_service import jwt_service, JwtService
 from src.api.services.user_service import UserService
 
@@ -25,7 +25,9 @@ class AuthService(BaseService):
 
     async def refresh_access_token(self, refresh_token: str) -> AccessTokenDTO:
         data = await self._jwt_service.decode_token(refresh_token)
-        user = await self._user_service.get_user(int(data['user']["user_id"]))
+        if data.token_type != "refresh":
+            raise Exception("Invalid token type")
+        user = await self._user_service.get_user(data.user.id)
         return await self._jwt_service.generate_access_token(user)
 
     async def register(self, user: UserRegisterDTO) -> TokenDTO:
