@@ -44,6 +44,22 @@ class ApplicationService(BaseService):
         except Exception as e:
             raise NoRowsFoundError
 
+    async def get_user_applications(self, user_id: int, limit: int = 10, page: int = 1
+                                     ) -> PaginationDTO[ApplicationDTO]:
+        try:
+            filter = ApplicationFilterDTO(owner_id=user_id)
+            response_objects = await self._repository.get_filtered(filter, limit=limit, page=page)
+            return self._paginate(response_objects, page, len(response_objects))
+        except Exception as e:
+            raise NoRowsFoundError
+
+    async def get_user_application(self, user_id: int, application_id: int) -> ApplicationDTO:
+        try:
+            filter = ApplicationFilterDTO(owner_id=user_id, id=application_id)
+            return await self._repository.get_filtered(filter, limit=1, page=1)
+        except Exception as e:
+            raise NoRowsFoundError(f"Application {application_id} not found")
+
     async def get_user_applied_applications(self, user_id: int, limit: int = 10, page: int = 1
                                             ) -> PaginationDTO[ApplicationDTO]:
         try:
@@ -92,6 +108,13 @@ class ApplicationService(BaseService):
 
     async def update_application(self, dto: ApplicationUpdateDTO) -> ApplicationDTO:
         return await self._repository.update(dto)
+
+    async def update_user_application(self, dto: ApplicationUpdateDTO, user_id: int) -> ApplicationDTO:
+        application = await self._repository.get_single(user_id)
+        if application and application.owner_id == user_id:
+            return await self._repository.update(dto)
+        else:
+            raise NoRowsFoundError(f"Application {user_id} not found")
 
     async def delete_application(self, id: int) -> None:
         return await self._repository.delete(id)

@@ -22,7 +22,7 @@ router = APIRouter(prefix="/applications", tags=["application"])
 
 
 @router.get("/", status_code=status.HTTP_200_OK)
-@permission_required([IsAuthenticated, IsService])
+@permission_required([IsService])
 @inject
 async def get_all_applications(
         request: Request,
@@ -32,6 +32,81 @@ async def get_all_applications(
 ) -> PaginationDTO[ApplicationDTO]:
     try:
         return await application_service.get_all_applications(limit=limit, page=page)
+    except NoRowsFoundError:
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+
+
+@router.get("/{id}", status_code=status.HTTP_200_OK)
+@permission_required([IsService])
+@inject
+async def get_application(
+        id: int,
+        request: Request,
+        application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
+) -> ApplicationDTO:
+    try:
+        return await application_service.get_application(id)
+    except NoRowsFoundError:
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+
+
+@router.get("/user_applications", status_code=status.HTTP_200_OK)
+@permission_required([IsAuthenticated])
+async def get_user_applications(
+        request: Request,
+        application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
+        limit: int = 10,
+        page: int = 1
+):
+    try:
+        return await application_service.get_user_applications(
+            request.state.user['user']['user_id'],
+            limit=limit,
+            page=page
+        )
+    except NoRowsFoundError:
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+
+
+@router.get("/user_application/{application_id}", status_code=status.HTTP_200_OK)
+@permission_required([IsAuthenticated, IsService])
+@inject
+async def get_user_applied_applications(
+        application_id: int,
+        request: Request,
+        application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
+):
+    try:
+        return await application_service.get_user_application(request.state.token.user.id, application_id)
+    except NoRowsFoundError:
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+
+
+@router.put("user_application/{id}", status_code=status.HTTP_200_OK)
+@permission_required([IsAuthenticated])
+@inject
+async def update_user_application(
+        id: int,
+        data: ApplicationUpdateDTO,
+        request: Request,
+        application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
+):
+    try:
+        return await application_service.update_user_application(request.state.token.user.id, id, data)
+    except NoRowsFoundError:
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+
+
+@router.put("/", status_code=status.HTTP_200_OK)
+@permission_required([IsService])
+@inject
+async def update_application(
+        data: ApplicationUpdateDTO,
+        request: Request,
+        application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
+):
+    try:
+        return await application_service.update_application(data)
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 

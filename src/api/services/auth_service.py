@@ -1,11 +1,10 @@
 from dependency_injector.wiring import inject, Provide
-from sqlalchemy.exc import IntegrityError
 
 from core.shared.base_service import BaseService
 from core.shared.errors import AlreadyExistError
 from src.api.containers.services_containers.user_service_container import UserServiceContainer
-from src.api.dtos.auth_dto import TokenDTO, RefreshTokenDTO, AccessTokenDTO
-from src.api.dtos.user_dto import UserCreateDTO, UserRegisterDTO, UserUpdateDTO, UserFilterDTO
+from src.api.dtos.auth_dto import TokenDTO, AccessTokenDTO
+from src.api.dtos.user_dto import UserCreateDTO, UserRegisterDTO, UserUpdateDTO
 from src.api.services.jwt_service import jwt_service, JwtService
 from src.api.services.user_service import UserService
 

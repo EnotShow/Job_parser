@@ -1,5 +1,3 @@
-from typing import List
-
 from dependency_injector.wiring import inject, Provide
 
 from core.shared.base_service import BaseService
@@ -37,6 +35,13 @@ class SearchService(BaseService):
         except Exception as e:
             raise NoRowsFoundError
 
+    async def get_user_search(self, user_id: int, search_id: int) -> SearchDTO:
+        try:
+            filter = SearchFilterDTO(owner_id=user_id, id=search_id)
+            return await self._repository.get_filtered(filter, limit=1, page=1)
+        except Exception as e:
+            raise NoRowsFoundError(f"Search {search_id} not found")
+
     @inject
     async def get_telegram_user_searches(
             self,
@@ -57,6 +62,16 @@ class SearchService(BaseService):
     async def create_search(self, dto: SearchCreateDTO) -> SearchDTO:
         try:
             return await self._repository.create(dto)
+        except Exception as e:
+            raise e
+
+    async def create_user_search(self, dto: SearchCreateDTO, user_id: int) -> SearchDTO:
+        try:
+            if dto.owner_id == user_id:
+                search_obj = SearchCreateDTO(**dto.model_dump())
+                return await self._repository.create(search_obj)
+            else:
+                raise NoRowsFoundError("User not found")
         except Exception as e:
             raise e
 
@@ -81,8 +96,28 @@ class SearchService(BaseService):
         except Exception as e:
             raise e
 
+    async def update_user_search(self, dto: SearchUpdateDTO, user_id: int) -> SearchDTO:
+        try:
+            search_dto = SearchFilterDTO(id=dto.id, owner_id=user_id)
+            await self._repository.get_filtered(search_dto, limit=1, page=1)[0]
+            if search_dto.owner_id == dto.owner_id:
+                return await self._repository.update(dto)
+            else:
+                raise NoRowsFoundError("Search not found")
+        except Exception as e:
+            raise e
+
     async def delete_search(self, id: int) -> None:
         try:
             return await self._repository.delete(id)
+        except Exception as e:
+            raise e
+
+    async def delete_user_search(self, search_id: int, user_id: int,) -> None:
+        try:
+            search_dto = SearchFilterDTO(id=search_id, owner_id=user_id)
+            await self._repository.get_filtered(search_dto, limit=1, page=1)[0]
+            if search_dto.owner_id == user_id:
+                return await self._repository.delete(search_id)
         except Exception as e:
             raise e
