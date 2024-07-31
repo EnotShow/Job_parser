@@ -10,7 +10,7 @@ from src.api.auth.containers.auth_service_container import AuthServiceContainer
 from src.api.users.user_dto import ChangePasswordDTO, UserRegisterDTO, UserLoginDTO
 from src.api.auth.services.auth_service import AuthService
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(tags=["Auth"])
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)
