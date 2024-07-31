@@ -3,10 +3,10 @@ from typing import TypeVar, List
 
 from dependency_injector.wiring import inject, Provide
 
-from core.config.proj_settings import settings, development_settings
+from core.config.proj_settings import development_settings
 from core.shared.base_dto import BaseDTO
-from src.api.containers.services_containers.search_service_container import SearchServiceContainer
-from src.api.services.searchings_service import SearchService
+from src.api.searches.containers.search_service_container import SearchServiceContainer
+from src.api.searches.searchings_service import SearchService
 from src.celery_worker.tasks import add_parsing_job
 
 T = TypeVar("T", bound=BaseDTO)

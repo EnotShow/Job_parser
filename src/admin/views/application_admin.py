@@ -1,6 +1,6 @@
 from sqladmin import ModelView
 
-from src.api.models import Application
+from src.api.applications.application_model import Application
 
 
 class ApplicationAdmin(ModelView, model=Application):

@@ -4,8 +4,8 @@ from aiogram import BaseMiddleware
 from aiogram.types import Message
 from dependency_injector.wiring import Provide
 
-from src.api.containers.services_containers.user_service_container import UserServiceContainer
-from src.api.services.user_service import UserService
+from src.api.users.containers.user_service_container import UserServiceContainer
+from src.api.users.user_service import UserService
 
 
 class SettingsMiddleware(BaseMiddleware):
