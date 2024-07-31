@@ -13,14 +13,14 @@ class TokenAuthMiddleware(BaseHTTPMiddleware):
         self._jwt_service = jwt_service
 
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint):
-        request.state.user = None
+        request.state.token = None
         try:
             auth_header = request.headers.get('Authorization')
             if auth_header:
                 scheme, token = auth_header.split()
                 if scheme.lower() == 'bearer':
-                    user_info = await self._jwt_service.decode_token(token)
-                    request.state.user = user_info
+                    token_info = await self._jwt_service.decode_token(token)
+                    request.state.token = token_info
 
             response = await call_next(request)
             return response
