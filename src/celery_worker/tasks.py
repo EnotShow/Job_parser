@@ -6,9 +6,9 @@ from celery.exceptions import TaskError
 
 from core.config.proj_settings import settings
 from core.shared.enums import SocialNetworkEnum
-from src.api.dtos.application_dto import ApplicationCreateDTO, ApplicationDTO, ApplicationFullDTO
-from src.api.dtos.notification_dto import NotificationDTO
-from src.api.dtos.search_dto import SearchFilterDTO
+from src.api.applications.application_dto import ApplicationCreateDTO, ApplicationFullDTO
+from src.api.messangers.dtos.notification_dto import NotificationDTO
+from src.api.searches.search_dto import SearchFilterDTO
 from src.bot.handlers.base_handlers import new_offer
 from src.celery_worker.celery import celery_app
 from src.parsers.helper import get_parser

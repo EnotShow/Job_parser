@@ -27,5 +27,4 @@ class LimitPaginationMiddleware(BaseHTTPMiddleware):
             new_query_string = urlencode(query_params)
             request.scope['query_string'] = new_query_string.encode('utf-8')
 
-        response = await call_next(request)
-        return response
+        return await call_next(request)

@@ -1,10 +1,3 @@
-import getpass
-
-from core.db.db_helper import db_helper
-from src.api.dtos.user_dto import UserCreateDTO
-from src.api.repositories.user_repository import UserRepository
-
-
 # async def add_user():
 #     email = input("Enter user email: ")
 #     while True:

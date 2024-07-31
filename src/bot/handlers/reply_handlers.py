@@ -2,9 +2,9 @@ from aiogram import types, Router, F
 from aiogram.types import InlineKeyboardMarkup
 from dependency_injector.wiring import Provide
 
-from src.api.containers.services_containers.application_service_container import ApplicationServiceContainer
-from src.api.dtos.user_dto import UserSettingsDTO
-from src.api.services.application_service import ApplicationService
+from src.api.applications.containers.application_service_container import ApplicationServiceContainer
+from src.api.users.user_dto import UserSettingsDTO
+from src.api.applications.application_service import ApplicationService
 from src.bot.filters.callbackquery_filter import ReplyCallback, ReplyType
 from src.bot.handlers.base_handlers import offer_description, offer_title
 from src.bot.keyboards.reply_keyboard_buttons import ReplyCallbackButtons

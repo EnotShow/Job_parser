@@ -1,7 +1,7 @@
 from typing import Union, List, TypeVar
 
 from core.shared.base_dto import BaseDTO
-from src.api.dtos.pagination_dto import PaginationDTO
+from src.api.middleware.dtos.pagination_dto import PaginationDTO
 
 T = TypeVar('T', bound=BaseDTO)
 

@@ -1,7 +1,7 @@
 from aiogram import Router, Bot, types
 from aiogram.utils.markdown import hlink, hbold
 
-from src.api.dtos.user_dto import UserSettingsDTO
+from src.api.users.user_dto import UserSettingsDTO
 from src.bot.localization.languages import get_main_manu_lang
 
 router = Router()

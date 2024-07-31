@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from src.api.dtos.application_dto import ApplicationCreateDTO
+from src.api.applications.application_dto import ApplicationCreateDTO
 
 
 class OlxParser:

@@ -13,8 +13,8 @@ from core.config.proj_settings import settings, development_settings
 from core.db.db_helper import db_helper
 from core.scripts.command_list import execute_command
 from src.admin.admin_routers import add_admin_views
-from src.api.containers.containers_builder import build_containers
 from src.api.middleware.LimitPaginationMiddleware import LimitPaginationMiddleware
+from src.containers_builder import build_containers
 
 from src.api.middleware.TokenAuthMiddleware import TokenAuthMiddleware
 from src.api.routes import get_apps_router
