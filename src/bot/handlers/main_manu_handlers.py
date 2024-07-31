@@ -1,15 +1,15 @@
 from aiogram import types, Router
-from aiogram.filters import CommandStart, Command, CommandObject
+from aiogram.filters import CommandStart, CommandObject
 from aiogram.utils.deep_linking import create_start_link
 from aiogram.utils.payload import decode_payload
 from dependency_injector.wiring import inject, Provide
 
 from bot_create import bot
-from src.api.containers.services_containers.application_service_container import ApplicationServiceContainer
-from src.api.containers.services_containers.user_service_container import UserServiceContainer
-from src.api.dtos.user_dto import UserSettingsDTO
-from src.api.services.application_service import ApplicationService
-from src.api.services.user_service import UserService
+from src.api.applications.containers.application_service_container import ApplicationServiceContainer
+from src.api.users.containers.user_service_container import UserServiceContainer
+from src.api.users.user_dto import UserSettingsDTO
+from src.api.applications.application_service import ApplicationService
+from src.api.users.user_service import UserService
 from src.bot.filters.text_filter import TextFilter
 from src.bot.keyboards.main_menu_keyboard_buttons import get_main_manu_keyboard
 from src.bot.localization.languages import get_main_manu_lang, get_referrals_lang, get_statistics_lang

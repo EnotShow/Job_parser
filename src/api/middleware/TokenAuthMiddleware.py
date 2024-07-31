@@ -3,7 +3,8 @@ from http.client import HTTPException
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
 from starlette.responses import JSONResponse
-from src.api.services.jwt_service import jwt_service
+
+from src.api.auth.services.jwt_service import jwt_service
 
 
 class TokenAuthMiddleware(BaseHTTPMiddleware):

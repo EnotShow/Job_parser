@@ -3,12 +3,12 @@ from jwt import PyJWTError, ExpiredSignatureError, InvalidSignatureError
 from sqladmin.authentication import AuthenticationBackend
 from starlette.requests import Request
 
-from src.api.containers.services_containers.auth_service_container import AuthServiceContainer
-from src.api.services.auth_service import AuthService
-from src.api.services.jwt_service import jwt_service
+from src.api.auth.containers.auth_service_container import AuthServiceContainer
+from src.api.auth.services.auth_service import AuthService
+from src.api.auth.services.jwt_service import jwt_service
 
 from core.config.jwt import settings_bot
-from src.api.services.jwt_service import JwtService
+from src.api.auth.services.jwt_service import JwtService
 
 
 class AdminAuth(AuthenticationBackend):

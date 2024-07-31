@@ -6,10 +6,10 @@ from dependency_injector.wiring import inject, Provide
 
 from core.shared.errors import ResourceError
 from core.shared.validators import JobResourceURL
-from src.api.containers.services_containers.search_service_container import SearchServiceContainer
-from src.api.dtos.search_dto import SearchDTO, SearchUpdateDTO
-from src.api.dtos.user_dto import UserSettingsDTO
-from src.api.services.searchings_service import SearchService
+from src.api.searches.containers.search_service_container import SearchServiceContainer
+from src.api.searches.search_dto import SearchDTO, SearchUpdateDTO
+from src.api.users.user_dto import UserSettingsDTO
+from src.api.searches.searchings_service import SearchService
 from src.bot.filters.text_filter import TextFilter
 from src.bot.keyboards.main_menu_keyboard_buttons import get_main_manu_keyboard
 from src.bot.keyboards.searches_menu_keyboard import get_searches_menu_keyboard, SearchesCallbackData, \

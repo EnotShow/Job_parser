@@ -5,7 +5,7 @@ from aiogram.filters.callback_data import CallbackData
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from src.api.dtos.user_dto import UserSettingsDTO
+from src.api.users.user_dto import UserSettingsDTO
 
 
 class SettingsCallbackType(enum.StrEnum):

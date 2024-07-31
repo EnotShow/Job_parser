@@ -2,9 +2,9 @@ from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from dependency_injector.wiring import inject, Provide
 
-from src.api.containers.services_containers.user_service_container import UserServiceContainer
-from src.api.dtos.user_dto import UserSettingsDTO, UserUpdateDTO
-from src.api.services.user_service import UserService
+from src.api.users.containers.user_service_container import UserServiceContainer
+from src.api.users.user_dto import UserSettingsDTO, UserUpdateDTO
+from src.api.users.user_service import UserService
 from src.bot.filters.text_filter import TextFilter
 from src.bot.keyboards.main_menu_keyboard_buttons import get_main_manu_keyboard
 from src.bot.keyboards.settings_manu_keyboard import get_settings_menu_keyboard, SettingsCallbackType, \
