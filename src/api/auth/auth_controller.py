@@ -9,7 +9,7 @@ from src.api.auth.auth_dto import UserLoginDTO, UserRegisterDTO, ChangePasswordD
 from src.api.auth.containers.auth_service_container import AuthServiceContainer
 from src.api.auth.services.auth_service import AuthService
 
-router = APIRouter(prefix="auth", tags=["Auth"])
+router = APIRouter(prefix="/auth", tags=["Auth"])
 
 
 @router.post("/login", status_code=status.HTTP_200_OK)
@@ -37,13 +37,16 @@ async def refresh_user_access_token(
     return await auth_service.refresh_access_token(dto.refresh_token)
 
 
-@router.post("/verify_token", status_code=status.HTTP_200_OK)
+@router.get("/verify_token", status_code=status.HTTP_200_OK)
 @inject
 async def verify_user_token(
-        dto: RefreshTokenDTO,
+        request: Request,
         auth_service: AuthService = Depends(Provide[AuthServiceContainer.auth_service])
-) -> AccessTokenDTO:
-    return await auth_service.verify_access_token(dto.refresh_token)
+) -> dict:
+
+    token = request.headers.get("Authorization").replace("Bearer ", "")
+    print(token)
+    return await auth_service.verify_access_token(token)
 
 
 @router.post("/change_password", status_code=status.HTTP_200_OK, response_model=None)
