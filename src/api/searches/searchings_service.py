@@ -65,11 +65,21 @@ class SearchService(BaseService):
         except Exception as e:
             raise e
 
-    async def create_user_search(self, dto: SearchCreateDTO, user_id: int) -> SearchDTO:
+    async def create_user_search(
+            self, dto: SearchCreateDTO,
+            user_id: int,
+            user_repository: UserRepository = Provide[UserRepositoryContainer.user_repository]
+    ) -> SearchDTO:
         try:
             if dto.owner_id == user_id:
-                search_obj = SearchCreateDTO(**dto.model_dump())
-                return await self._repository.create(search_obj)
+                user = await user_repository.get_user_settings(user_id)
+                search_dto = SearchFilterDTO(owner_id=user.id)
+                searches_count = await self._repository.get_filtered(search_dto, count=True)
+                if searches_count >= user.links_limit:
+                    search_obj = SearchCreateDTO(**dto.model_dump())
+                    return await self._repository.create(search_obj)
+                else:
+                    raise NoRowsFoundError("User links limit reached")
             else:
                 raise NoRowsFoundError("User not found")
         except Exception as e:
@@ -84,7 +94,7 @@ class SearchService(BaseService):
     ) -> SearchDTO:
         try:
             user_obj = UserFilterDTO(telegram_id=telegram_id)
-            user = await user_repository.get_filtered(user_obj, get_single=True)
+            user = await user_repository.get_filtered(user_obj, limit=1, page=1)[0]
             search_obj = SearchCreateDTO(owner_id=user.id, **data)
             return await self._repository.create(search_obj)
         except Exception as e:
