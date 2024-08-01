@@ -4,8 +4,9 @@ from datetime import datetime, timedelta
 from jwt import encode, get_unverified_header, decode, ExpiredSignatureError, PyJWTError, InvalidSignatureError
 
 from core.config.jwt import JWTSettings, settings_bot
-from src.api.auth.auth_dto import AccessTokenDTO, RefreshTokenDTO, TokenDTO
-from src.api.users.user_dto import UserDTO
+from src.api.auth.auth_dto import AccessTokenDTO, RefreshTokenDTO, TokenDTO, AccessTokenPayloadDTO, \
+    RefreshTokenPayloadDTO
+from src.api.users.user_dto import UserDTO, UserShortDTO
 
 
 class JwtService:
@@ -26,24 +27,25 @@ class JwtService:
 
     async def generate_access_token(self, dto: UserDTO):
         expire = datetime.utcnow() + timedelta(seconds=self.config.ACCESS_TOKEN_LIFETIME)
-        payload = {
-            "token_type": "access",
-            "user": {"user_id": str(dto.id), "user_email": str(dto.email)},
-            "exp": expire,
-            "iat": datetime.utcnow(),
-        }
-        token = await self.encode_token(payload)
+        payload = AccessTokenPayloadDTO(
+            token_type="access",
+            user=UserShortDTO(id=dto.id, email=dto.email),
+            exp=expire,
+            iat=datetime.utcnow(),
+
+        )
+        token = await self.encode_token(payload.model_dump())
         return AccessTokenDTO(access_token=token)
 
     async def generate_refresh_token(self, dto: UserDTO) -> RefreshTokenDTO:
         expire = datetime.utcnow() + timedelta(seconds=self.config.REFRESH_TOKEN_LIFETIME)
-        payload = {
-            "token_type": "refresh",
-            "user": {"user_id": str(dto.id), "user_email": str(dto.email)},
-            "exp": expire,
-            "iat": datetime.utcnow(),
-        }
-        token = await self.encode_token(payload)
+        payload = payload = RefreshTokenPayloadDTO(
+            token_type="refresh",
+            user=UserShortDTO(id=dto.id, email=dto.email),
+            exp=expire,
+            iat=datetime.utcnow(),
+        )
+        token = await self.encode_token(payload.model_dump())
         return RefreshTokenDTO(refresh_token=token)
 
     async def encode_token(self, payload):
@@ -55,10 +57,14 @@ class JwtService:
             raise InvalidSignatureError("Key error")
         return token
 
-    async def decode_token(self, token: str) -> dict:
+    async def decode_token(self, token: str) -> AccessTokenPayloadDTO | RefreshTokenPayloadDTO:
         try:
             self._validate_token(token)
-            return decode(token, self.config.SECRET_KEY, self.config.ALGORITHM)
+            data = decode(token, self.config.SECRET_KEY, self.config.ALGORITHM)
+            if data["token_type"] == "access":
+                return AccessTokenPayloadDTO(**data)
+            elif data["token_type"] == "refresh":
+                return RefreshTokenPayloadDTO(**data)
         except ExpiredSignatureError:
             raise ExpiredSignatureError("Token lifetime is expired")
         except PyJWTError:

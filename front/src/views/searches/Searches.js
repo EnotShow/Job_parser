@@ -4,7 +4,7 @@ import {
   CButton, CButtonGroup,
   CCard,
   CCardBody,
-  CCol, CPagination, CPaginationItem,
+  CCol, CFormInput, CInputGroup, CPagination, CPaginationItem,
   CRow, CTable,
 } from '@coreui/react'
 import DeleteModal from "src/views/_DeleteModal";
@@ -84,6 +84,10 @@ const items = [
         <CCol xs={12}>
           <CCard className="mb-4">
             <CCardBody>
+              <CInputGroup className="mb-3">
+                <CFormInput placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2"/>
+                <CButton type="button" color="secondary" variant="outline" id="button-addon2">Button</CButton>
+              </CInputGroup>
               <center><h1>Searches</h1></center>
               <CTable columns={columns} items={items} />
               <CPagination aria-label="Page navigation example">

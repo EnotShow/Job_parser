@@ -9,7 +9,7 @@ import {
   CDropdown,
   CDropdownItem,
   CDropdownMenu,
-  CDropdownToggle,
+  CDropdownToggle, CFormInput, CInputGroup,
   CPagination,
   CPaginationItem,
   CRow,
@@ -92,6 +92,10 @@ const Applications = () => {
         <CCol xs={12}>
           <CCard className="items">
             <CCardBody>
+              <CInputGroup className="mb-3">
+                <CFormInput placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2"/>
+                <CButton type="button" color="secondary" variant="outline" id="button-addon2">Button</CButton>
+              </CInputGroup>
               <CRow>
               <CCol xs={3} md={3} style={{ display: 'flex' }}>
               <CDropdown>
