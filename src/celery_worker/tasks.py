@@ -22,6 +22,9 @@ def add_parsing_job(searches: [List[SearchFilterDTO], dict]):
 
 
 async def parsing_job(searches: [List[SearchFilterDTO], dict]):
+    session = requests.Session()
+    session.headers.update({'X-API-Key': settings.service_api_token})
+
     for search in searches:
         parser = await get_parser(search.url)
         result = await parser.parse_offers(search.url, search.owner_id)
