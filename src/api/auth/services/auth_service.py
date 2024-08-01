@@ -34,6 +34,7 @@ class AuthService(BaseService):
         if data.token_type != "access":
             raise Exception("Invalid token type")
         return {"message": "Access token is valid!"}
+
     async def register(self, user: UserRegisterDTO) -> TokenDTO:
         user = UserCreateDTO(**user.dict())
         user.selected_language = user.language_code

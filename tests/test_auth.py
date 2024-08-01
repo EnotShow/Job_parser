@@ -1,7 +1,4 @@
-import asyncio
-
 from src.api.auth.auth_dto import UserLoginDTO, UserRegisterDTO
-from src.api.users.user_dto import UserCreateDTO
 from src.client.base import JobParserClient
 
 
