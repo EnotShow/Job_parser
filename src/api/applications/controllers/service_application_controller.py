@@ -50,15 +50,17 @@ async def get_application(
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
-@router.put("/", status_code=status.HTTP_200_OK)
+@router.put("/{application_id}", status_code=status.HTTP_200_OK)
 @permission_required([IsService])
 @inject
 async def update_application(
+        application_id: int,
         data: ApplicationUpdateDTO,
         request: Request,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ):
     try:
+        data.id = application_id
         return await application_service.update_application(data)
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})

@@ -47,22 +47,23 @@ async def get_user_applied_applications(
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
-@router.put("/{id}", status_code=status.HTTP_200_OK)
+@router.put("/{application_id}", status_code=status.HTTP_200_OK)
 @permission_required([IsAuthenticated])
 @inject
 async def update_user_application(
-        id: int,
+        application_id: int,
         data: ApplicationUpdateDTO,
         request: Request,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ):
     try:
-        return await application_service.update_user_application(request.state.token.user.id, id, data)
+        data.id = application_id
+        return await application_service.update_user_application(data, request.state.token.user.id)
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
-@router.get("/{user_id}", status_code=status.HTTP_200_OK)
+@router.get("/applied/", status_code=status.HTTP_200_OK)
 @permission_required([IsAuthenticated])
 @inject
 async def get_user_applied_applications(
@@ -73,6 +74,6 @@ async def get_user_applied_applications(
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ):
     try:
-        return await application_service.get_user_applied_applications(user_id, limit=limit, page=page)
+        return await application_service.get_user_applied_applications(request.state.token.user.id, limit=limit, page=page)
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
