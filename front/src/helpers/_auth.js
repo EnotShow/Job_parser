@@ -1,17 +1,18 @@
+import jobParserClient from 'src/client/BaseClient';
+
 function setCookie(name, value, days) {
-    let expires = "";
-    if (days) {
-        const date = new Date();
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = "; expires=" + date.toUTCString();
-    }
-    document.cookie = name + "=" + encodeURIComponent(value) + expires + "; path=/";
+  let expires = '';
+  if (days) {
+    const date = new Date();
+    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+    expires = '; expires=' + date.toUTCString();
   }
+  document.cookie = name + '=' + encodeURIComponent(value) + expires + '; path=/';
+}
 
 function getCookies() {
   const cookies = document.cookie;
   const cookieObject = {};
-
   cookies.split(';').forEach(cookie => {
     const [name, ...rest] = cookie.split('=');
     const value = rest.join('=').trim();
@@ -19,17 +20,27 @@ function getCookies() {
       cookieObject[name.trim()] = decodeURIComponent(value);
     }
   });
-
   return cookieObject;
 }
 
-function verifyToken(cookie) {
+async function verifyToken() {
   const cookies = getCookies();
-  if (!cookies) {
+  if (!cookies || !cookies.accessToken) {
+    return false;
+  } else {
+    jobParserClient.client.defaults.headers['Authorization'] = `Bearer ${cookies.accessToken}`;
+    try {
+      const tokenVerified = await jobParserClient.verifyToken();
+      if (!tokenVerified) {
+        await jobParserClient.refreshAccessToken();
+        return true;
+      }
+      return true;
+    } catch (error) {
+      console.error('Token verification failed:', error);
+    }
     return false;
   }
-
 }
 
-
-export { setCookie, getCookies };
+export { setCookie, getCookies, verifyToken };

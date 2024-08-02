@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AppSettings from "src/AppSettings";
+import {getCookies} from "src/helpers/_auth";
 
 class JobParserClient {
     constructor(base_url) {
@@ -10,7 +11,7 @@ class JobParserClient {
                 'Content-Type': 'application/json'
             }
         });
-        this.refreshToken = null;
+        this.refreshToken = getCookies().refreshToken;
     }
 
     async authAsUser(data) {
@@ -44,7 +45,6 @@ class JobParserClient {
             this.client.defaults.headers['Authorization'] = `Bearer ${access_token}`;
             this.refreshToken = access_token;
 
-            console.log(response.data);
             return response.data;
         } catch (error) {
             console.error('Error refreshing access token:', error);
