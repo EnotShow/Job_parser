@@ -15,8 +15,9 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
-import axios from 'axios'
 import { setCookie } from 'src/helpers/_auth'
+import jobParserClient from "src/client/BaseClient";
+import UserLoginDTO from "src/client/DTOs/UserLoginDTO";
 
 const Login = () => {
   const [email, setEmail] = React.useState('')
@@ -42,21 +43,13 @@ const Login = () => {
     }
     setLoading(true)
 
-    const formDetails = {
-      email: email,
-      password: password,
-    }
+    const formDetails = new UserLoginDTO(
+      email,
+      password
+    ).toJSON();
 
     try {
-      const response = await axios.post(
-        'http://localhost:8000/auth/login',
-        formDetails,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      )
+      const response = await jobParserClient.authAsUser(formDetails)
 
       if (response && response.data) {
         setCookie('accessToken', response.data.access_token, 1)

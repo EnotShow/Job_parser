@@ -13,8 +13,57 @@ import {
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
+import {useNavigate} from "react-router-dom";
+import UserLoginDTO from "src/client/DTOs/UserLoginDTO";
+import jobParserClient from "src/client/BaseClient";
+import {setCookie} from "src/helpers/_auth";
 
 const Register = () => {
+  const [email, setEmail] = React.useState('')
+  const [password, setPassword] = React.useState('')
+  const [error, setError] = React.useState('')
+  const [loading, setLoading] = React.useState(false)
+
+  const navigate = useNavigate()
+
+  const validateForm = () => {
+    if (!email || !password) {
+      setError('Username and password are required')
+      return false
+    }
+    setError('')
+    return true
+  }
+
+  const handleSubmit = async (event) => {
+    event.preventDefault()
+    if (!validateForm()) {
+      return
+    }
+    setLoading(true)
+
+    const formDetails = new UserLoginDTO(
+      email,
+      password
+    ).toJSON();
+
+    try {
+      const response = await jobParserClient.authAsUser(formDetails)
+
+      if (response && response.data) {
+        setCookie('accessToken', response.data.access_token, 1)
+        setCookie('refreshToken', response.data.refresh_token, 1)
+        navigate('/')
+      } else {
+        setError(response.data.details || 'Unexpected error occurred')
+      }
+    } catch (e) {
+      setError(e.response?.data?.message || 'Login failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   return (
     <div className="bg-body-tertiary min-vh-100 d-flex flex-row align-items-center">
       <CContainer>

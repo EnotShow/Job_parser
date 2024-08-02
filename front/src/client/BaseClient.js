@@ -1,6 +1,9 @@
-const axios = require('axios');
-const { settings } = require('./core/config/proj_settings');
-const { UserRegisterDTO, UserLoginDTO } = require('./src/api/auth/auth_dto');
+import axios from 'axios';
+
+//TODO: move to settings
+const settings = {
+  base_url: 'http://localhost:8000'
+}
 
 class JobParserClient {
     constructor(baseUrl = settings.base_url) {
@@ -78,4 +81,8 @@ class JobParserClient {
     }
 }
 
-export default JobParserClient;
+let jobParserClient = new JobParserClient(
+    settings.base_url
+);
+
+export default jobParserClient;
