@@ -26,11 +26,14 @@ dependency-injector2 = "^4.41.1"
 celery = {extras = ["librabbitmq"], version = "^5.4.0"}
 flower = "^2.0.1"
 
+pytest = "^8.3.2"
+pytest-asyncio = "^0.23.8"
+faker = "^26.1.0"
+
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
-[dev-dependencies]
-pytest = "^8.3.2"
-pytest-asyncio = "^0.20.8"
+[requires]
+python_version = "3.12"
