@@ -2,12 +2,16 @@ import httpx
 
 from core.config.proj_settings import settings
 from src.api.auth.auth_dto import UserRegisterDTO, UserLoginDTO
+from src.client.ApplicationClient import ApplicationClient
+from src.client.SearchClient import SearchClient
 from src.client.UserClient import UserClient
 
 
 class JobParserClient:
     def __init__(self, base_url: str = settings.base_url):
-        users = UserClient(self)
+        self.users = UserClient(self)
+        self.applications = ApplicationClient(self)
+        self.searches = SearchClient(self)
 
         self.base_url = base_url
         self.session = httpx.AsyncClient()
