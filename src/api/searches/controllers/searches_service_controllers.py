@@ -6,10 +6,10 @@ from starlette.status import HTTP_400_BAD_REQUEST
 
 from core.shared.errors import NoRowsFoundError
 from core.shared.permissions.permission_decorator import permission_required
-from core.shared.permissions.permissions import IsAuthenticated, IsService
-from src.api.searches.containers.search_service_container import SearchServiceContainer
+from core.shared.permissions.permissions import IsService
 from src.api.middleware.dtos.pagination_dto import PaginationDTO
-from src.api.searches.search_dto import SearchDTO, SearchCreateDTO, SearchUpdateDTO
+from src.api.searches.containers.search_service_container import SearchServiceContainer
+from src.api.searches.search_dto import SearchDTO
 from src.api.searches.searchings_service import SearchService
 
 router = APIRouter(prefix="/service")
