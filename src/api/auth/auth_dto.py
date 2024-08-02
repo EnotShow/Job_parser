@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from core.shared.base_dto import BaseDTO
-from src.api.dtos.user_dto import UserDTO, UserShortDTO
+from src.api.users.user_dto import UserShortDTO
 
 
 class UserLoginDTO(BaseDTO):
