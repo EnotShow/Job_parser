@@ -83,3 +83,9 @@ class UserService(BaseService):
             return await self._repository.get_user_settings(user_id)
         except Exception as e:
             raise e
+
+    async def delete_user(self, user_id: int) -> UserDTO:
+        try:
+            return await self._repository.delete(user_id)
+        except Exception as e:
+            raise e

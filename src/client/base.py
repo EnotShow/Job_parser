@@ -2,14 +2,13 @@ import httpx
 
 from core.config.proj_settings import settings
 from src.api.auth.auth_dto import UserRegisterDTO, UserLoginDTO
+from src.client.UserClient import UserClient
 
 
 class JobParserClient:
-    # user_client = UserClient()
-    # application_client = ApplicationClient()
-    # search_client = SearchClient()
-
     def __init__(self, base_url: str = settings.base_url):
+        users = UserClient(self)
+
         self.base_url = base_url
         self.session = httpx.AsyncClient()
         self.refresh_token = None
@@ -59,3 +58,7 @@ class JobParserClient:
             raise Exception
 
         return tokens
+
+    async def auth_as_service(self):
+        self.session.headers["X-Api-Key"] = settings.service_api_key
+        self.refresh_token = None

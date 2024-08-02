@@ -7,6 +7,7 @@ from starlette.status import HTTP_400_BAD_REQUEST
 from core.shared.permissions.permission_decorator import permission_required
 from core.shared.permissions.permissions import IsAuthenticated, IsService
 from src.api.users.containers.user_service_container import UserServiceContainer
+from src.api.users.user_dto import UserUpdateDTO
 from src.api.users.user_service import UserService
 
 router = APIRouter()
@@ -29,7 +30,7 @@ async def get_me(
 @permission_required([IsAuthenticated])
 @inject
 async def update_me(
-        data: dict,
+        data: UserUpdateDTO,
         request: Request,
         user_service: UserService = Depends(Provide[UserServiceContainer.user_service]),
 ):

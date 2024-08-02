@@ -2,7 +2,7 @@ from typing import List
 
 from asyncpg import UniqueViolationError
 from dependency_injector.wiring import Provide, inject
-from sqlalchemy import select, update
+from sqlalchemy import select, update, delete
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -109,6 +109,13 @@ class UserRepository(BaseRepository):
             return UserSettingsDTO(**row.__dict__)
         except (NoResultFound, AttributeError) as e:
             raise Exception(f"User with id {user_id} not found")
+
+    async def delete(self, id: int):
+        stmt = delete(self.model).where(self.model.id == id)
+        res = await self._session.execute(stmt)
+        if res.rowcount == 0:
+            raise NoResultFound(f"{self.model.__name__} not found")
+        await self._session.commit()
 
     def _get_dto(self, row):
         return UserDTO(**row.__dict__)

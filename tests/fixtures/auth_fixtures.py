@@ -18,6 +18,13 @@ def faker():
 
 
 @pytest.fixture()
+async def service_client():
+    client = JobParserClient()
+    await client.auth_as_service()
+    return client
+
+
+@pytest.fixture()
 async def base_user(client: JobParserClient, faker: _faker.Faker):
     user = UserRegisterDTO(
         email=faker.email(),
@@ -25,6 +32,5 @@ async def base_user(client: JobParserClient, faker: _faker.Faker):
         language_code=faker.language_code(),
         refer_id=0,
     )
-    print(user)
     await client.register(user)
     return user

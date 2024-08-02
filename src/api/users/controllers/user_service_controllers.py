@@ -53,3 +53,17 @@ async def update_user(
         return await user_service.update_user(data, user_id)
     except Exception as ex:
         raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(ex))
+
+
+@router.delete("/{user_id}", status_code=status.HTTP_200_OK)
+@permission_required([IsService])
+@inject
+async def delete_user(
+        user_id: int,
+        request: Request,
+        user_service: UserService = Depends(Provide[UserServiceContainer.user_service]),
+):
+    try:
+        return await user_service.delete_user(user_id)
+    except Exception as ex:
+        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(ex))
