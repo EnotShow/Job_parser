@@ -18,7 +18,7 @@ const Register = React.lazy(() => import('./views/pages/register/Register'))
 const NotFound = React.lazy(() => import('./views/pages/page404/Page404'))
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'))
 
-
+const Test = React.lazy(() => import('./views/tests/Test'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
@@ -42,6 +42,8 @@ const routes = [
   { path: '/register', name: 'Register', element: Register },
   { path: '/404', name: 'Page404', element: NotFound },
   { path: '/500', name: 'Page500', element: Page500 },
+
+  { path: '/test', name: 'Test', element: Test },
 ]
 
 export default routes
