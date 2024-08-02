@@ -1,4 +1,4 @@
-const BaseDTO = require("src/client/BaseDTO");
+import BaseDTO from "src/client/BaseDTO";
 
 class UserLoginDTO extends BaseDTO {
     constructor(email, password) {

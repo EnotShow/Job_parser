@@ -14,13 +14,14 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import {useNavigate} from "react-router-dom";
-import UserLoginDTO from "src/client/DTOs/UserLoginDTO";
 import jobParserClient from "src/client/BaseClient";
 import {setCookie} from "src/helpers/_auth";
+import UserRegisterDTO from "src/client/DTOs/UserRegisterDTO";
 
 const Register = () => {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
+  const [confirmPassword, setConfirmPassword] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
@@ -29,6 +30,10 @@ const Register = () => {
   const validateForm = () => {
     if (!email || !password) {
       setError('Username and password are required')
+      return false
+    }
+    if (password !== confirmPassword) {
+      setError('Passwords do not match')
       return false
     }
     setError('')
@@ -42,23 +47,26 @@ const Register = () => {
     }
     setLoading(true)
 
-    const formDetails = new UserLoginDTO(
+    const formDetails = new UserRegisterDTO(
       email,
-      password
+      password,
+      "en",
+      0
     ).toJSON();
 
     try {
-      const response = await jobParserClient.authAsUser(formDetails)
 
-      if (response && response.data) {
-        setCookie('accessToken', response.data.access_token, 1)
-        setCookie('refreshToken', response.data.refresh_token, 1)
+      const response = await jobParserClient.register(formDetails)
+
+      if (response) {
+        setCookie('accessToken', response.access_token, 1)
+        setCookie('refreshToken', response.refresh_token, 1)
         navigate('/')
       } else {
-        setError(response.data.details || 'Unexpected error occurred')
+        setError(response.details || 'Unexpected error occurred')
       }
     } catch (e) {
-      setError(e.response?.data?.message || 'Login failed')
+      setError(e.response?.message || 'Login failed')
     } finally {
       setLoading(false)
     }
@@ -71,18 +79,17 @@ const Register = () => {
           <CCol md={9} lg={7} xl={6}>
             <CCard className="mx-4">
               <CCardBody className="p-4">
-                <CForm>
+                <CForm onSubmit={handleSubmit}>
                   <h1>Register</h1>
                   <p className="text-body-secondary">Create your account</p>
                   <CInputGroup className="mb-3">
-                    <CInputGroupText>
-                      <CIcon icon={cilUser} />
-                    </CInputGroupText>
-                    <CFormInput placeholder="Username" autoComplete="username" />
-                  </CInputGroup>
-                  <CInputGroup className="mb-3">
                     <CInputGroupText>@</CInputGroupText>
-                    <CFormInput placeholder="Email" autoComplete="email" />
+                    <CFormInput
+                      placeholder="Email"
+                      autoComplete="email"
+                      onChange={(e) => setEmail(e.target.value)}
+                      value={email}
+                    />
                   </CInputGroup>
                   <CInputGroup className="mb-3">
                     <CInputGroupText>
@@ -92,6 +99,8 @@ const Register = () => {
                       type="password"
                       placeholder="Password"
                       autoComplete="new-password"
+                      onChange={(e) => setPassword(e.target.value)}
+                      value={password}
                     />
                   </CInputGroup>
                   <CInputGroup className="mb-4">
@@ -102,11 +111,16 @@ const Register = () => {
                       type="password"
                       placeholder="Repeat password"
                       autoComplete="new-password"
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      value={confirmPassword}
                     />
                   </CInputGroup>
                   <div className="d-grid">
-                    <CButton color="success">Create Account</CButton>
+                    <CButton color="primary" className="px-4" disabled={loading} type="submit">
+                          {loading ? 'Loading...' : 'Create account'}
+                    </CButton>
                   </div>
+                    {error && <p className="text-danger mt-2">{error}</p>}
                 </CForm>
               </CCardBody>
             </CCard>

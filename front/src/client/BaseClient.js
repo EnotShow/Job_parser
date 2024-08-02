@@ -1,15 +1,11 @@
 import axios from 'axios';
-
-//TODO: move to settings
-const settings = {
-  base_url: 'http://localhost:8000'
-}
+import AppSettings from "src/AppSettings";
 
 class JobParserClient {
-    constructor(baseUrl = settings.base_url) {
-        this.baseUrl = baseUrl;
+    constructor(base_url) {
+        this.baseUrl = base_url;
         this.client = axios.create({
-            baseURL: baseUrl,
+            baseURL: base_url,
             headers: {
                 'Content-Type': 'application/json'
             }
@@ -82,7 +78,7 @@ class JobParserClient {
 }
 
 let jobParserClient = new JobParserClient(
-    settings.base_url
+    AppSettings.base_url
 );
 
 export default jobParserClient;

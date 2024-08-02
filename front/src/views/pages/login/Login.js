@@ -49,17 +49,18 @@ const Login = () => {
     ).toJSON();
 
     try {
+
       const response = await jobParserClient.authAsUser(formDetails)
 
-      if (response && response.data) {
-        setCookie('accessToken', response.data.access_token, 1)
-        setCookie('refreshToken', response.data.refresh_token, 1)
+      if (response) {
+        setCookie('accessToken', response.access_token, 1)
+        setCookie('refreshToken', response.refresh_token, 1)
         navigate('/')
       } else {
-        setError(response.data.details || 'Unexpected error occurred')
+        setError(response.details || 'Unexpected error occurred')
       }
     } catch (e) {
-      setError(e.response?.data?.message || 'Login failed')
+      setError(e.response?.message || 'Login failed')
     } finally {
       setLoading(false)
     }
@@ -104,8 +105,8 @@ const Login = () => {
                         <CButton color="primary" className="px-4" disabled={loading} type="submit">
                           {loading ? 'Loading...' : 'Login'}
                         </CButton>
-                        {error && <p className="text-danger mt-2">{error}</p>}
                       </CCol>
+                        {error && <p className="text-danger mt-2">{error}</p>}
                       <CCol xs={6} className="text-right">
                         <CButton color="link" className="px-0">
                           Forgot password?
