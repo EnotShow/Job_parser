@@ -53,12 +53,12 @@ export const ROUTES = {
   DASHBOARD : "/dashboard",
 
   SEARCHES : "/searches",
-  SEARCH_DETAILS : "/searches/:search_id",
-  SEARCH_EDIT : "/searches/:search_id/edit",
+  SEARCH_DETAILS : "/searches/:id",
+  SEARCH_EDIT : "/searches/:id/edit",
 
   APPLICATIONS : "/applications",
-  APPLICATION_DETAILS : "/applications/:application_id",
-  APPLICATION_EDIT : "/applications/:application_id/edit",
+  APPLICATION_DETAILS : "/applications/:id",
+  APPLICATION_EDIT : "/applications/:id/edit",
 
   PROFILE : "/profile",
   SETTINGS : "/settings",

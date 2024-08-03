@@ -32,6 +32,7 @@ async function verifyToken() {
     try {
       const tokenVerified = await jobParserClient.verifyToken();
       if (!tokenVerified) {
+        console.log("Trying to refresh token...");
         await jobParserClient.refreshAccessToken();
         return true;
       }

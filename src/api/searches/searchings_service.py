@@ -94,8 +94,8 @@ class SearchService(BaseService):
     ) -> SearchDTO:
         try:
             user_obj = UserFilterDTO(telegram_id=telegram_id)
-            user = await user_repository.get_filtered(user_obj, limit=1, page=1)[0]
-            search_obj = SearchCreateDTO(owner_id=user.id, **data)
+            response = await user_repository.get_filtered(user_obj, limit=1, page=1)
+            search_obj = SearchCreateDTO(owner_id=response[0].id, **data)
             return await self._repository.create(search_obj)
         except Exception as e:
             raise e
@@ -109,8 +109,8 @@ class SearchService(BaseService):
     async def update_user_search(self, dto: SearchUpdateDTO, user_id: int) -> SearchDTO:
         try:
             search_dto = SearchFilterDTO(id=dto.id, owner_id=user_id)
-            await self._repository.get_filtered(search_dto, limit=1, page=1)[0]
-            if search_dto.owner_id == dto.owner_id:
+            response = await self._repository.get_filtered(search_dto, limit=1, page=1)
+            if search_dto.owner_id == dto.owner_id and response[0]:
                 return await self._repository.update(dto)
             else:
                 raise NoRowsFoundError("Search not found")
@@ -126,8 +126,10 @@ class SearchService(BaseService):
     async def delete_user_search(self, search_id: int, user_id: int,) -> None:
         try:
             search_dto = SearchFilterDTO(id=search_id, owner_id=user_id)
-            await self._repository.get_filtered(search_dto, limit=1, page=1)[0]
-            if search_dto.owner_id == user_id:
+            response = await self._repository.get_filtered(search_dto, limit=1, page=1)
+            if response[0] and search_dto.owner_id == user_id:
                 return await self._repository.delete(search_id)
+            else:
+                raise NoRowsFoundError("Search not found")
         except Exception as e:
             raise e
