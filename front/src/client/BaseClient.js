@@ -1,10 +1,18 @@
 import axios from 'axios';
 import AppSettings from "src/AppSettings";
 import {getCookies} from "src/helpers/_auth";
+import UserClient from "src/client/UserClient";
+import ApplicationClient from "src/client/ApplicationClient";
+import SearchClient from "src/client/SearchClient";
+
 
 class JobParserClient {
     constructor(base_url) {
-        this.baseUrl = base_url;
+        this.users = new UserClient(this);
+        this.applications = new ApplicationClient(this);
+        this.searches = new SearchClient(this);
+        
+        this.base_url = base_url;
         this.client = axios.create({
             baseURL: base_url,
             headers: {
