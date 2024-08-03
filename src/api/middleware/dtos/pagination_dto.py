@@ -8,6 +8,7 @@ T = TypeVar('T', bound=BaseDTO)
 class PaginationDTO(BaseDTO, Generic[T]):
     page: int
     size: int
+    total: int
     items: List[T]
 
 

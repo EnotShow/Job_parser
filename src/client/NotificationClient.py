@@ -1,9 +1,10 @@
 from typing import List
 
 from src.api.messangers.dtos.notification_dto import NotificationDTO
+from src.client.BaseClient import BaseClient
 
 
-class NotificationsClient:
+class NotificationsClient(BaseClient):
     def __init__(self, client):
         self.client = client
         self.base_url = f"{self.client.base_url}/notifications"

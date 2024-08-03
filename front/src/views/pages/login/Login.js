@@ -16,7 +16,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import { setCookie } from 'src/helpers/_auth'
-import jobParserClient from "src/client/BaseClient";
+import jobParserClient from "src/client/Client";
 import UserLoginDTO from "src/client/DTOs/UserLoginDTO";
 
 const Login = () => {

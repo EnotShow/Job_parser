@@ -31,7 +31,8 @@ class SearchService(BaseService):
         try:
             filter = SearchFilterDTO(owner_id=user_id)
             response_objects = await self._repository.get_filtered(filter, limit=limit, page=page)
-            return self._paginate(response_objects, page, len(response_objects))
+            total = await self._repository.get_count(filter)
+            return self._paginate(response_objects, page, len(response_objects), total)
         except Exception as e:
             raise NoRowsFoundError
 

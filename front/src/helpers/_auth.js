@@ -1,4 +1,4 @@
-import jobParserClient from 'src/client/BaseClient';
+import jobParserClient from 'src/client/Client';
 
 function setCookie(name, value, days) {
   let expires = '';

@@ -1,5 +1,8 @@
-class UserClient {
+import BaseClient from "src/client/BaseClient";
+
+class UserClient extends BaseClient {
     constructor(client) {
+        super();
         this.client = client;
         this.base_url = `${this.client.base_url}/users`;
     }

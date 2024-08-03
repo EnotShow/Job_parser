@@ -1,20 +1,24 @@
-class ApplicationClient {
+import BaseClient from "src/client/BaseClient";
+
+class ApplicationClient extends BaseClient {
     constructor(client) {
+        super();
         this.client = client;
         this.base_url = `${this.client.base_url}/applications`;
     }
 
-    async getAllApplications() {
+    async getApplications(limit = null, page = null) {
         try {
-            const response = await this.client.client.get(`${this.base_url}/`);
+            const url = this.constructor.addPagination(`${this.base_url}/`, limit, page);
+            const response = await this.client.client.get(url);
             return response.data;
         } catch (error) {
-            console.error('Error getting all applications:', error);
+            console.error('Error getting applications:', error);
             throw error;
         }
     }
 
-    async getApplication(applicationId) {
+    async getApplicationById(applicationId) {
         try {
             const response = await this.client.client.get(`${this.base_url}/${applicationId}`);
             return response.data;
@@ -24,14 +28,12 @@ class ApplicationClient {
         }
     }
 
-    async getAppliedApplications(userId) {
+    async createApplication(data) {
         try {
-            const response = await this.client.client.get(`${this.base_url}/applied`, {
-                params: { user_id: userId }
-            });
+            const response = await this.client.client.post(`${this.base_url}/`, data);
             return response.data;
         } catch (error) {
-            console.error('Error getting applied applications:', error);
+            console.error('Error creating application:', error);
             throw error;
         }
     }
@@ -42,6 +44,15 @@ class ApplicationClient {
             return response.data;
         } catch (error) {
             console.error('Error updating application:', error);
+            throw error;
+        }
+    }
+
+    async deleteApplication(applicationId) {
+        try {
+            await this.client.client.delete(`${this.base_url}/${applicationId}`);
+        } catch (error) {
+            console.error('Error deleting application:', error);
             throw error;
         }
     }

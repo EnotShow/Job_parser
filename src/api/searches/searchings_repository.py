@@ -1,7 +1,7 @@
 from typing import List
 
 from dependency_injector.wiring import Provide, inject
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -38,19 +38,24 @@ class SearchRepository(BaseRepository):
             raise NoRowsFoundError(f"{self.model.__name__} no found")
 
     async def get_filtered(self, filters: SearchFilterDTO, *,
-                           limit: int = 10, page: int = 1, count: bool = False) -> [List[SearchDTO], SearchDTO, int]:
+                           limit: int = 10, page: int = 1) -> [List[SearchDTO], SearchDTO, int]:
         offset = (page - 1) * limit
-        stmt = select(self.model).where(*filters.to_orm_expressions(self.model))
-        if not count:
-            stmt.limit(limit).offset(offset)
+        stmt = select(self.model).where(*filters.to_orm_expressions(self.model)).limit(limit).offset(offset)
         try:
             result = await self._session.execute(stmt)
-            if count:
-                return result.scalars().all().count(self.model)
             rows = result.scalars().all()
             return [self._get_dto(row) for row in rows]
         except (NoResultFound, AttributeError):
             raise Exception(f"Search objects not found")
+
+    async def get_count(self, filters: SearchFilterDTO) -> int:
+        try:
+            stmt = select(func.count(self.model.id)).where(*filters.to_orm_expressions(self.model))
+            result = await self._session.execute(stmt)
+            count = result.scalars().first()
+            return count
+        except Exception as e:
+            raise Exception(str(e))
 
     async def create(self, dto: SearchCreateDTO):
         instance = self.model(**dto.model_dump())

@@ -1,7 +1,8 @@
 from src.api.users.user_dto import UserUpdateDTO, UserDTO, UserSettingsDTO
+from src.client.BaseClient import BaseClient
 
 
-class UserServiceClient:
+class UserServiceClient(BaseClient):
     def __init__(self, client):
         self.client = client
         self.base_url = f"{self.client.base_url}/service"
@@ -24,10 +25,10 @@ class UserServiceClient:
 
 class UserClient:
     def __init__(self, client):
-        self.service = UserServiceClient(self)
-
         self.client = client
         self.base_url = f"{self.client.base_url}/users"
+
+        self.service = UserServiceClient(self)
 
     async def get_me(self) -> UserDTO:
         response = await self.client.session.get(f"{self.base_url}/me")

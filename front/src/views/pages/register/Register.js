@@ -14,7 +14,7 @@ import {
 import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cilUser } from '@coreui/icons'
 import {useNavigate} from "react-router-dom";
-import jobParserClient from "src/client/BaseClient";
+import jobParserClient from "src/client/Client";
 import {setCookie} from "src/helpers/_auth";
 import UserRegisterDTO from "src/client/DTOs/UserRegisterDTO";
 

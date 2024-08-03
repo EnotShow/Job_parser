@@ -11,9 +11,10 @@ import {
   CPaginationItem,
   CRow,
   CTable,
+  CFormSelect,
 } from '@coreui/react';
 import DeleteModal from 'src/views/_DeleteModal';
-import jobParserClient from 'src/client/BaseClient';
+import jobParserClient from 'src/client/Client';
 import { useNavigate } from 'react-router-dom';
 import { formatRoute } from 'react-router-named-routes/lib';
 import { ROUTES } from 'src/routes';
@@ -23,19 +24,26 @@ const Searches = () => {
   const [visible, setVisible] = useState(false);
   const [items, setItems] = useState([]);
   const [itemDelete, setItemDelete] = useState(null);
+  const [paginationLimit, setPaginationLimit] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await jobParserClient.searches.getSearches();
-        setItems(generateItems(data.items));
+        const data = await jobParserClient.searches.getSearches(
+          paginationLimit,
+          currentPage
+        );
+        setItems(generateItems(data.items)); // Assuming data has `items` and `total` properties
+        setTotalItems(data.total); // Total number of items
       } catch (error) {
         console.error('Error fetching data:', error);
       }
     };
 
     fetchData();
-  }, []);
+  }, [paginationLimit, currentPage]); // Dependency array includes paginationLimit and currentPage
 
   const generateItems = (data) => {
     return data.map((item) => ({
@@ -78,6 +86,13 @@ const Searches = () => {
     { key: 'actions', label: 'Actions', _props: { scope: 'col' } },
   ];
 
+  const handlePaginationChange = (e) => {
+    setPaginationLimit(parseInt(e.target.value, 10));
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(totalItems / paginationLimit);
+
   return (
     <>
       <DeleteModal model="search" visible={visible} setVisible={setVisible} onDelete={handleDelete} />
@@ -92,19 +107,31 @@ const Searches = () => {
                   Search
                 </CButton>
               </CInputGroup>
+              <CButton color="primary" className="mb-3" onClick={() => navigate(ROUTES.CREATE_SEARCH)}>
+                Create Search
+              </CButton>
               <center><h1>Searches</h1></center>
               <CTable columns={columns} items={items} />
-              <CPagination aria-label="Page navigation example">
-                <CPaginationItem aria-label="Previous" disabled>
-                  <span aria-hidden="true">&laquo;</span>
-                </CPaginationItem>
-                <CPaginationItem active>1</CPaginationItem>
-                <CPaginationItem>2</CPaginationItem>
-                <CPaginationItem>3</CPaginationItem>
-                <CPaginationItem aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </CPaginationItem>
-              </CPagination>
+              <div className="d-flex justify-content-between align-items-center">
+                <CPagination aria-label="Page navigation example">
+                  <CPaginationItem aria-label="Previous" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+                    <span aria-hidden="true">&laquo;</span>
+                  </CPaginationItem>
+                  {[...Array(totalPages).keys()].map((page) => (
+                    <CPaginationItem key={page} active={currentPage === page + 1} onClick={() => setCurrentPage(page + 1)}>
+                      {page + 1}
+                    </CPaginationItem>
+                  ))}
+                  <CPaginationItem aria-label="Next" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+                    <span aria-hidden="true">&raquo;</span>
+                  </CPaginationItem>
+                </CPagination>
+                <CFormSelect className="ms-3" aria-label="Select pagination limit" onChange={handlePaginationChange} style={{ width: 'auto' }}>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                </CFormSelect>
+              </div>
             </CCardBody>
           </CCard>
         </CCol>
