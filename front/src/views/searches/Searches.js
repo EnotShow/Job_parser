@@ -1,76 +1,83 @@
-import React, {useState} from 'react'
-
+import React, { useState, useEffect } from 'react';
 import {
   CButton, CButtonGroup,
   CCard,
   CCardBody,
   CCol, CFormInput, CInputGroup, CPagination, CPaginationItem,
   CRow, CTable,
-} from '@coreui/react'
-import DeleteModal from "src/views/_DeleteModal";
+} from '@coreui/react';
+import DeleteModal from 'src/views/_DeleteModal';
+import jobParserClient from 'src/client/BaseClient';
+import {useNavigate} from "react-router-dom";
 
 const Searches = () => {
-  const [visible, setVisible] = useState(false)
+  const navigate = useNavigate();
+  const [visible, setVisible] = useState(false);
+  const [items, setItems] = useState([]);
 
-  const columns = [
-  {
-    key: 'id',
-    label: '#',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'title',
-    label: 'Title',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'url',
-    label: 'URL',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'created_at',
-    label: 'Created at',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'actions',
-    label: 'Actions',
-    _props: { scope: 'col' },
-  },
-]
-const items = [
-    {
-      id: 1,
-      title: 'Title',
-      url: 'https://google.com',
-      created_at: '2022-01-01',
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await jobParserClient.searches.getSearches();
+      setItems(generateItems(data.items));
+    };
+
+    fetchData();
+  }, []);
+
+  const generateItems = (data) => {
+    return data.map((item) => ({
+      id: item.id,
+      title: item.title,
+      url: item.url,
+      created_at: item.created_at,
       actions: (
         <>
-        <CRow>
-        <CButtonGroup>
-        <CButton color="primary" onClick={() => alert('Button 2 clicked')}>
-        Edit
-        </CButton>
-        <CButton color="primary" onClick={() => alert('Button 2 clicked')}>
-        Details
-        </CButton>
-        <CButton color="danger" onClick={() => setVisible(true)}>
-        Delete
-        </CButton>
-        </CButtonGroup>
-        </CRow>
+          <CRow>
+            <CButtonGroup>
+              <CButton color="primary" onClick={(event) => navigate(event.id)}>
+                Details
+              </CButton>
+              <CButton color="primary" onClick={() => alert('Edit clicked')}>
+                Edit
+              </CButton>
+              <CButton color="danger" onClick={() => setVisible(true)}>
+                Delete
+              </CButton>
+            </CButtonGroup>
+          </CRow>
         </>
       ),
-      _cellProps: {id: {scope: 'row', },},
-    },
-  ]
+      _cellProps: { id: { scope: 'row' } },
+    }));
+  };
 
-  for (let i = 2; i <= 10; i++) {
-    let item = { ...items[0] }
-    item.id = i
-    items.push(item)
-  }
+  const columns = [
+    {
+      key: 'id',
+      label: '#',
+      _props: { scope: 'col' },
+    },
+    {
+      key: 'title',
+      label: 'Title',
+      _props: { scope: 'col' },
+    },
+    {
+      key: 'url',
+      label: 'URL',
+      _props: { scope: 'col' },
+    },
+    {
+      key: 'created_at',
+      label: 'Created at',
+      _props: { scope: 'col' },
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      _props: { scope: 'col' },
+    },
+  ];
 
   const handleDelete = () => {
     console.log("Item deleted");
@@ -85,7 +92,7 @@ const items = [
           <CCard className="mb-4">
             <CCardBody>
               <CInputGroup className="mb-3">
-                <CFormInput placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2"/>
+                <CFormInput placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2" />
                 <CButton type="button" color="secondary" variant="outline" id="button-addon2">Button</CButton>
               </CInputGroup>
               <center><h1>Searches</h1></center>
@@ -106,7 +113,7 @@ const items = [
         </CCol>
       </CRow>
     </>
-  )
-}
+  );
+};
 
-export default Searches
+export default Searches;

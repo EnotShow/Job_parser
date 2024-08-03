@@ -26,14 +26,14 @@ const routes = [
 
   // searches
   { path: '/searches', name: 'Searches', element: Searches },
-  { path: '/searches/{search_id}', name: 'Searches', element: SearchDetails },
-  { path: '/searches/{search_id}/edit', name: 'Searches', element: SearchEdit },
+  { path: '/searches/{search_id}', name: 'Get_Search', element: SearchDetails },
+  { path: '/searches/{search_id}/edit', name: 'Edit_Searches', element: SearchEdit },
 
   // applications
-  { path: '/applications/my-applications', name: 'My Applications', element: Applications },
-  { path: '/applications/all-applications', name: 'All Applications', element: Applications },
-  { path: '/applications/{application_id}', name: 'Applications', element: ApplicationDetails },
-  { path: '/applications/{application_id}/edit', name: 'Applications', element: ApplicationEdit },
+  { path: '/applications/my-applications', name: 'User_Applications', element: Applications },
+  { path: '/applications/all-applications', name: 'Applications', element: Applications },
+  { path: '/applications/{application_id}', name: 'Get_Application', element: ApplicationDetails },
+  { path: '/applications/{application_id}/edit', name: 'Edit_Application', element: ApplicationEdit },
 
   { path: '/profile', name: 'Profile', element: Profile },
   { path: '/settings', name: 'Settings', element: Settings },

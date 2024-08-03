@@ -8,10 +8,6 @@ import SearchClient from "src/client/SearchClient";
 
 class JobParserClient {
     constructor(base_url) {
-        this.users = new UserClient(this);
-        this.applications = new ApplicationClient(this);
-        this.searches = new SearchClient(this);
-        
         this.base_url = base_url;
         this.client = axios.create({
             baseURL: base_url,
@@ -20,6 +16,10 @@ class JobParserClient {
             }
         });
         this.refreshToken = getCookies().refreshToken;
+
+        this.users = new UserClient(this);
+        this.applications = new ApplicationClient(this);
+        this.searches = new SearchClient(this);
     }
 
     async authAsUser(data) {

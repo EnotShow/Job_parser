@@ -41,7 +41,6 @@ class JobParserClient:
             raise Exception
 
         self.session.headers["Authorization"] = f"Bearer {tokens.json()['access_token']}"
-        print(tokens.json())
         self.refresh_token = tokens.json()["access_token"]
 
         return tokens
