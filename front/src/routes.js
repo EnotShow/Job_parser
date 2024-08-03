@@ -22,21 +22,22 @@ const Test = React.lazy(() => import('./views/tests/Test'))
 
 const routes = [
   { path: '/', exact: true, name: 'Home' },
-  { path: '/dashboard', name: 'Dashboard', element: Dashboard },
+
+  { path: '/dashboard', name: 'Dashboard', element: Dashboard, protected: true },
 
   // searches
   { path: '/searches', name: 'Searches', element: Searches },
-  { path: '/searches/{search_id}', name: 'Get_Search', element: SearchDetails },
-  { path: '/searches/{search_id}/edit', name: 'Edit_Searches', element: SearchEdit },
+  { path: '/searches/:search_id', name: 'Get_Search', element: SearchDetails, protected: true },
+  { path: '/searches/:search_id/edit', name: 'Edit_Searches', element: SearchEdit, protected: true },
 
   // applications
-  { path: '/applications/my-applications', name: 'User_Applications', element: Applications },
-  { path: '/applications/all-applications', name: 'Applications', element: Applications },
-  { path: '/applications/{application_id}', name: 'Get_Application', element: ApplicationDetails },
-  { path: '/applications/{application_id}/edit', name: 'Edit_Application', element: ApplicationEdit },
+  { path: '/applications/my-applications', name: 'User_Applications', element: Applications, protected: true },
+  { path: '/applications/all-applications', name: 'Applications', element: Applications, protected: true },
+  { path: '/applications/:application_id', name: 'Get_Application', element: ApplicationDetails, protected: true },
+  { path: '/applications/:application_id/edit', name: 'Edit_Application', element: ApplicationEdit, protected: true },
 
-  { path: '/profile', name: 'Profile', element: Profile },
-  { path: '/settings', name: 'Settings', element: Settings },
+  { path: '/profile', name: 'Profile', element: Profile, protected: true },
+  { path: '/settings', name: 'Settings', element: Settings, protected: true },
 
   { path: '/login', name: 'Login', element: Login },
   { path: '/register', name: 'Register', element: Register },
@@ -45,5 +46,27 @@ const routes = [
 
   { path: '/test', name: 'Test', element: Test },
 ]
+
+export const ROUTES = {
+  HOME : "/",
+
+  DASHBOARD : "/dashboard",
+
+  SEARCHES : "/searches",
+  SEARCH_DETAILS : "/searches/:search_id",
+  SEARCH_EDIT : "/searches/:search_id/edit",
+
+  APPLICATIONS : "/applications",
+  APPLICATION_DETAILS : "/applications/:application_id",
+  APPLICATION_EDIT : "/applications/:application_id/edit",
+
+  PROFILE : "/profile",
+  SETTINGS : "/settings",
+
+  LOGIN : "/login",
+  REGISTER : "/register",
+  NOT_FOUND : "/404",
+  SERVER_ERROR : "/500",
+}
 
 export default routes
