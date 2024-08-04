@@ -13,7 +13,6 @@ import {
   CTable,
   CFormSelect,
 } from '@coreui/react';
-import DeleteModal from 'src/views/_DeleteModal';
 import jobParserClient from 'src/client/Client';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { formatRoute } from 'react-router-named-routes/lib';

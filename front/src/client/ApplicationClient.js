@@ -21,7 +21,7 @@ class ApplicationClient extends BaseClient {
     async getApplicationById(applicationId) {
         try {
             const response = await this.client.client.get(`${this.base_url}/${applicationId}`);
-            return response.data;
+            return response.data[0];
         } catch (error) {
             console.error('Error getting application by ID:', error);
             throw error;
