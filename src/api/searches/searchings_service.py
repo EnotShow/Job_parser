@@ -113,12 +113,12 @@ class SearchService(BaseService):
         try:
             search_dto = SearchFilterDTO(id=dto.id, owner_id=user_id)
             response = await self._repository.get_filtered(search_dto, limit=1, page=1)
-            if search_dto.owner_id == dto.owner_id and response[0]:
+            if response:
                 return await self._repository.update(dto)
             else:
                 raise NoRowsFoundError("Search not found")
         except Exception as e:
-            raise e
+            raise NoRowsFoundError("Search not found")
 
     async def delete_search(self, id: int) -> None:
         try:
