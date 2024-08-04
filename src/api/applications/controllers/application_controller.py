@@ -1,7 +1,11 @@
+from datetime import datetime
+from uuid import UUID
+
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, HTTPException, APIRouter
 from starlette import status
 from starlette.requests import Request
+from starlette.responses import RedirectResponse
 from starlette.status import HTTP_400_BAD_REQUEST
 
 from core.shared.errors import NoRowsFoundError
@@ -25,7 +29,7 @@ async def get_user_applications(
 ):
     try:
         return await application_service.get_user_applications(
-            request.state.user['user']['user_id'],
+            request.state.token.user.id,
             limit=limit,
             page=page
         )
@@ -74,6 +78,35 @@ async def get_user_applied_applications(
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ):
     try:
-        return await application_service.get_user_applied_applications(request.state.token.user.id, limit=limit, page=page)
+        return await application_service.get_user_applied_applications(request.state.token.user.id, limit=limit,
+                                                                       page=page)
+    except NoRowsFoundError:
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+
+
+@router.get("/apply/{short_id}", status_code=status.HTTP_301_MOVED_PERMANENTLY)
+@inject
+async def redirect_to_application(
+        short_id: UUID,
+        application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
+):
+    print('redirecting')
+    try:
+        application = await application_service.get_application_by_short_id(short_id)
+        print('working')
+
+        if application is None:
+            raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+
+        if not application.applied:
+            updated_dto = ApplicationUpdateDTO(
+                id=application.id,
+                applied=True,
+                applied_at=datetime.utcnow()
+            )
+            await application_service.update_application(updated_dto)
+            print('updated')
+
+        return RedirectResponse(url=application.url, status_code=status.HTTP_301_MOVED_PERMANENTLY)
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})

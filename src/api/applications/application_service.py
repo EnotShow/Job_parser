@@ -17,7 +17,8 @@ class ApplicationService(BaseService):
 
     @inject
     def __init__(self,
-                 repository: ApplicationRepository = Provide[ApplicationRepositoryContainer.application_repository]):
+                 repository: ApplicationRepository = Provide[ApplicationRepositoryContainer.application_repository]
+                 ):
         self._repository = repository
 
     async def get_all_applications(self, limit: int = 10, page: int = 1) -> PaginationDTO[ApplicationDTO]:
@@ -40,17 +41,20 @@ class ApplicationService(BaseService):
     async def get_application_by_short_id(self, short_id: UUID) -> ApplicationDTO:
         try:
             filter = ApplicationFilterDTO(short_id=short_id)
-            return await self._repository.get_filtered(filter)
+            response = await self._repository.get_filtered(filter, limit=1, page=1)
+            return response[0]
         except Exception as e:
             raise NoRowsFoundError
 
-    async def get_user_applications(self, user_id: int, limit: int = 10, page: int = 1
-                                     ) -> PaginationDTO[ApplicationDTO]:
+    async def get_user_applications(
+            self, user_id: int, limit: int = 10, page: int = 1
+    ) -> PaginationDTO[ApplicationDTO]:
         try:
             filter = ApplicationFilterDTO(owner_id=user_id)
             response_objects = await self._repository.get_filtered(filter, limit=limit, page=page)
-            return self._paginate(response_objects, page, len(response_objects))
-        except Exception as e:
+            total = await self._repository.get_count(filter)
+            return self._paginate(response_objects, page, len(response_objects), total)
+        except NoRowsFoundError as e:
             raise NoRowsFoundError
 
     async def get_user_application(self, user_id: int, application_id: int) -> ApplicationDTO:
@@ -71,7 +75,8 @@ class ApplicationService(BaseService):
     async def get_applications_if_exists(self, filters: List[ApplicationFilterDTO], limit: int = 10, page: int = 1
                                          ) -> PaginationDTO[ApplicationDTO]:
         try:
-            response_objects = await self._repository.get_filtered_multiple_applications(filters, limit=limit, page=page)
+            response_objects = await self._repository.get_filtered_multiple_applications(filters, limit=limit,
+                                                                                         page=page)
             return self._paginate(response_objects, page, len(response_objects))
         except (NoResultFound, AttributeError) as e:
             raise NoRowsFoundError
@@ -107,6 +112,7 @@ class ApplicationService(BaseService):
             raise e
 
     async def update_application(self, dto: ApplicationUpdateDTO) -> ApplicationDTO:
+        print('updating application')
         return await self._repository.update(dto)
 
     async def update_user_application(self, dto: ApplicationUpdateDTO, user_id: int) -> ApplicationDTO:

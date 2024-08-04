@@ -1,150 +1,136 @@
-import React, {useState} from 'react'
-
+import React, { useState, useEffect } from 'react';
 import {
   CButton,
   CButtonGroup,
   CCard,
   CCardBody,
   CCol,
-  CDropdown,
-  CDropdownItem,
-  CDropdownMenu,
-  CDropdownToggle, CFormInput, CInputGroup,
+  CFormInput,
+  CInputGroup,
   CPagination,
   CPaginationItem,
   CRow,
   CTable,
-} from '@coreui/react'
+  CFormSelect,
+} from '@coreui/react';
+import DeleteModal from 'src/views/_DeleteModal';
+import jobParserClient from 'src/client/Client';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { formatRoute } from 'react-router-named-routes/lib';
+import { ROUTES } from 'src/routes';
 
 const Applications = () => {
-  const columns = [
-  {
-    key: 'id',
-    label: '#',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'title',
-    label: 'Title',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'description',
-    label: 'Description',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'finded_date',
-    label: 'Finded',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'application_date',
-    label: 'Application date',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'applied',
-    label: 'Applied',
-    _props: { scope: 'col' },
-  },
-  {
-    key: 'actions',
-    label: 'Actions',
-    _props: { scope: 'col' },
-  },
-]
-  const items = [
-    {
-      id: 1,
-      title: 'Title',
-      description: 'Description',
-      finded_date: '07-01-2004',
-      application_date: '07-01-2004',
-      applied: 'Applied',
-      actions: (
-        <>
-        <CRow>
-        <CButtonGroup>
-        <CButton color="primary" onClick={() => alert('Button 2 clicked')}>
-        Apply
-        </CButton>
-        <CButton color="primary" onClick={() => alert('Button 2 clicked')}>
-        Details
-        </CButton>
-        </CButtonGroup>
-        </CRow>
-        </>
-      ),
-      _cellProps: {id: {scope: 'row', },},
-    },
-  ]
+  const navigate = useNavigate();
+  const location = useLocation();
 
-  for (let i = 2; i <= 10; i++) {
-    let item = { ...items[0] }
-    item.id = i
-    items.push(item)
-  }
+  const queryParams = new URLSearchParams(location.search);
+  const initialPage = parseInt(queryParams.get('page'), 10) || 1;
+
+  const [items, setItems] = useState([]);
+  const [paginationLimit, setPaginationLimit] = useState(10);
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [totalItems, setTotalItems] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const data = await jobParserClient.applications.getApplications(
+          paginationLimit,
+          currentPage
+        );
+        setItems(generateItems(data.items));
+        setTotalItems(data.total);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      }
+    };
+
+    fetchData();
+  }, [paginationLimit, currentPage]);
+
+  useEffect(() => {
+    if (currentPage > 1) {
+      navigate(`?page=${currentPage}`, { replace: true });
+    }
+  }, [currentPage, navigate]);
+
+  const generateItems = (data) => {
+    return data.map((item) => ({
+      id: item.id,
+      title: item.title,
+      finded_date: item.created_at,
+      application_date: item.application_date,
+      applied: item.applied ? 'Yes' : 'No',
+      actions: (
+        <CButtonGroup>
+          <CButton color="primary" onClick={() => navigate(formatRoute(ROUTES.APPLICATION_DETAILS, { id: item.id }))}>
+            Details
+          </CButton>
+          <CButton color="primary" href={jobParserClient.applications.getApplyLink(item.short_id)}>
+            Apply
+          </CButton>
+        </CButtonGroup>
+      ),
+      _cellProps: { id: { scope: 'row' } },
+    }));
+  };
+
+  const columns = [
+    { key: 'id', label: '#', _props: { scope: 'col' } },
+    { key: 'title', label: 'Title', _props: { scope: 'col' } },
+    { key: 'finded_date', label: 'Finded', _props: { scope: 'col' } },
+    { key: 'application_date', label: 'Application date', _props: { scope: 'col' } },
+    { key: 'applied', label: 'Applied', _props: { scope: 'col' } },
+    { key: 'actions', label: 'Actions', _props: { scope: 'col' } },
+  ];
+
+  const handlePaginationChange = (e) => {
+    setPaginationLimit(parseInt(e.target.value, 10));
+    setCurrentPage(1);
+  };
+
+  const totalPages = Math.ceil(totalItems / paginationLimit);
 
   return (
     <>
       <CRow>
         <CCol xs={12}>
-          <CCard className="items">
+          <CCard className="mb-4">
             <CCardBody>
               <CInputGroup className="mb-3">
-                <CFormInput placeholder="Recipient's username" aria-label="Recipient's username" aria-describedby="button-addon2"/>
-                <CButton type="button" color="secondary" variant="outline" id="button-addon2">Button</CButton>
+                <CFormInput placeholder="Search..." aria-label="Search" aria-describedby="button-addon2" />
+                <CButton type="button" color="secondary" variant="outline" id="button-addon2">
+                  Search
+                </CButton>
               </CInputGroup>
-              <CRow>
-              <CCol xs={3} md={3} style={{ display: 'flex' }}>
-              <CDropdown>
-                <CDropdownToggle color={'background-color'} style={{ border: '1px solid black' }}>Selected language: English</CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem href="#">English</CDropdownItem>
-                  <CDropdownItem href="#">Polish</CDropdownItem>
-                  <CDropdownItem href="#">Russian</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-
-              <CDropdown>
-                <CDropdownToggle color={'background-color'} style={{ border: '1px solid black' }}>Selected language: English</CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem href="#">English</CDropdownItem>
-                  <CDropdownItem href="#">Polish</CDropdownItem>
-                  <CDropdownItem href="#">Russian</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-
-              <CDropdown>
-                <CDropdownToggle color={'background-color'} style={{ border: '1px solid black' }}>Selected language: English</CDropdownToggle>
-                <CDropdownMenu>
-                  <CDropdownItem href="#">English</CDropdownItem>
-                  <CDropdownItem href="#">Polish</CDropdownItem>
-                  <CDropdownItem href="#">Russian</CDropdownItem>
-                </CDropdownMenu>
-              </CDropdown>
-              </CCol>
-              </CRow>
               <center><h1>Applications</h1></center>
               <CTable columns={columns} items={items} />
-              <CPagination aria-label="Page navigation example">
-                <CPaginationItem aria-label="Previous" disabled>
-                  <span aria-hidden="true">&laquo;</span>
-                </CPaginationItem>
-                <CPaginationItem active>1</CPaginationItem>
-                <CPaginationItem>2</CPaginationItem>
-                <CPaginationItem>3</CPaginationItem>
-                <CPaginationItem aria-label="Next">
-                  <span aria-hidden="true">&raquo;</span>
-                </CPaginationItem>
-              </CPagination>
+              <div className="d-flex justify-content-between align-items-center">
+                <CPagination aria-label="Page navigation example">
+                  <CPaginationItem aria-label="Previous" disabled={currentPage === 1} onClick={() => setCurrentPage(currentPage - 1)}>
+                    <span aria-hidden="true">&laquo;</span>
+                  </CPaginationItem>
+                  {[...Array(totalPages).keys()].map((page) => (
+                    <CPaginationItem key={page} active={currentPage === page + 1} onClick={() => setCurrentPage(page + 1)}>
+                      {page + 1}
+                    </CPaginationItem>
+                  ))}
+                  <CPaginationItem aria-label="Next" disabled={currentPage === totalPages} onClick={() => setCurrentPage(currentPage + 1)}>
+                    <span aria-hidden="true">&raquo;</span>
+                  </CPaginationItem>
+                </CPagination>
+                <CFormSelect className="ms-3" aria-label="Select pagination limit" onChange={handlePaginationChange} style={{ width: 'auto' }}>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="30">30</option>
+                </CFormSelect>
+              </div>
             </CCardBody>
           </CCard>
         </CCol>
       </CRow>
     </>
-  )
-}
+  );
+};
 
-export default Applications
+export default Applications;

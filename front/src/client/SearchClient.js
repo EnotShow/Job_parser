@@ -21,7 +21,7 @@ class SearchClient extends BaseClient {
     async getSearchById(searchId) {
         try {
             const response = await this.client.client.get(`${this.base_url}/${searchId}`);
-            return new response.data;
+            return response.data;
         } catch (error) {
             console.error('Error getting search by ID:', error);
             throw error;
@@ -31,7 +31,7 @@ class SearchClient extends BaseClient {
     async createSearch(data) {
         try {
             const response = await this.client.client.post(`${this.base_url}/`, data);
-            return new response.data;
+            return response.data;
         } catch (error) {
             console.error('Error creating search:', error);
             throw error;
@@ -41,7 +41,7 @@ class SearchClient extends BaseClient {
     async updateSearch(data, searchId) {
         try {
             const response = await this.client.client.put(`${this.base_url}/${searchId}`, data);
-            return new response.data;
+            return response.data;
         } catch (error) {
             console.error('Error updating search:', error);
             throw error;

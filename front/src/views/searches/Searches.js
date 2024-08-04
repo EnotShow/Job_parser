@@ -35,8 +35,8 @@ const Searches = () => {
           paginationLimit,
           currentPage
         );
-        setItems(generateItems(data.items)); // Assuming data has `items` and `total` properties
-        setTotalItems(data.total); // Total number of items
+        setItems(generateItems(data.items));
+        setTotalItems(data.total);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
@@ -44,6 +44,12 @@ const Searches = () => {
 
     fetchData();
   }, [paginationLimit, currentPage]); // Dependency array includes paginationLimit and currentPage
+
+  useEffect(() => {
+    if (currentPage > 1) {
+      navigate(`?page=${currentPage}`, { replace: true });
+    }
+  }, [currentPage, navigate]);
 
   const generateItems = (data) => {
     return data.map((item) => ({

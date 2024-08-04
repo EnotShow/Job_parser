@@ -27,14 +27,14 @@ const routes = [
 
   // searches
   { path: '/searches', name: 'Searches', element: Searches },
-  { path: '/searches/:search_id', name: 'Get_Search', element: SearchDetails, protected: true },
-  { path: '/searches/:search_id/edit', name: 'Edit_Searches', element: SearchEdit, protected: true },
+  { path: '/searches/:id', name: 'Get_Search', element: SearchDetails, protected: true },
+  { path: '/searches/:id/edit', name: 'Edit_Searches', element: SearchEdit, protected: true },
 
   // applications
   { path: '/applications/my-applications', name: 'User_Applications', element: Applications, protected: true },
   { path: '/applications/all-applications', name: 'Applications', element: Applications, protected: true },
-  { path: '/applications/:application_id', name: 'Get_Application', element: ApplicationDetails, protected: true },
-  { path: '/applications/:application_id/edit', name: 'Edit_Application', element: ApplicationEdit, protected: true },
+  { path: '/applications/:id', name: 'Get_Application', element: ApplicationDetails, protected: true },
+  { path: '/applications/:id/edit', name: 'Edit_Application', element: ApplicationEdit, protected: true },
 
   { path: '/profile', name: 'Profile', element: Profile, protected: true },
   { path: '/settings', name: 'Settings', element: Settings, protected: true },

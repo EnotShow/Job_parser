@@ -1,5 +1,4 @@
-import React, {useState} from 'react'
-
+import React, { useState, useEffect } from 'react';
 import {
   CButton,
   CButtonGroup,
@@ -10,14 +9,43 @@ import {
   CFormInput,
   CFormLabel,
   CRow,
-} from '@coreui/react'
-import DeleteModal from "src/views/_DeleteModal";
+} from '@coreui/react';
+import DeleteModal from 'src/views/_DeleteModal';
+import { useParams, useNavigate } from 'react-router-dom';
+import jobParserClient from 'src/client/Client'; // Assuming you have a client for API calls
+import { ROUTES } from 'src/routes'; // Assuming you have defined your routes
 
 const SearchDetails = () => {
-  const [visible, setVisible] = useState(false)
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [visible, setVisible] = useState(false);
+  const [searchDetails, setSearchDetails] = useState({
+    title: '',
+    url: '',
+    created_at: ''
+  });
 
-  const handleDelete = () => {
-    console.log("Item deleted");
+  useEffect(() => {
+    const fetchSearchDetails = async () => {
+      try {
+        const data = await jobParserClient.searches.getSearchById(id);
+        setSearchDetails(data);
+      } catch (error) {
+        console.error('Error fetching search details:', error);
+      }
+    };
+
+    fetchSearchDetails();
+  }, [id]);
+
+  const handleDelete = async () => {
+    try {
+      await jobParserClient.searches.deleteSearch(id);
+      setVisible(false);
+      navigate(ROUTES.SEARCHES);
+    } catch (error) {
+      console.error('Error deleting search:', error);
+    }
   };
 
   return (
@@ -31,37 +59,37 @@ const SearchDetails = () => {
               <center><h1>Search Details</h1></center>
               <CForm className="row g-3">
                 <CRow className="mb-3">
-                <CFormLabel htmlFor="staticTitle" className="col-sm-2 col-form-label">Title</CFormLabel>
-                <CCol sm={10}>
-                  <CFormInput type="text" id="staticTitle" defaultValue="Some search title" readOnly plainText/>
+                  <CFormLabel htmlFor="staticTitle" className="col-sm-2 col-form-label">Title</CFormLabel>
+                  <CCol sm={10}>
+                    <CFormInput type="text" id="staticTitle" value={searchDetails.title} readOnly plainText />
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="staticUrl" className="col-sm-2 col-form-label">Url</CFormLabel>
+                  <CCol sm={10}>
+                    <CFormInput type="text" id="staticUrl" value={searchDetails.url} readOnly plainText />
+                  </CCol>
+                </CRow>
+                <CRow className="mb-3">
+                  <CFormLabel htmlFor="staticCreatedAt" className="col-sm-2 col-form-label">Created at</CFormLabel>
+                  <CCol sm={10}>
+                    <CFormInput type="text" id="staticCreatedAt" value={searchDetails.created_at} readOnly plainText />
+                  </CCol>
+                </CRow>
+                <CCol xs={12}>
+                  <CButtonGroup>
+                    <CButton color="primary" onClick={() => navigate(`${ROUTES.SEARCH_EDIT}/${id}`)}>Edit</CButton>
+                    <CButton color="secondary" onClick={() => navigate(-1)}>Back</CButton>
+                    <CButton color="danger" onClick={() => setVisible(true)}>Delete</CButton>
+                  </CButtonGroup>
                 </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="staticUrl" className="col-sm-2 col-form-label">Url</CFormLabel>
-                <CCol sm={10}>
-                  <CFormInput type="text" id="staticUrl" defaultValue="https://searchurl.com/jobs" readOnly plainText/>
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="staticCreatedAt" className="col-sm-2 col-form-label">Created at</CFormLabel>
-                <CCol sm={10}>
-                  <CFormInput type="text" id="staticCreatedAt" defaultValue="2022-01-01" readOnly plainText/>
-                </CCol>
-              </CRow>
-              <CCol xs={12}>
-              <CButtonGroup>
-                <CButton color="primary" type="submit">Edit</CButton>
-                <CButton color="secondary">Back</CButton>
-                <CButton color="danger" onClick={() => setVisible(true)}>Delete</CButton>
-              </CButtonGroup>
-              </CCol>
               </CForm>
             </CCardBody>
           </CCard>
         </CCol>
       </CRow>
     </>
-  )
-}
+  );
+};
 
-export default SearchDetails
+export default SearchDetails;

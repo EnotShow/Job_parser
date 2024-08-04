@@ -56,6 +56,10 @@ class ApplicationClient extends BaseClient {
             throw error;
         }
     }
+
+    getApplyLink(searchId) {
+      return `${this.base_url}/apply/${searchId}`;
+    }
 }
 
 export default ApplicationClient;
