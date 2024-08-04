@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-router-named-routes/lib/index.js b/node_modules/react-router-named-routes/lib/index.js
+index 962f3e7..98d0c0a 100644
+--- a/node_modules/react-router-named-routes/lib/index.js
++++ b/node_modules/react-router-named-routes/lib/index.js
+@@ -71,7 +71,7 @@ var Link = createReactClass({
+         if(!resolver) resolver = NamedURLResolver;
+ 
+         var finalTo = resolveTo(resolver, to, params);
+-        return <OriginalLink to={finalTo} {...rest} />;
++        return React.createElement(OriginalLink, { to: finalTo, ...rest });
+     }
+ 
+ });
