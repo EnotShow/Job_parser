@@ -27,5 +27,4 @@ async def processing(
                 batch = searches[i:i + 100]
                 add_parsing_job.apply_async((batch,))
         except Exception as e:
-            print(e)
         await asyncio.sleep(60 * development_settings.parsing_delay)

@@ -2,10 +2,10 @@ from dependency_injector.wiring import inject, Provide
 
 from core.shared.base_service import BaseService
 from core.shared.errors import AlreadyExistError
+from src.api.auth.auth_dto import TokenDTO, AccessTokenDTO, UserRegisterDTO
+from src.api.auth.services.jwt_service import JwtService, jwt_service
 from src.api.users.containers.user_service_container import UserServiceContainer
-from src.api.auth.auth_dto import TokenDTO, AccessTokenDTO
-from src.api.users.user_dto import UserCreateDTO, UserRegisterDTO, UserUpdateDTO
-from src.api.auth.services.jwt_service import jwt_service, JwtService
+from src.api.users.user_dto import UserCreateDTO, UserUpdateDTO
 from src.api.users.user_service import UserService
 
 
@@ -24,8 +24,16 @@ class AuthService(BaseService):
 
     async def refresh_access_token(self, refresh_token: str) -> AccessTokenDTO:
         data = await self._jwt_service.decode_token(refresh_token)
-        user = await self._user_service.get_user(int(data['user']["user_id"]))
+        if data.token_type != "refresh":
+            raise Exception("Invalid token type")
+        user = await self._user_service.get_user(data.user.id)
         return await self._jwt_service.generate_access_token(user)
+
+    async def verify_access_token(self, access_token: str):
+        data = await self._jwt_service.decode_token(access_token)
+        if data.token_type != "access":
+            raise Exception("Invalid token type")
+        return {"message": "Access token is valid!"}
 
     async def register(self, user: UserRegisterDTO) -> TokenDTO:
         user = UserCreateDTO(**user.dict())

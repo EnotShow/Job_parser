@@ -7,7 +7,7 @@ from core.shared.permissions.BasePermission import BasePermission
 class IsAuthenticated(BasePermission):
     @staticmethod
     async def is_permitted(request: Request, *args, **kwargs):
-        return request.state.user is not None
+        return request.state.token is not None
 
 
 class IsService(BasePermission):

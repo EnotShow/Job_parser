@@ -9,5 +9,5 @@ T = TypeVar('T', bound=BaseDTO)
 class BaseService:
 
     @staticmethod
-    def _paginate(dto: Union[List[T], T], page: int, size: int):
-        return PaginationDTO(page=page, size=size, items=dto)
+    def _paginate(dto: Union[List[T], T], page: int, size: int, total: int) -> PaginationDTO:
+        return PaginationDTO(page=page, size=size, items=dto, total=total)

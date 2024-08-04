@@ -2,7 +2,7 @@ from operator import or_
 from typing import List
 
 from dependency_injector.wiring import Provide, inject
-from sqlalchemy import select, update, delete, and_
+from sqlalchemy import select, update, delete, and_, func
 from sqlalchemy.exc import NoResultFound, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -51,6 +51,15 @@ class ApplicationRepository(BaseRepository):
             return [self._get_dto(row) for row in rows]
         except (NoResultFound, AttributeError):
             raise NoRowsFoundError(f"{self.model.__name__} no found")
+
+    async def get_count(self, filters: ApplicationFilterDTO) -> int:
+        try:
+            stmt = select(func.count(self.model.id)).where(*filters.to_orm_expressions(self.model))
+            result = await self._session.execute(stmt)
+            count = result.scalars().first()
+            return count
+        except Exception as e:
+            raise Exception(str(e))
 
     async def get_filtered_multiple_applications(
             self,

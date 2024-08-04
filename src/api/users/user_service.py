@@ -50,7 +50,7 @@ class UserService(BaseService):
     async def get_user_referrals(self, refer_id: int, count: bool = False) -> [UserDTO, int]:
         try:
             if count:
-                return len(await self._repository.get_filtered(UserFilterDTO(refer_id=refer_id), count=count))
+                return await self._repository.get_count(UserFilterDTO(refer_id=refer_id))
             return await self._repository.get_filtered(UserFilterDTO(refer_id=refer_id))
         except Exception as e:
             return NoRowsFoundError
@@ -81,5 +81,11 @@ class UserService(BaseService):
     async def get_user_settings(self, user_id: int) -> UserDTO:
         try:
             return await self._repository.get_user_settings(user_id)
+        except Exception as e:
+            raise e
+
+    async def delete_user(self, user_id: int) -> UserDTO:
+        try:
+            return await self._repository.delete(user_id)
         except Exception as e:
             raise e

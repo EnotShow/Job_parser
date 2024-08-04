@@ -54,8 +54,10 @@ async def create_user_search(
 ) -> SearchDTO:
     try:
         return await search_service.create_user_search(data, request.state.token.user.id)
-    except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+    # except NoRowsFoundError:
+    #     raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+    except Exception as e:
+        raise e
 
 
 @router.delete("/{search_id}", status_code=status.HTTP_200_OK)
@@ -67,7 +69,7 @@ async def delete_user_search(
         search_service: SearchService = Depends(Provide[SearchServiceContainer.search_service]),
 ):
     try:
-        return await search_service.delete_user_search(request.state.token.user.id, search_id)
+        return await search_service.delete_user_search(search_id, request.state.token.user.id)
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 

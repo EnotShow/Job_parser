@@ -50,15 +50,17 @@ async def get_application(
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
-@router.put("/", status_code=status.HTTP_200_OK)
+@router.put("/{application_id}", status_code=status.HTTP_200_OK)
 @permission_required([IsService])
 @inject
 async def update_application(
+        application_id: int,
         data: ApplicationUpdateDTO,
         request: Request,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ):
     try:
+        data.id = application_id
         return await application_service.update_application(data)
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
@@ -110,30 +112,5 @@ async def create_multiple_applications(
         return await application_service.create_multiple_applications(
             data if isinstance(data, list) else [data]
         )
-    except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
-
-
-@router.get("/{short_id}", status_code=status.HTTP_301_MOVED_PERMANENTLY)
-@inject
-async def redirect_to_application(
-        short_id: UUID,
-        application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
-):
-    try:
-        application = await application_service.get_application_by_short_id(short_id)
-
-        if application is None:
-            raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
-
-        if not application.applied:
-            updated_dto = ApplicationUpdateDTO(
-                id=application.id,
-                applied=True,
-                applied_at=datetime.utcnow()
-            )
-            await application_service.update_application(updated_dto)
-
-        return RedirectResponse(url=application.url, status_code=status.HTTP_301_MOVED_PERMANENTLY)
     except NoRowsFoundError:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
