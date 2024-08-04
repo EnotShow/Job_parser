@@ -1,4 +1,5 @@
 import React from 'react'
+import SearchCreate from "src/views/searches/SearchCreate";
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'))
 
@@ -27,14 +28,15 @@ const routes = [
 
   // searches
   { path: '/searches', name: 'Searches', element: Searches },
-  { path: '/searches/:id', name: 'Get_Search', element: SearchDetails, protected: true },
-  { path: '/searches/:id/edit', name: 'Edit_Searches', element: SearchEdit, protected: true },
+  { path: '/searches/:id', name: 'Get Search', element: SearchDetails, protected: true },
+  { path: '/searches/:id/edit', name: 'Edit Searches', element: SearchEdit, protected: true },
+  { path: '/searches/create', name: 'Create Search', element: SearchCreate, protected: true },
 
   // applications
-  { path: '/applications/my-applications', name: 'User_Applications', element: Applications, protected: true },
+  { path: '/applications/my-applications', name: 'User Applications', element: Applications, protected: true },
   { path: '/applications/all-applications', name: 'Applications', element: Applications, protected: true },
-  { path: '/applications/:id', name: 'Get_Application', element: ApplicationDetails, protected: true },
-  { path: '/applications/:id/edit', name: 'Edit_Application', element: ApplicationEdit, protected: true },
+  { path: '/applications/:id', name: 'Get Application', element: ApplicationDetails, protected: true },
+  { path: '/applications/:id/edit', name: 'Edit Application', element: ApplicationEdit, protected: true },
 
   { path: '/profile', name: 'Profile', element: Profile, protected: true },
   { path: '/settings', name: 'Settings', element: Settings, protected: true },
@@ -55,6 +57,7 @@ export const ROUTES = {
   SEARCHES : "/searches",
   SEARCH_DETAILS : "/searches/:id",
   SEARCH_EDIT : "/searches/:id/edit",
+  SEARCH_CREATE : "/searches/create",
 
   APPLICATIONS : "/applications",
   APPLICATION_DETAILS : "/applications/:id",

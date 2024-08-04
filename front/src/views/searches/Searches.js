@@ -113,7 +113,7 @@ const Searches = () => {
                   Search
                 </CButton>
               </CInputGroup>
-              <CButton color="primary" className="mb-3" onClick={() => navigate(ROUTES.CREATE_SEARCH)}>
+              <CButton color="primary" className="mb-3" onClick={() => navigate(ROUTES.SEARCH_CREATE)}>
                 Create Search
               </CButton>
               <center><h1>Searches</h1></center>

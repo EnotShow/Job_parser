@@ -54,8 +54,10 @@ async def create_user_search(
 ) -> SearchDTO:
     try:
         return await search_service.create_user_search(data, request.state.token.user.id)
-    except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+    # except NoRowsFoundError:
+    #     raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+    except Exception as e:
+        raise e
 
 
 @router.delete("/{search_id}", status_code=status.HTTP_200_OK)

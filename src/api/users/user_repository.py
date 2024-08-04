@@ -103,10 +103,17 @@ class UserRepository(BaseRepository):
         except NoResultFound:
             raise NoRowsFoundError(f"{self.model.__name__} no found")
 
+    async def get_user_settings_telegram(self, user_id: int):
+        stmt = select(self.model).where(self.model.telegram_id == user_id)
+        try:
+            result = await self._session.execute(stmt)
+            row = result.scalars().first()
+            return UserSettingsDTO(**row.__dict__)
+        except (NoResultFound, AttributeError) as e:
+            raise Exception(f"User with id {user_id} not found")
+
     async def get_user_settings(self, user_id: int):
-        stmt = select(
-            self.model
-        ).where(self.model.telegram_id == user_id)
+        stmt = select(self.model).where(self.model.id == user_id)
         try:
             result = await self._session.execute(stmt)
             row = result.scalars().first()
