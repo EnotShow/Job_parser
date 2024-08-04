@@ -30,8 +30,6 @@ const ApplicationDetails = () => {
     const fetchApplicationDetails = async () => {
       try {
         const data = await jobParserClient.applications.getApplicationById(id);
-        console.log(data);
-        console.log("title", data.title, "applied", data.applied, "application_date", data.application_date, "finded_date", data.finded_date, "description", data.description);
         setApplicationDetails({
           title: data.title, // Ensure values are never undefined
           description: data.description,

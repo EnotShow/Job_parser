@@ -40,7 +40,6 @@ class SearchService(BaseService):
         try:
             filter = SearchFilterDTO(owner_id=user_id, id=search_id)
             response = await self._repository.get_filtered(filter, limit=1, page=1)
-            print(response)
             return response[0]
         except Exception as e:
             raise NoRowsFoundError(f"Search {search_id} not found")

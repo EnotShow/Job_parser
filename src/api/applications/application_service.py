@@ -112,7 +112,6 @@ class ApplicationService(BaseService):
             raise e
 
     async def update_application(self, dto: ApplicationUpdateDTO) -> ApplicationDTO:
-        print('updating application')
         return await self._repository.update(dto)
 
     async def update_user_application(self, dto: ApplicationUpdateDTO, user_id: int) -> ApplicationDTO:
