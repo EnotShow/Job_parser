@@ -1,6 +1,6 @@
 version: "3.8"
 services:
-  db:
+  postgres:
     image: postgres:latest
     volumes:
       - pg_data:/var/lib/postgresql/data/
@@ -22,9 +22,6 @@ services:
     restart: always
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-    expose:
-      - 5672
-      - 15672
     ports:
       - "5672:5672"
       - "15672:15672"
@@ -36,7 +33,18 @@ services:
       timeout: 10s
       retries: 5
 
-  web:
+  flower:
+    image: mher/flower
+    command: [ "python", "-m", "flower", "--broker=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}//", "flower" ]
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      mqbroker:
+        condition: service_healthy
+
+  backend:
     container_name: backend
     restart: always
     build:
@@ -53,23 +61,26 @@ services:
     depends_on:
       mqbroker:
         condition: service_healthy
-      db:
+      postgres:
         condition: service_healthy
     command: "sh -c 'alembic upgrade head && uvicorn app:app --host 0.0.0.0 --port 8000 --reload --log-level debug'"
 
-  flower:
-    build: ./
-    restart: always
-    command: celery_worker -A tasks flower
-    volumes:
-      - ./examples:/data
-    working_dir: /data
+  frontend:
+    build:
+      context: ././
+      dockerfile: Dockerfile-react
+    expose:
+      - 3000
     ports:
-      - 5555:5555
+      - "3000:3000"
+    volumes:
+      - .:/app
     env_file:
-      - .env
+      - front/.env
     depends_on:
-      - redis
+      postgres:
+        condition: service_healthy
+    command: "sh -c 'serve -s front/build'"
 
 volumes:
   pg_data:
