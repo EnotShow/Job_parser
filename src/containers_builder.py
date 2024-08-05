@@ -1,5 +1,5 @@
 import src
-from core.shared.async_session_container import AsyncSessionContainer
+from core.shared.async_session_container import AsyncSessionContainer, UnitOfWorkContainer
 from src.api.auth.containers.auth_service_container import AuthServiceContainer
 from src.api.messangers.bots_containers.notification_container import NotificationServiceContainer
 from src.api.applications.containers.application_repository_container import ApplicationRepositoryContainer
@@ -12,6 +12,7 @@ from src.api.users.containers.user_service_container import UserServiceContainer
 
 container_list = [
     AsyncSessionContainer,
+    UnitOfWorkContainer,
     TelegramServiceContainer,
     NotificationServiceContainer,
     AuthServiceContainer,
