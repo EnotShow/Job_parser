@@ -1,13 +1,9 @@
-from datetime import datetime
 from typing import List, Union
-from uuid import UUID
 
 from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, APIRouter, HTTPException
 from starlette import status
 from starlette.requests import Request
-from starlette.responses import RedirectResponse
-from starlette.status import HTTP_400_BAD_REQUEST
 
 from core.shared.errors import NoRowsFoundError
 from core.shared.permissions.permission_decorator import permission_required
@@ -33,7 +29,7 @@ async def get_all_applications(
     try:
         return await application_service.get_all_applications(limit=limit, page=page)
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
@@ -47,7 +43,7 @@ async def get_application(
     try:
         return await application_service.get_application(id)
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
 
 
 @router.put("/{application_id}", status_code=status.HTTP_200_OK)
@@ -58,26 +54,26 @@ async def update_application(
         data: ApplicationUpdateDTO,
         request: Request,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
-):
+) -> ApplicationDTO:
     try:
         data.id = application_id
         return await application_service.update_application(data)
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
 
 
-@router.post("/", status_code=status.HTTP_200_OK)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 @permission_required([IsService])
 @inject
 async def create_application(
         data: ApplicationCreateDTO,
         request: Request,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
-):
+) -> ApplicationFullDTO:
     try:
         return await application_service.create_application(data)
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
 
 
 @router.post("/find_multiple", status_code=status.HTTP_200_OK)
@@ -97,10 +93,10 @@ async def get_applications_if_exists(
             page=page
         )
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
 
 
-@router.post("/create_multiple", status_code=status.HTTP_200_OK)
+@router.post("/create_multiple", status_code=status.HTTP_201_CREATED)
 @permission_required([IsService])
 @inject
 async def create_multiple_applications(
@@ -113,4 +109,4 @@ async def create_multiple_applications(
             data if isinstance(data, list) else [data]
         )
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
