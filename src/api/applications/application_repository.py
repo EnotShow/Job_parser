@@ -91,6 +91,7 @@ class ApplicationRepository(BaseRepository):
         instance = self.model(**dto.model_dump())
         self._uow.session.add(instance)
         try:
+            await self._uow.session.flush()
             await self._uow.commit()
             await self._uow.session.refresh(instance)
             return self._get_full_dto(instance)
@@ -105,6 +106,7 @@ class ApplicationRepository(BaseRepository):
             self._uow.session.add(instance)
             created_instances.append(instance)
         try:
+            await self._uow.session.flush()
             await self._uow.commit()
             for instance in created_instances:
                 await self._uow.session.refresh(instance)

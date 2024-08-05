@@ -58,6 +58,7 @@ class SearchRepository(BaseRepository):
         instance = self.model(**dto.model_dump())
         self._uow.session.add(instance)
         try:
+            await self._uow.session.flush()
             await self._uow.session.commit()
             await self._uow.session.refresh(instance)
             return self._get_dto(instance)
