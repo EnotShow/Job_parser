@@ -117,6 +117,7 @@ class ApplicationRepository(BaseRepository):
         stmt = update(self.model).where(self.model.id == dto.id).values(**dto.to_orm_values()).returning(self.model)
         result = await self._uow.session.execute(stmt)
         await self._uow.commit()
+        await self._uow.session.refresh(result.scalar_one())
         try:
             return self._get_dto(result.scalar_one())
         except NoResultFound:

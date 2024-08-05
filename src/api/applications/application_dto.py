@@ -13,7 +13,7 @@ AnyUrl = Annotated[AnyUrl, AfterValidator(str)]
 
 
 class ApplicationDTO(BaseDTO):
-    id: int
+    id: UUID
     title: str
     description: str
     application_link: str
@@ -30,7 +30,7 @@ class ApplicationDTO(BaseDTO):
 
 
 class ApplicationFullDTO(BaseDTO):
-    id: int
+    id: UUID
     title: str
     description: str
     application_link: str
@@ -46,8 +46,9 @@ class ApplicationFullDTO(BaseDTO):
     def short_url(self) -> Url:
         return f"{settings.base_url}/applications/{self.short_id}"
 
+
 class ApplicationFilterDTO(BaseDTO):
-    id: Optional[int] = None
+    id: Optional[UUID] = None
     title: Optional[str] = None
     description: Optional[str] = None
     application_link: Optional[AnyUrl] = None
@@ -56,7 +57,7 @@ class ApplicationFilterDTO(BaseDTO):
 
 
 class ApplicationUpdateDTO(BaseDTO):
-    id: int
+    id: UUID
     title: Optional[str] = None
     description: Optional[str] = None
     application_link: Optional[AnyUrl] = None

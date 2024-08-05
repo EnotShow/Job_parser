@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional, Annotated
+from uuid import UUID
 
 from pydantic import AnyUrl, AfterValidator
 
@@ -9,7 +10,7 @@ AnyUrl = Annotated[AnyUrl, AfterValidator(str)]
 
 
 class SearchDTO(BaseDTO):
-    id: int
+    id: UUID
     title: str
     url: AnyUrl
     created_at: datetime
@@ -17,14 +18,14 @@ class SearchDTO(BaseDTO):
 
 
 class SearchFilterDTO(BaseDTO):
-    id: Optional[int] = None
+    id: Optional[UUID] = None
     title: Optional[str] = None
     url: Optional[AnyUrl] = None
     owner_id: Optional[int] = None
 
 
 class SearchUpdateDTO(BaseDTO):
-    id: int
+    id: UUID
     title: Optional[str] = None
     url: Optional[AnyUrl] = None
 

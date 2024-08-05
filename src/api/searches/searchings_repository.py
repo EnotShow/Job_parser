@@ -62,6 +62,7 @@ class SearchRepository(BaseRepository):
             await self._uow.session.refresh(instance)
             return self._get_dto(instance)
         except IntegrityError as e:
+            await self._uow.session.rollback()
             raise Exception(str(e))
 
     async def update(self, dto: SearchUpdateDTO) -> SearchDTO:
@@ -71,6 +72,7 @@ class SearchRepository(BaseRepository):
                 .returning(self.model))
         result = await self._uow.session.execute(stmt)
         await self._uow.session.commit()
+        await self._uow.session.refresh(result.scalar_one())
         try:
             return SearchDTO.model_validate(result.scalar_one())
         except NoResultFound:
