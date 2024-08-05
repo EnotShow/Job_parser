@@ -21,12 +21,14 @@ async def get_me(
         user_service: UserService = Depends(Provide[UserServiceContainer.user_service]),
 ):
     try:
-        return await user_service.get_user(request.state.token.user.id)
+        user_id = request.state.token.user.id
+        user = await user_service.get_user(user_id)
+        return user
     except Exception as ex:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(ex))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching user: {str(ex)}")
 
 
-@router.put("/me/", status_code=status.HTTP_200_OK)
+@router.put("/me", status_code=status.HTTP_200_OK)
 @permission_required([IsAuthenticated])
 @inject
 async def update_me(
@@ -35,9 +37,11 @@ async def update_me(
         user_service: UserService = Depends(Provide[UserServiceContainer.user_service]),
 ):
     try:
-        return await user_service.update_user(data, request.state.token.user.id)
+        user_id = request.state.token.user.id
+        updated_user = await user_service.update_user(data, user_id)
+        return updated_user
     except Exception as ex:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(ex))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error updating user: {str(ex)}")
 
 
 @router.get("/me/settings", status_code=status.HTTP_200_OK)
@@ -48,6 +52,8 @@ async def get_me_settings(
         user_service: UserService = Depends(Provide[UserServiceContainer.user_service]),
 ):
     try:
-        return await user_service.get_user_settings(request.state.token.user.id)
+        user_id = request.state.token.user.id
+        settings = await user_service.get_user_settings(user_id)
+        return settings
     except Exception as ex:
-        raise HTTPException(status_code=HTTP_400_BAD_REQUEST, detail=str(ex))
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching user settings: {str(ex)}")
