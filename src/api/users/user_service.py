@@ -74,7 +74,6 @@ class UserService(BaseService):
 
     async def create_user(self, user: UserCreateDTO) -> UserDTO:
         async with self.uow as uow:
-            print(uow.session)
             repository = UserRepository(uow)
             try:
                 return await repository.create(user)
