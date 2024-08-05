@@ -9,7 +9,7 @@ from core.shared.permissions.permission_decorator import permission_required
 from core.shared.permissions.permissions import IsService
 from src.api.middleware.dtos.pagination_dto import PaginationDTO
 from src.api.searches.containers.search_service_container import SearchServiceContainer
-from src.api.searches.search_dto import SearchDTO, SearchCreateDTO
+from src.api.searches.search_dto import SearchDTO
 from src.api.searches.searchings_service import SearchService
 
 router = APIRouter(prefix="/service")
@@ -27,7 +27,7 @@ async def get_all_searches(
     try:
         return await search_service.get_all_searches(limit, page)
     except NoRowsFoundError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
 @router.get("/{id}", status_code=status.HTTP_200_OK)
@@ -41,24 +41,24 @@ async def get_search(
     try:
         return await search_service.get_search(id)
     except NoRowsFoundError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED)
+@router.post("/", status_code=status.HTTP_200_OK)
 @permission_required([IsService])
 @inject
 async def create_search(
-        data: SearchCreateDTO,
+        data: SearchDTO,
         request: Request,
         search_service: SearchService = Depends(Provide[SearchServiceContainer.search_service]),
 ) -> SearchDTO:
     try:
         return await search_service.create_search(data)
-    except Exception as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except NoRowsFoundError:
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_200_OK)
 @permission_required([IsService])
 @inject
 async def delete_search(
@@ -67,7 +67,6 @@ async def delete_search(
         search_service: SearchService = Depends(Provide[SearchServiceContainer.search_service]),
 ):
     try:
-        await search_service.delete_search(id)
+        return await search_service.delete_search(id)
     except NoRowsFoundError:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
-    return {"detail": "Search deleted successfully"}
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
