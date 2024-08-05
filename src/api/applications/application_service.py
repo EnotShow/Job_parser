@@ -23,7 +23,8 @@ class ApplicationService(BaseService):
         async with self.uow as uow:
             repository = ApplicationRepository(uow)
             response_objects = await repository.get(limit=limit, page=page)
-            return self._paginate(response_objects, page, len(response_objects))
+            total = await repository.get_count()
+            return self._paginate(response_objects, page, len(response_objects), total)
 
     async def get_application(self, id: int) -> ApplicationDTO:
         async with self.uow as uow:
@@ -80,7 +81,8 @@ class ApplicationService(BaseService):
             try:
                 filter = ApplicationFilterDTO(applied=True, owner_id=user_id)
                 response_objects = await repository.get_filtered(filter, limit=limit, page=page)
-                return self._paginate(response_objects, page, len(response_objects))
+                total = await repository.get_count(filter)
+                return self._paginate(response_objects, page, len(response_objects), total)
             except NoRowsFoundError:
                 raise NoRowsFoundError
 
@@ -89,27 +91,31 @@ class ApplicationService(BaseService):
             repository = ApplicationRepository(uow)
             try:
                 response_objects = await repository.get_filtered_multiple_applications(filters, limit=limit, page=page)
-                return self._paginate(response_objects, page, len(response_objects))
+                return self._paginate(response_objects, page, len(response_objects), len(response_objects))
             except NoRowsFoundError:
                 raise NoRowsFoundError
 
-    async def get_applications_by_user_id(self, user_id: int, limit: int = 10, page: int = 1) -> PaginationDTO[ApplicationDTO]:
+    async def get_applications_by_user_id(
+            self, user_id: int, limit: int = 10, page: int = 1) -> PaginationDTO[ApplicationDTO]:
         async with self.uow as uow:
             repository = ApplicationRepository(uow)
             try:
                 filter = ApplicationFilterDTO(user_id=user_id)
                 response_objects = await repository.get_filtered(filter, limit=limit, page=page)
-                return self._paginate(response_objects, page, len(response_objects))
+                total = await repository.get_count(filter)
+                return self._paginate(response_objects, page, len(response_objects), total)
             except NoRowsFoundError:
                 raise NoRowsFoundError
 
-    async def get_applications_by_telegram_id(self, telegram_id: int, limit: int = 10, page: int = 1) -> PaginationDTO[ApplicationDTO]:
+    async def get_applications_by_telegram_id(
+            self, telegram_id: int, limit: int = 10, page: int = 1) -> PaginationDTO[ApplicationDTO]:
         async with self.uow as uow:
             repository = ApplicationRepository(uow)
             try:
                 filter = ApplicationFilterDTO(telegram_id=telegram_id)
                 response_objects = await repository.get_filtered(filter, limit=limit, page=page)
-                return self._paginate(response_objects, page, len(response_objects))
+                total = await repository.get_count(filter)
+                return self._paginate(response_objects, page, len(response_objects), total)
             except NoRowsFoundError:
                 raise NoRowsFoundError
 

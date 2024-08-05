@@ -47,9 +47,11 @@ class ApplicationRepository(BaseRepository):
         except (NoResultFound, AttributeError):
             raise NoRowsFoundError(f"{self.model.__name__} not found")
 
-    async def get_count(self, filters: ApplicationFilterDTO) -> int:
+    async def get_count(self, filters: ApplicationFilterDTO = None) -> int:
         try:
-            stmt = select(func.count(self.model.id)).where(*filters.to_orm_expressions(self.model))
+            stmt = select(func.count(self.model.id))
+            if filters:
+                stmt = stmt.where(*filters.to_orm_expressions(self.model))
             result = await self._uow.session.execute(stmt)
             count = result.scalars().first()
             return count

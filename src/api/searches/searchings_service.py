@@ -21,7 +21,8 @@ class SearchService(BaseService):
         async with self.uow as uow:
             repository = SearchRepository(uow)
             response_objects = await repository.get(limit, page)
-            return self._paginate(response_objects, page, len(response_objects))
+            total = await repository.get_count(SearchFilterDTO())
+            return self._paginate(response_objects, page, len(response_objects), total)
 
     async def get_search(self, id: int) -> SearchDTO:
         async with self.uow as uow:
@@ -67,7 +68,8 @@ class SearchService(BaseService):
                 user = await user_repository.get_filtered(find_user_filter, limit=1, page=1)
                 response_objects = await repository.get_filtered(
                     SearchFilterDTO(owner_id=user.id), limit=limit, page=page)
-                return self._paginate(response_objects, page, len(response_objects))
+                total = await repository.get_count(SearchFilterDTO(owner_id=user.id))
+                return self._paginate(response_objects, page, len(response_objects), total)
             except NoRowsFoundError:
                 raise NoRowsFoundError
 
