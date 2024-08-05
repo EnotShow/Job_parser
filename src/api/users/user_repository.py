@@ -90,7 +90,6 @@ class UserRepository(BaseRepository):
             await self._uow.session.refresh(instance)
             return self._get_dto(instance)
         except IntegrityError as e:
-            await self._uow.session.rollback()
             raise e
         except UniqueViolationError as e:
             raise AlreadyExistError(f"User with this email already exists")
@@ -99,7 +98,6 @@ class UserRepository(BaseRepository):
         stmt = update(self.model).where(self.model.id == dto.id).values(**dto.to_orm_values()).returning(self.model)
         result = await self._uow.session.execute(stmt)
         await self._uow.session.commit()
-        await self._uow.session.refresh(result.scalar_one())
         try:
             return self._get_dto(result.scalar_one())
         except NoResultFound:

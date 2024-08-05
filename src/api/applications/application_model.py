@@ -14,7 +14,7 @@ class Application(Base):
     """
     __tablename__ = "applications"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     application_link: Mapped[str] = mapped_column(String(200))

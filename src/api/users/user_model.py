@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from typing import Optional
-from uuid import UUID
 
 from sqlalchemy import String, BigInteger, DateTime, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -15,7 +14,7 @@ def datetime_plus_3_days():
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     email: Mapped[Optional[str]] = mapped_column(String(200), nullable=True, unique=True)
     telegram_id: Mapped[Optional[BigInteger]] = mapped_column(BigInteger, nullable=True, unique=True)
     language_code: Mapped[Optional[str]] = mapped_column(String(200))

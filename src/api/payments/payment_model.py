@@ -1,5 +1,4 @@
 from datetime import datetime
-from uuid import UUID
 
 from sqlalchemy import String, ForeignKey, Float, DateTime
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -10,7 +9,7 @@ from core.shared.models import Base
 class Payment(Base):
     __tablename__ = "payments"
 
-    id: Mapped[UUID] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     amount: Mapped[float] = mapped_column(Float)
     currency: Mapped[str] = mapped_column(String)
     created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.utcnow)
