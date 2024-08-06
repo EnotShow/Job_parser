@@ -1,0 +1,116 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:latest
+    volumes:
+      - pg_data:/var/lib/postgresql/data/
+    expose:
+      - 5432
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    healthcheck:
+      test: pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  mqbroker:
+    image: rabbitmq:management
+    container_name: mqbroker
+    restart: always
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file:
+      - .env
+    healthcheck:
+      test: [ "CMD", "rabbitmqctl", "status" ]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  flower:
+    image: mher/flower
+    command: [ "python", "-m", "flower", "--broker=amqp://${RABBITMQ_USER}:${RABBITMQ_PASSWORD}@${RABBITMQ_HOST}:${RABBITMQ_PORT}//", "flower" ]
+    ports:
+      - "5555:5555"
+    env_file:
+      - .env
+    depends_on:
+      mqbroker:
+        condition: service_healthy
+
+  backend:
+    container_name: backend
+    restart: always
+    build:
+      context: ././
+      dockerfile: Dockerfile
+    expose:
+      - 8000
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      mqbroker:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    command: "sh -c 'alembic upgrade head && uvicorn app:app --host 0.0.0.0 --port 8000 --reload --log-level debug'"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`api.example.com`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+      - "traefik.http.services.backend.loadbalancer.server.port=8000"
+
+  frontend:
+    build:
+      context: ././
+      dockerfile: Dockerfile-react
+    expose:
+      - 3000
+    volumes:
+      - .:/app
+    env_file:
+      - front/.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: "sh -c 'serve -s front/build'"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`example.com`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls.certresolver=myresolver"
+      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+
+  traefik:
+    image: traefik:v2.4
+    container_name: traefik
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
+      - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.myresolver.acme.email=youremail@example.com"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./letsencrypt:/letsencrypt"
+
+volumes:
+  pg_data:
+  rabbitmq_data:
