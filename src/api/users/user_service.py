@@ -84,6 +84,8 @@ class UserService(BaseService):
         user_data = UserCreateDTO(
             email=None,
             password=None,
+            first_name=message.from_user.first_name,
+            last_name=message.from_user.last_name,
             telegram_id=message.from_user.id,
             language_code=message.from_user.language_code,
             selected_language=message.from_user.language_code,
@@ -104,6 +106,7 @@ class UserService(BaseService):
 
     async def update_self(self, user: UserSelfUpdateDTO, user_id: int) -> UserDTO:
         try:
+            user.id = user_id
             user = UserUpdateDTO(**user.dict())
             return await self.update_user(user, user_id=user.id)
         except Exception as e:

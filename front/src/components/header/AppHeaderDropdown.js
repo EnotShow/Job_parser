@@ -1,10 +1,9 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   CAvatar,
   CBadge,
   CDropdown,
   CDropdownDivider,
-  CDropdownHeader,
   CDropdownItem,
   CDropdownMenu,
   CDropdownToggle,
@@ -12,23 +11,40 @@ import {
 import {
   cilBell,
   cilCreditCard,
-  cilCommentSquare,
-  cilEnvelopeOpen,
-  cilFile,
-  cilLockLocked,
   cilSettings,
-  cilTask,
-  cilUser, cilExitToApp,
+  cilUser,
+  cilExitToApp,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
-import avatar8 from './../../assets/images/avatars/8.jpg'
+import { getCookies, setCookie } from 'src/helpers/_auth'
+import jobParserClient from 'src/client/Client'
 
 const AppHeaderDropdown = () => {
+  const [avatarInitials, setAvatarInitials] = useState(null);
+
+  useEffect(() => {
+    const fetchAvatarInitials = async () => {
+      const cookies = getCookies();
+      if (!cookies || !cookies.avatarInitials) {
+        jobParserClient.client.defaults.headers['Authorization'] = `Bearer ${cookies.accessToken}`;
+        const user_data = await jobParserClient.users.getMe();
+        const initials = user_data.first_name.charAt(0) + user_data.last_name.charAt(0);
+        setCookie('avatarInitials', initials, 1);
+        setAvatarInitials(initials);
+      } else {
+        setAvatarInitials(cookies.avatarInitials);
+      }
+    };
+
+    fetchAvatarInitials();
+  }, []);
+
   return (
     <CDropdown variant="nav-item">
       <CDropdownToggle placement="bottom-end" className="py-0 pe-0" caret={false}>
-        <CAvatar src={avatar8} size="md" />
+        <CAvatar color="primary" textColor="white" size="md">
+          {avatarInitials}
+        </CAvatar>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
         <CDropdownItem href="#">
@@ -57,7 +73,7 @@ const AppHeaderDropdown = () => {
         </CDropdownItem>
       </CDropdownMenu>
     </CDropdown>
-  )
-}
+  );
+};
 
-export default AppHeaderDropdown
+export default AppHeaderDropdown;

@@ -14,7 +14,8 @@ def datetime_plus_3_days():
 class User(Base):
     __tablename__ = "users"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    first_name: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
+    last_name: Mapped[Optional[str]] = mapped_column(String(200), nullable=True)
     email: Mapped[Optional[str]] = mapped_column(String(200), nullable=True, unique=True)
     telegram_id: Mapped[Optional[BigInteger]] = mapped_column(BigInteger, nullable=True, unique=True)
     language_code: Mapped[Optional[str]] = mapped_column(String(200))
@@ -23,7 +24,6 @@ class User(Base):
     paused: Mapped[bool] = mapped_column(Boolean, default=False)
     membership: Mapped[datetime] = mapped_column(DateTime, default=datetime_plus_3_days)
     links_limit: Mapped[Optional[int]] = mapped_column(default=25, nullable=True)
-    created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.utcnow)
     refer_id: Mapped[BigInteger] = mapped_column(BigInteger, default=0)
     applications: Mapped[list["Application"]] = relationship("Application", back_populates="owner")
     searches: Mapped[list["Search"]] = relationship("Search", back_populates="owner")
