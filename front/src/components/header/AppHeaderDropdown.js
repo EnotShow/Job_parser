@@ -18,6 +18,9 @@ import {
 import CIcon from '@coreui/icons-react'
 import { getCookies, setCookie } from 'src/helpers/_auth'
 import jobParserClient from 'src/client/Client'
+import {formatRoute} from "react-router-named-routes/lib";
+import {ROUTES} from "src/routes";
+import {NavLink} from "react-router-dom";
 
 const AppHeaderDropdown = () => {
   const [avatarInitials, setAvatarInitials] = useState(null);
@@ -47,18 +50,11 @@ const AppHeaderDropdown = () => {
         </CAvatar>
       </CDropdownToggle>
       <CDropdownMenu className="pt-0" placement="bottom-end">
-        <CDropdownItem href="#">
-          <CIcon icon={cilBell} className="me-2" />
-          Updates
-          <CBadge color="info" className="ms-2">
-            42
-          </CBadge>
-        </CDropdownItem>
-        <CDropdownItem href="#">
+        <CDropdownItem to={formatRoute(ROUTES.PROFILE)} as={NavLink}>
           <CIcon icon={cilUser} className="me-2" />
           Profile
         </CDropdownItem>
-        <CDropdownItem href="#">
+        <CDropdownItem to={formatRoute(ROUTES.SETTINGS)} as={NavLink}>
           <CIcon icon={cilSettings} className="me-2" />
           Settings
         </CDropdownItem>

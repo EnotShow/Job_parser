@@ -103,10 +103,7 @@ const Dashboard = () => {
         </CCardBody>
         <CCardFooter>
           <CRow
-            xs={{ cols: 1, gutter: 4 }}
-            sm={{ cols: 2 }}
-            lg={{ cols: 4 }}
-            xl={{ cols: 5 }}
+            md={{ cols: 3 }}
             className="mb-2 text-center"
           >
             {progressExample.map((item, index, items) => (
