@@ -1,4 +1,4 @@
-from src.api.users.user_dto import UserUpdateDTO, UserDTO, UserSettingsDTO
+from src.api.users.user_dto import UserUpdateDTO, UserDTO, UserSettingsDTO, UserSelfUpdateDTO
 from src.client.BaseClient import BaseClient
 
 
@@ -34,7 +34,7 @@ class UserClient:
         response = await self.client.session.get(f"{self.base_url}/me")
         return UserDTO(**response.json())
 
-    async def update_me(self, data: UserUpdateDTO) -> UserDTO:
+    async def update_me(self, data: UserSelfUpdateDTO) -> UserDTO:
         response = await self.client.session.put(f"{self.base_url}/me", json=data)
         return UserDTO(**response.json())
 

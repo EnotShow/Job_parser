@@ -38,6 +38,12 @@ class UserUpdateDTO(BaseDTO):
     links_limit: Optional[int] = None
 
 
+class UserSelfUpdateDTO(BaseDTO):
+    id: int
+    selected_language: Optional[str] = None
+    paused: Optional[bool] = None
+
+
 class UserCreateDTO(BaseDTO):
     email: Optional[str] = None
     telegram_id: Optional[int] = None

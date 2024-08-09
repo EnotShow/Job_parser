@@ -8,7 +8,7 @@ from core.shared.async_session_container import UnitOfWorkContainer
 from core.shared.base_service import BaseService
 from core.shared.errors import NoRowsFoundError, AlreadyExistError
 from src.api.middleware.dtos.pagination_dto import PaginationDTO
-from src.api.users.user_dto import UserFilterDTO, UserCreateDTO, UserDTO, UserUpdateDTO
+from src.api.users.user_dto import UserFilterDTO, UserCreateDTO, UserDTO, UserUpdateDTO, UserSelfUpdateDTO
 from src.api.users.user_repository import UserRepository
 
 
@@ -93,13 +93,21 @@ class UserService(BaseService):
             repository = UserRepository(uow)
             return await repository.create(user_data)
 
-    async def update_user(self, user: UserUpdateDTO) -> UserDTO:
+    async def update_user(self, user: UserUpdateDTO, user_id: int) -> UserDTO:
         async with self.uow as uow:
             repository = UserRepository(uow)
             try:
+                user.id = user_id
                 return await repository.update(user)
             except Exception as e:
                 raise e
+
+    async def update_self(self, user: UserSelfUpdateDTO, user_id: int) -> UserDTO:
+        try:
+            user = UserUpdateDTO(**user.dict())
+            return await self.update_user(user, user_id=user.id)
+        except Exception as e:
+            raise e
 
     async def get_user_settings(self, user_id: int) -> UserDTO:
         async with self.uow as uow:

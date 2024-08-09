@@ -2,12 +2,11 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, APIRouter, HTTPException
 from starlette import status
 from starlette.requests import Request
-from starlette.status import HTTP_400_BAD_REQUEST
 
 from core.shared.permissions.permission_decorator import permission_required
-from core.shared.permissions.permissions import IsAuthenticated, IsService
+from core.shared.permissions.permissions import IsAuthenticated
 from src.api.users.containers.user_service_container import UserServiceContainer
-from src.api.users.user_dto import UserUpdateDTO
+from src.api.users.user_dto import UserSelfUpdateDTO
 from src.api.users.user_service import UserService
 
 router = APIRouter()
@@ -32,13 +31,13 @@ async def get_me(
 @permission_required([IsAuthenticated])
 @inject
 async def update_me(
-        data: UserUpdateDTO,
+        data: UserSelfUpdateDTO,
         request: Request,
         user_service: UserService = Depends(Provide[UserServiceContainer.user_service]),
 ):
     try:
         user_id = request.state.token.user.id
-        updated_user = await user_service.update_user(data, user_id)
+        updated_user = await user_service.update_self(data, user_id)
         return updated_user
     except Exception as ex:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error updating user: {str(ex)}")
