@@ -67,20 +67,20 @@ services:
 
   frontend:
     build:
-      context: ././
+      context: .
       dockerfile: Dockerfile-react
     expose:
       - 3000
     ports:
       - "3000:3000"
     volumes:
-      - .:/app
+      - ./front:/front  # Mount the front directory for hot-reloading during development
     env_file:
       - front/.env
     depends_on:
       postgres:
         condition: service_healthy
-    command: "sh -c 'serve -s front/build'"
+    command: "sh -c 'serve -s build'"
 
 volumes:
   pg_data:
