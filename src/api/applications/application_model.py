@@ -16,7 +16,6 @@ class Application(Base):
 
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
-    application_link: Mapped[str] = mapped_column(String(200))
     url: Mapped[str] = mapped_column(String(200))
     short_id: Mapped[UUID] = mapped_column(default=uuid.uuid4, unique=True)
     applied: Mapped[bool] = mapped_column(Boolean, default=False)
