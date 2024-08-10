@@ -1,5 +1,3 @@
-import asyncio
-
 import requests
 from bs4 import BeautifulSoup
 
@@ -41,13 +39,3 @@ class PracujParser:
 
         description = f"{responsibilities}\n{requirements}\n{offered}"
         return description
-
-
-async def main():
-    parser = PracujParser()
-    res = await parser.parse_offers('https://it.pracuj.pl/praca/linux;kw?sc=0', 1)
-    print(f"{res}'\n'{len(res)}")
-
-
-if __name__ == '__main__':
-    asyncio.run(main())
