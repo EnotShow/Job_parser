@@ -40,10 +40,12 @@ class AuthService(BaseService):
         user.selected_language = user.language_code
         user.password = await self._jwt_service.encode_password(user.password)
         try:
-            user = await self._user_service.create_user(user)
+            if not await self._user_service.get_user_by_email(user.email):
+                user = await self._user_service.create_user(user)
+                return await self._jwt_service.create_tokens(user)
+            raise AlreadyExistError("User with this email already exists")
         except AlreadyExistError:
             raise AlreadyExistError("User with this email already exists")
-        return await self._jwt_service.create_tokens(user)
 
     async def change_password(
             self,

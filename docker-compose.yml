@@ -74,7 +74,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      - ./front:/front  # Mount the front directory for hot-reloading during development
+      - ./front:/front
     env_file:
       - front/.env
     depends_on:

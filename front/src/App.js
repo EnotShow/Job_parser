@@ -49,7 +49,6 @@ const App = () => {
           <Route exact path={ROUTES.NOT_FOUND} name="Page 404" element={<Page404 />} />
           <Route exact path={ROUTES.SERVER_ERROR} name="Page 500" element={<Page500 />} />
           <Route path="*" name="Home" element={<ProtectedRoute element={<DefaultLayout />} />} />
-          {/*<Route path="*" name="Home" element={<DefaultLayout />} />*/}
         </Routes>
       </Suspense>
     </BrowserRouter>

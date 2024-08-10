@@ -16,7 +16,6 @@ class ApplicationDTO(BaseDTO):
     id: int
     title: str
     description: str
-    application_link: str
     url: str  # JobResourceURL
     short_id: Optional[UUID] = None
     applied: Optional[bool] = None
@@ -33,7 +32,6 @@ class ApplicationFullDTO(BaseDTO):
     id: int
     title: str
     description: str
-    application_link: str
     url: str
     short_id: Optional[UUID] = None
     applied: Optional[bool] = None
@@ -50,7 +48,6 @@ class ApplicationFilterDTO(BaseDTO):
     id: Optional[int] = None
     title: Optional[str] = None
     description: Optional[str] = None
-    application_link: Optional[AnyUrl] = None
     url: Optional[AnyUrl] = None
     owner_id: Optional[int] = None
 
@@ -59,7 +56,6 @@ class ApplicationUpdateDTO(BaseDTO):
     id: int
     title: Optional[str] = None
     description: Optional[str] = None
-    application_link: Optional[AnyUrl] = None
     url: Optional[AnyUrl] = None
     short_id: Optional[UUID] = None
     applied: Optional[bool] = None
@@ -69,6 +65,5 @@ class ApplicationUpdateDTO(BaseDTO):
 class ApplicationCreateDTO(BaseDTO):
     title: str
     description: str
-    application_link: AnyUrl
     url: AnyUrl
     owner_id: int

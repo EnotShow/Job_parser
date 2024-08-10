@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, async_scoped_session, AsyncSession
 
 from core.config.db import settings_db
+from core.db.uow import UnitOfWork
 
 
 class DatabaseHelper:
@@ -26,6 +27,9 @@ class DatabaseHelper:
             session_factory=self.session_factory,
             scopefunc=current_task
         )
+
+    async def get_unit_of_work(self) -> UnitOfWork:
+        return UnitOfWork(self.session_factory)
 
     @asynccontextmanager
     async def get_db_session(self):
