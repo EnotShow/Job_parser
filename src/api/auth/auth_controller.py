@@ -14,9 +14,10 @@ router = APIRouter(prefix="/auth", tags=["Auth"])
 
 @router.post("/login", status_code=status.HTTP_200_OK)
 @inject
-async def login_user(auth: UserLoginDTO,
-                     auth_service: AuthService = Depends(Provide[AuthServiceContainer.auth_service])
-                     ):
+async def login_user(
+        auth: UserLoginDTO,
+        auth_service: AuthService = Depends(Provide[AuthServiceContainer.auth_service])
+):
     try:
         return await auth_service.login(auth.email, auth.password)
     except Exception as e:

@@ -6,6 +6,8 @@ from core.shared.base_dto import BaseDTO
 
 class UserDTO(BaseDTO):
     id: int
+    first_name: Optional[str]
+    last_name: Optional[str]
     email: Optional[str]
     telegram_id: Optional[int]
     language_code: Optional[str]
@@ -20,6 +22,8 @@ class UserShortDTO(BaseDTO):
 
 class UserFilterDTO(BaseDTO):
     id: Optional[int] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     email: Optional[str] = None
     telegram_id: Optional[int] = None
     language_code: Optional[int] = None
@@ -29,6 +33,8 @@ class UserFilterDTO(BaseDTO):
 
 class UserUpdateDTO(BaseDTO):
     id: int
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     email: Optional[str] = None
     telegram_id: Optional[int] = None
     password: Optional[str] = None
@@ -38,7 +44,17 @@ class UserUpdateDTO(BaseDTO):
     links_limit: Optional[int] = None
 
 
+class UserSelfUpdateDTO(BaseDTO):
+    id: int
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    selected_language: Optional[str] = None
+    paused: Optional[bool] = None
+
+
 class UserCreateDTO(BaseDTO):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
     email: Optional[str] = None
     telegram_id: Optional[int] = None
     password: Optional[str] = None

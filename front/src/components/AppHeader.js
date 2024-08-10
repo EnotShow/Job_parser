@@ -27,6 +27,8 @@ import {
 
 import { AppBreadcrumb } from './index'
 import { AppHeaderDropdown } from './header/index'
+import {formatRoute} from "react-router-named-routes/lib";
+import {ROUTES} from "src/routes";
 
 const AppHeader = () => {
   const headerRef = useRef()
@@ -53,15 +55,19 @@ const AppHeader = () => {
         </CHeaderToggler>
         <CHeaderNav className="d-none d-md-flex">
           <CNavItem>
-            <CNavLink to="/dashboard" as={NavLink}>
+            <CNavLink to={formatRoute(ROUTES.DASHBOARD)} as={NavLink}>
               Dashboard
             </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink href="#">Profile</CNavLink>
+            <CNavLink to={formatRoute(ROUTES.PROFILE)} as={NavLink}>
+              Profile
+            </CNavLink>
           </CNavItem>
           <CNavItem>
-            <CNavLink href="#">Settings</CNavLink>
+            <CNavLink to={formatRoute(ROUTES.SETTINGS)} as={NavLink}>
+              Settings
+            </CNavLink>
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav className="ms-auto">

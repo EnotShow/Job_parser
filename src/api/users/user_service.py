@@ -8,7 +8,7 @@ from core.shared.async_session_container import UnitOfWorkContainer
 from core.shared.base_service import BaseService
 from core.shared.errors import NoRowsFoundError, AlreadyExistError
 from src.api.middleware.dtos.pagination_dto import PaginationDTO
-from src.api.users.user_dto import UserFilterDTO, UserCreateDTO, UserDTO, UserUpdateDTO
+from src.api.users.user_dto import UserFilterDTO, UserCreateDTO, UserDTO, UserUpdateDTO, UserSelfUpdateDTO
 from src.api.users.user_repository import UserRepository
 
 
@@ -84,6 +84,8 @@ class UserService(BaseService):
         user_data = UserCreateDTO(
             email=None,
             password=None,
+            first_name=message.from_user.first_name,
+            last_name=message.from_user.last_name,
             telegram_id=message.from_user.id,
             language_code=message.from_user.language_code,
             selected_language=message.from_user.language_code,
@@ -93,13 +95,22 @@ class UserService(BaseService):
             repository = UserRepository(uow)
             return await repository.create(user_data)
 
-    async def update_user(self, user: UserUpdateDTO) -> UserDTO:
+    async def update_user(self, user: UserUpdateDTO, user_id: int) -> UserDTO:
         async with self.uow as uow:
             repository = UserRepository(uow)
             try:
+                user.id = user_id
                 return await repository.update(user)
             except Exception as e:
                 raise e
+
+    async def update_self(self, user: UserSelfUpdateDTO, user_id: int) -> UserDTO:
+        try:
+            user.id = user_id
+            user = UserUpdateDTO(**user.dict())
+            return await self.update_user(user, user_id=user.id)
+        except Exception as e:
+            raise e
 
     async def get_user_settings(self, user_id: int) -> UserDTO:
         async with self.uow as uow:

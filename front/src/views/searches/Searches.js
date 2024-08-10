@@ -19,6 +19,13 @@ import { useNavigate } from 'react-router-dom';
 import { formatRoute } from 'react-router-named-routes/lib';
 import { ROUTES } from 'src/routes';
 
+const truncateUrl = (url, maxLength = 30) => {
+  if (url.length > maxLength) {
+    return url.slice(0, maxLength) + '...';
+  }
+  return url;
+};
+
 const Searches = () => {
   const navigate = useNavigate();
   const [visible, setVisible] = useState(false);
@@ -43,7 +50,7 @@ const Searches = () => {
     };
 
     fetchData();
-  }, [paginationLimit, currentPage]); // Dependency array includes paginationLimit and currentPage
+  }, [paginationLimit, currentPage]);
 
   useEffect(() => {
     if (currentPage > 1) {
@@ -55,7 +62,7 @@ const Searches = () => {
     return data.map((item) => ({
       id: item.id,
       title: item.title,
-      url: item.url,
+      url: truncateUrl(item.url), // Truncate URL here
       created_at: item.created_at,
       actions: (
         <CButtonGroup>
@@ -144,6 +151,6 @@ const Searches = () => {
       </CRow>
     </>
   );
-}
+};
 
 export default Searches;

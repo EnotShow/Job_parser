@@ -14,7 +14,6 @@ class Application(Base):
     """
     __tablename__ = "applications"
 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String())
     description: Mapped[str] = mapped_column(String())
     application_link: Mapped[str] = mapped_column(String(200))
@@ -22,7 +21,6 @@ class Application(Base):
     short_id: Mapped[UUID] = mapped_column(default=uuid.uuid4, unique=True)
     applied: Mapped[bool] = mapped_column(Boolean, default=False)
     application_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
-    created_at: Mapped[DateTime] = mapped_column(DateTime, default=datetime.utcnow)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     owner: Mapped["User"] = relationship("User", back_populates="applications", lazy="joined")
 

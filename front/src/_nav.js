@@ -23,6 +23,16 @@ const _nav = [
   },
   {
     component: CNavItem,
+    name: 'AdminDashboard',
+    to: '/admin/dashboard',
+    icon: <CIcon icon={cilSpeedometer} customClassName="nav-icon" />,
+    badge: {
+      color: 'info',
+      text: 'NEW',
+    },
+  },
+  {
+    component: CNavItem,
     name: 'My Searches',
     to: '/searches',
     icon: <CIcon icon={cilSearch} customClassName="nav-icon" />,

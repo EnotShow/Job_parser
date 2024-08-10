@@ -89,17 +89,6 @@ const SearchEdit = () => {
                     />
                   </CCol>
                 </CRow>
-                <CRow className="mb-3">
-                  <CFormLabel htmlFor="createdAt" className="col-sm-2 col-form-label">Created at</CFormLabel>
-                  <CCol sm={10}>
-                    <CFormInput
-                      type="text"
-                      id="createdAt"
-                      value={searchDetails.created_at}
-                      onChange={(e) => setSearchDetails({ ...searchDetails, created_at: e.target.value })}
-                    />
-                  </CCol>
-                </CRow>
                 <CCol xs={12}>
                   <CButtonGroup>
                     <CButton color="primary" onClick={handleSave}>Save</CButton>

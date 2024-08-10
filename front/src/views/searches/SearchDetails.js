@@ -13,7 +13,8 @@ import {
 import DeleteModal from 'src/views/_DeleteModal';
 import { useParams, useNavigate } from 'react-router-dom';
 import jobParserClient from 'src/client/Client'; // Assuming you have a client for API calls
-import { ROUTES } from 'src/routes'; // Assuming you have defined your routes
+import { ROUTES } from 'src/routes';
+import {formatRoute} from "react-router-named-routes/lib"; // Assuming you have defined your routes
 
 const SearchDetails = () => {
   const { id } = useParams();
@@ -78,7 +79,7 @@ const SearchDetails = () => {
                 </CRow>
                 <CCol xs={12}>
                   <CButtonGroup>
-                    <CButton color="primary" onClick={() => navigate(`${ROUTES.SEARCH_EDIT}/${id}`)}>Edit</CButton>
+                    <CButton color="primary" onClick={() => navigate(formatRoute(ROUTES.SEARCH_EDIT, { id: id }))}>Edit</CButton>
                     <CButton color="secondary" onClick={() => navigate(-1)}>Back</CButton>
                     <CButton color="danger" onClick={() => setVisible(true)}>Delete</CButton>
                   </CButtonGroup>
