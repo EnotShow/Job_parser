@@ -65,28 +65,30 @@ services:
     command: "sh -c 'alembic upgrade head && uvicorn app:app --host 0.0.0.0 --port 8000 --reload --log-level debug'"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.backend.rule=Host(`api.example.com`)"
+      - "traefik.http.routers.backend.rule=Host(`${BACKEND_HOST}`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=myresolver"
       - "traefik.http.services.backend.loadbalancer.server.port=8000"
 
   frontend:
     build:
-      context: ././
+      context: .
       dockerfile: Dockerfile-react
     expose:
       - 3000
+    ports:
+      - "3000:3000"
     volumes:
-      - .:/app
+      - ./front:/front
     env_file:
       - front/.env
     depends_on:
       postgres:
         condition: service_healthy
-    command: "sh -c 'serve -s front/build'"
+    command: "sh -c 'serve -s build'"
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`example.com`)"
+      - "traefik.http.routers.frontend.rule=Host(`${FRONTEND_HOST}`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls.certresolver=myresolver"
       - "traefik.http.services.frontend.loadbalancer.server.port=3000"
@@ -101,7 +103,7 @@ services:
       - "--entrypoints.websecure.address=:443"
       - "--certificatesresolvers.myresolver.acme.httpchallenge=true"
       - "--certificatesresolvers.myresolver.acme.httpchallenge.entrypoint=web"
-      - "--certificatesresolvers.myresolver.acme.email=youremail@example.com"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL}"
       - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
