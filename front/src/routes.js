@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchCreate from "src/views/searches/SearchCreate";
+import AdminDashboard from "src/views/dashboard/AdminDashboard";
 
 const Dashboard = React.lazy(() => import('./views/dashboard/Dashboard'));
 
@@ -24,6 +25,7 @@ const ROUTES = {
   HOME: "/",
 
   DASHBOARD: "/dashboard",
+  ADMIN_DASHBOARD: "/admin/dashboard",
 
   SEARCHES: "/searches",
   SEARCH_DETAILS: "/searches/:id",
@@ -46,6 +48,7 @@ const routeConfig = [
   { path: ROUTES.HOME, exact: true, name: 'Home' },
 
   { path: ROUTES.DASHBOARD, name: 'Dashboard', element: Dashboard, protected: true },
+  { path: ROUTES.ADMIN_DASHBOARD, name: 'Admin Dashboard', element: AdminDashboard, protected: true },
 
   // searches
   { path: ROUTES.SEARCHES, name: 'Searches', element: Searches },

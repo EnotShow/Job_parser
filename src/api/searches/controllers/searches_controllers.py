@@ -2,7 +2,6 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, APIRouter, HTTPException
 from starlette import status
 from starlette.requests import Request
-from starlette.status import HTTP_400_BAD_REQUEST
 
 from core.shared.errors import NoRowsFoundError
 from core.shared.permissions.permission_decorator import permission_required
@@ -27,7 +26,7 @@ async def get_user_searches(
     try:
         return await search_service.get_user_searches(request.state.token.user.id, limit, page)
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No rows found")
 
 
 @router.get("/{search_id}", status_code=status.HTTP_200_OK)
@@ -41,7 +40,7 @@ async def get_user_search(
     try:
         return await search_service.get_user_search(request.state.token.user.id, search_id)
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No rows found")
 
 
 @router.post("/", status_code=status.HTTP_201_CREATED)
@@ -67,9 +66,10 @@ async def delete_user_search(
         search_service: SearchService = Depends(Provide[SearchServiceContainer.search_service]),
 ):
     try:
-        return await search_service.delete_user_search(search_id, request.state.token.user.id)
+        await search_service.delete_user_search(search_id, request.state.token.user.id)
+        return {"detail": "Search deleted successfully"}
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No rows found")
 
 
 @router.put("/{search_id}", status_code=status.HTTP_200_OK)
@@ -82,6 +82,7 @@ async def update_user_search(
         search_service: SearchService = Depends(Provide[SearchServiceContainer.search_service]),
 ) -> SearchDTO:
     try:
+        data.id = search_id
         return await search_service.update_user_search(data, request.state.token.user.id)
     except NoRowsFoundError:
-        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No rows found")

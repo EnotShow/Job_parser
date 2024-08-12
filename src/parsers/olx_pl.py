@@ -1,3 +1,5 @@
+import asyncio
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -14,12 +16,11 @@ class OlxParser:
         result = []
         for i in jobs:
             title, url = i.get_text(separator='\n'), self.base_url + i.a['href']
-            description, application_link = await self._parse_details(url)
+            description = await self._parse_details(url)
             job = ApplicationCreateDTO(
                 title=title,
                 url=url,
                 description=description,
-                application_link=application_link,
                 owner_id=owner_id
             )
             result.append(job)
@@ -29,7 +30,13 @@ class OlxParser:
         html = requests.get(url).text
         soup = BeautifulSoup(html, "html.parser")
         description = soup.find(class_='css-14ie0im').get_text()
-        application_link = 'https://www.olx.pl/oferta/praca/calzedonia-galeria-wilenska-kierownik-sklepu-CID4-ID10Qs99.html' #soup.find(class_='css-ezafkw')['href']
-        # if application_link.startswith('/'):
-        #     application_link = self.base_url + application_link
-        return description, application_link
+        return description
+
+
+async def main():
+    parser = OlxParser()
+    print(await parser.parse_offers('https://www.olx.pl/praca/q-linux/?search%5Border%5D=created_at:desc', 1))
+
+
+if __name__ == '__main__':
+    asyncio.run(main())

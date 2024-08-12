@@ -13,6 +13,7 @@
   "license": "MIT",
   "author": "The CoreUI Team (https://github.com/orgs/coreui/people)",
   "scripts": {
+    "postinstall": "patch-package",
     "build": "vite build",
     "lint": "eslint \"src/**/*.js\"",
     "serve": "vite preview",
@@ -32,6 +33,7 @@
     "classnames": "^2.5.1",
     "core-js": "^3.37.1",
     "dotenv": "^16.4.5",
+    "patch-package": "^8.0.0",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -40,7 +42,8 @@
     "react-router-named-routes": "^0.0.23",
     "react-scripts": "^5.0.1",
     "redux": "5.0.1",
-    "simplebar-react": "^3.2.5"
+    "simplebar-react": "^3.2.5",
+    "vite-plugin-commonjs": "^0.10.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.1",
