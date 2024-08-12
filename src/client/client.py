@@ -65,6 +65,6 @@ class JobParserClient(BaseClient):
 
         return tokens
 
-    async def auth_as_service(self):
-        self.session.headers["X-Api-Key"] = development_settings.service_api_token
+    async def auth_as_service(self, api_token: str):
+        self.session.headers["X-Api-Key"] = api_token
         self.refresh_token = None

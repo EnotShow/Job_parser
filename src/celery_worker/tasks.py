@@ -1,7 +1,6 @@
 import asyncio
 from typing import List
 
-import requests
 from celery.exceptions import TaskError
 
 from core.config.proj_settings import settings
@@ -11,6 +10,7 @@ from src.api.messangers.dtos.notification_dto import NotificationDTO
 from src.api.searches.search_dto import SearchFilterDTO
 from src.bot.handlers.base_handlers import new_offer
 from src.celery_worker.celery import celery_app
+from src.client.client import JobParserClient
 from src.parsers.helper import get_parser
 
 
@@ -22,8 +22,8 @@ def add_parsing_job(searches: [List[SearchFilterDTO], dict]):
 
 
 async def parsing_job(searches: [List[SearchFilterDTO], dict]):
-    session = requests.Session()
-    session.headers.update({'X-API-Key': settings.service_api_token})
+    client = JobParserClient()
+    await client.auth_as_service(settings.service_api_key)
 
     for search in searches:
         parser = await get_parser(search.url)
@@ -32,9 +32,11 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
         for job in result:
             to_search.append(job.model_dump(exclude_none=True))
 
-        find = requests.post(f"{settings.base_url}/applications/find_multiple/", json=to_search).json()
-        if find.status_code != 200:
-            raise TaskError(f"Failed to find jobs in database: {find.text}")
+        await client.applications.service.find_multiple(to_search)
+        try:
+            find = await client.applications.service.get_applications_if_exists(to_search)
+        except Exception:
+            raise TaskError(f"Failed to find jobs in database")
 
         existing_urls = [f['url'] for f in find]
         to_add = []
@@ -49,9 +51,10 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 )
                 to_add.append(model.model_dump())
 
-        add_results = requests.post(f"{settings.base_url}/applications/create_multiple/", json=to_add)
-        if add_results.status_code != 200:
-            raise TaskError(f"Failed to add jobs to database: {add_results.text}")
+        try:
+            add_results = await client.applications.service.create_multiple_applications(to_add)
+        except Exception:
+            raise TaskError(f"Failed to add jobs to database")
         result = [ApplicationFullDTO(**res) for res in add_results.json()]
         notifications = []
 
@@ -68,9 +71,9 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 social_network_id=job.owner.telegram_id
             )
             notifications.append(notification.model_dump())
-
-        send_notifications = requests.post(f"{settings.base_url}/notification/notify_multiple", json=notifications)
-        if send_notifications.status_code != 200:
-            raise TaskError(f"Failed to send notifications: {send_notifications.text}")
+        try:
+            await client.notifications.send_multiple_notifications(notifications)
+        except Exception:
+            raise TaskError(f"Failed to send notifications")
 
         return True

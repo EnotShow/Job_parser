@@ -14,7 +14,7 @@ class NotificationsClient(BaseClient):
     async def send_notification(
         self, data: NotificationDTO, *, return_response: bool = False
     ) -> Union[None, Response]:
-        response = await self.session.post(f"{self.base_url}/", json=data.model_dump())
+        response = await self.session.post(f"{self.base_url}/notify", json=data.model_dump())
         if return_response:
             return response
 
@@ -23,7 +23,7 @@ class NotificationsClient(BaseClient):
     ) -> Union[List[Response], None]:
         responses = []
         for notification_dto in notifications_dto:
-            response = await self.send_notification(notification_dto, return_response=True)
+            response = await self.session.post(f"{self.base_url}/notify_multiple", json=notification_dto.model_dump())
             if return_response:
                 responses.append(response)
         if return_response:

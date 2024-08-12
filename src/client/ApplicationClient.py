@@ -34,6 +34,12 @@ class ApplicationServiceClient(BaseClient):
             return response
         return ApplicationDTO(**response.json())
 
+    async def create_multiple_applications(self, data: List[ApplicationCreateDTO], *, return_response: bool = False) -> Union[List[ApplicationDTO], Response]:
+        response = await self.session.post(f"{self.base_url}/create_multiple", json=[item.dict() for item in data])
+        if return_response:
+            return response
+        return [ApplicationDTO(**application) for application in response.json()]
+
     async def get_all_applications(self, *, limit: int = None, page: int = None, return_response: bool = False) -> Union[List[ApplicationDTO], Response]:
         url = self._add_pagination(f"{self.base_url}/", limit, page)
         response = await self.session.get(url)
