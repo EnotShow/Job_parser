@@ -1,6 +1,6 @@
 import httpx
 
-from core.config.proj_settings import settings
+from core.config.proj_settings import settings, development_settings
 from src.api.auth.auth_dto import UserRegisterDTO, UserLoginDTO
 from src.client.ApplicationClient import ApplicationClient
 from src.client.BaseClient import BaseClient
@@ -66,5 +66,5 @@ class JobParserClient(BaseClient):
         return tokens
 
     async def auth_as_service(self):
-        self.session.headers["X-Api-Key"] = settings.service_api_key
+        self.session.headers["X-Api-Key"] = development_settings.service_api_token
         self.refresh_token = None

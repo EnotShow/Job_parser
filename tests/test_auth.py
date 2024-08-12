@@ -4,9 +4,8 @@ from src.api.auth.auth_dto import UserLoginDTO, UserRegisterDTO
 
 
 @pytest.mark.auth
-async def test_auth(client, base_user):
-    base_user = await base_user
-    user = UserLoginDTO(email=base_user.email(), password=base_user.password())
+async def test_auth(client, created_user):
+    user = UserLoginDTO(email=created_user.email, password=created_user.password)
     await client.auth_as_user(user)
 
     assert client.session.headers["Authorization"]

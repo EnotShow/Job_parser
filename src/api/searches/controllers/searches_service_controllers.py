@@ -44,7 +44,7 @@ async def get_search(
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
-@router.post("/", status_code=status.HTTP_200_OK)
+@router.post("/", status_code=status.HTTP_201_CREATED)
 @permission_required([IsService])
 @inject
 async def create_search(
