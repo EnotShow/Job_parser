@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-from pydantic import PostgresDsn, AmqpDsn
+from pydantic import PostgresDsn, AmqpDsn, RedisDsn
 from dotenv import load_dotenv
 from pydantic.v1 import BaseSettings
 
@@ -24,18 +24,14 @@ class ConfigDataBase(BaseSettings):
         )
 
 
-class ConfigMessageBroker(BaseSettings):
-    RABBITMQ_USER: str
-    RABBITMQ_PASSWORD: str
-    RABBITMQ_HOST: str
-    RABBITMQ_PORT: str
+class ConfigCacheBroker(BaseSettings):
+    REDIS_HOST: str
+    REDIS_PORT: str
+    REDIS_PASSWORD: str
 
     @property
-    def broker_url(self) -> Optional[AmqpDsn]:
-        return (
-            f"amqp://{self.RABBITMQ_USER}:{self.RABBITMQ_PASSWORD}@"
-            f"{self.RABBITMQ_HOST}:{self.RABBITMQ_PORT}/"
-        )
+    def broker_url(self) -> Optional[RedisDsn]:
+        return f"redis://:{self.REDIS_PASSWORD}@{self.REDIS_HOST}:{self.REDIS_PORT}/"
 
 
 settings_db = ConfigDataBase(
@@ -46,9 +42,8 @@ settings_db = ConfigDataBase(
     POSTGRES_DB=os.getenv("POSTGRES_DB"),
 )
 
-settings_broker = ConfigMessageBroker(
-    RABBITMQ_USER=os.getenv("RABBITMQ_USER"),
-    RABBITMQ_PASSWORD=os.getenv("RABBITMQ_PASSWORD"),
-    RABBITMQ_HOST=os.getenv("RABBITMQ_HOST"),
-    RABBITMQ_PORT=os.getenv("RABBITMQ_PORT"),
+settings_broker = ConfigCacheBroker(
+    REDIS_HOST=os.getenv("REDIS_HOST", "localhost"),
+    REDIS_PORT=os.getenv("REDIS_PORT", "6379"),
+    REDIS_PASSWORD=os.getenv("REDIS_PASSWORD", None),
 )

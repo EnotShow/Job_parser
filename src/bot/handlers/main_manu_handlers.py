@@ -6,6 +6,8 @@ from dependency_injector.wiring import inject, Provide
 
 from bot_create import bot
 from src.api.applications.containers.application_service_container import ApplicationServiceContainer
+from src.api.auth.containers.auth_service_container import AuthServiceContainer
+from src.api.auth.services.auth_service import AuthService
 from src.api.users.containers.user_service_container import UserServiceContainer
 from src.api.users.user_dto import UserSettingsDTO
 from src.api.applications.application_service import ApplicationService
@@ -19,7 +21,7 @@ main_manu_router = Router()
 
 @main_manu_router.message(CommandStart())
 @inject
-async def main_manu(
+async def start_bot(
         message: types.Message,
         command: CommandObject,
         settings: UserSettingsDTO,
@@ -31,7 +33,14 @@ async def main_manu(
             payload = decode_payload(command.args)
             if payload.startswith("ref="):
                 ref = payload.split("=")[1]
+            # if payload.startswith("login"):
+            #     return await
+
         await user_service.create_user_from_telegram(message, ref)
+        await main_manu(message, settings)
+
+
+async def main_manu(message: types.Message, settings: UserSettingsDTO = None):
     await message.answer(
         text=get_main_manu_lang(
             settings.selected_language or settings.language_code if settings else message.from_user.language_code,
@@ -42,6 +51,22 @@ async def main_manu(
             settings.selected_language or settings.language_code if settings else message.from_user.language_code
         )
     )
+
+
+@inject
+async def site_login(
+        message: types.Message,
+        settings: UserSettingsDTO,
+        auth_service: AuthService = Provide[AuthServiceContainer.auth_service],
+):
+    user_id = settings.id
+    if not user_id:
+        # DO REGISTER
+        pass
+
+    _hash = await auth_service.generate_login_hash(user_id)
+    # message answer with login url
+    # await message.answer()
 
 
 @main_manu_router.message(TextFilter(text_list=get_main_manu_keyboard(return_buttons_list=True, button='referrals')))

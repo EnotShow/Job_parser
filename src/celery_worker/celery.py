@@ -1,12 +1,12 @@
-from celery.app import Celery
-
+from celery import Celery
 from core.config.db import settings_broker
 
 celery_app = Celery(
     __name__,
     broker=settings_broker.broker_url,
-    backend='rpc://',
+    backend='redis://',
 )
+
 celery_app.autodiscover_tasks(packages=["src.celery_worker.tasks"])
 
 celery_app.conf.update(
