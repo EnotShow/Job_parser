@@ -67,9 +67,8 @@ async def statistics(
         settings: UserSettingsDTO,
         application_service: ApplicationService = Provide[ApplicationServiceContainer.application_service]
 ):
-    jobs_counter = await application_service.get_applications_by_telegram_id(telegram_id=message.from_user.id,
-                                                                             count=True)
+    jobs_counter = await application_service.get_applications_by_telegram_id(telegram_id=message.from_user.id)
     await message.answer(
-        text=get_statistics_lang(settings.language_code, 'statistics', jobs_counter),
+        text=get_statistics_lang(settings.language_code, 'statistics', jobs_counter.total),
         reply_markup=get_main_manu_keyboard(settings.selected_language or settings.language_code)
     )

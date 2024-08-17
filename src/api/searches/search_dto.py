@@ -16,6 +16,13 @@ class SearchDTO(BaseDTO):
     owner_id: int
 
 
+class SearchSmallDTO(BaseDTO):
+    id: int
+    title: str
+    url: AnyUrl
+    owner_id: int
+
+
 class SearchFilterDTO(BaseDTO):
     id: Optional[int] = None
     title: Optional[str] = None

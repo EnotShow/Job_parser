@@ -65,10 +65,10 @@ class SearchService(BaseService):
             user_repository = UserRepository(uow)
             try:
                 find_user_filter = UserFilterDTO(telegram_id=telegram_id)
-                user = await user_repository.get_filtered(find_user_filter, limit=1, page=1)
+                users = await user_repository.get_filtered(find_user_filter, limit=1, page=1)
                 response_objects = await repository.get_filtered(
-                    SearchFilterDTO(owner_id=user.id), limit=limit, page=page)
-                total = await repository.get_count(SearchFilterDTO(owner_id=user.id))
+                    SearchFilterDTO(owner_id=users[0].id), limit=limit, page=page)
+                total = await repository.get_count(SearchFilterDTO(owner_id=users[0].id))
                 return self._paginate(response_objects, page, len(response_objects), total)
             except NoRowsFoundError:
                 raise NoRowsFoundError

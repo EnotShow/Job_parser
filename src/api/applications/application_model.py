@@ -19,7 +19,6 @@ class Application(Base):
     url: Mapped[str] = mapped_column(String(200))
     short_id: Mapped[UUID] = mapped_column(default=uuid.uuid4, unique=True)
     applied: Mapped[bool] = mapped_column(Boolean, default=False)
-    application_date: Mapped[datetime] = mapped_column(DateTime, nullable=True)
     owner_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     owner: Mapped["User"] = relationship("User", back_populates="applications", lazy="joined")
 

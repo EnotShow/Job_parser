@@ -3,8 +3,9 @@ from typing import List
 from aiogram import types, Router, F
 from aiogram.fsm.context import FSMContext
 from dependency_injector.wiring import inject, Provide
+from sqlalchemy.exc import NoResultFound
 
-from core.shared.errors import ResourceError
+from core.shared.errors import ResourceError, NoRowsFoundError
 from core.shared.validators import JobResourceURL
 from src.api.searches.containers.search_service_container import SearchServiceContainer
 from src.api.searches.search_dto import SearchDTO, SearchUpdateDTO
@@ -15,7 +16,7 @@ from src.bot.keyboards.main_menu_keyboard_buttons import get_main_manu_keyboard
 from src.bot.keyboards.searches_menu_keyboard import get_searches_menu_keyboard, SearchesCallbackData, \
     get_searches_list_menu_keyboard
 from src.bot.localization.languages import get_searches_lang
-from src.bot.states.search_states import FSMSearchAddState, FSMSearchDeleteState
+from src.bot.states.search_states import FSMSearchAddState, FSMSearchChangeState
 
 searches_router = Router()
 
@@ -38,20 +39,23 @@ async def searches_list(
         settings: UserSettingsDTO,
         search_service: SearchService = Provide[SearchServiceContainer.search_service],
 ):
-    searches: List[SearchDTO] = await search_service.get_telegram_user_searches(callback_query.from_user.id)
-    if searches:
-        for search in searches:
-            await callback_query.message.answer(
-                f'{search.title}\n{search.url}',
-                reply_markup=get_searches_list_menu_keyboard(
-                    search.id,
-                    settings.selected_language or settings.selected_language
-                ))
-    else:
+    try:
+        r = await search_service.get_telegram_user_searches(callback_query.from_user.id)
+    except NoRowsFoundError:
         await callback_query.message.answer(get_searches_lang(
             settings.selected_language or settings.selected_language,
             'no_resources'
         ))
+    else:
+        searches: List[SearchDTO] = r.items
+        if searches:
+            for search in searches:
+                await callback_query.message.answer(
+                    f'{search.title}\n{search.url}',
+                    reply_markup=get_searches_list_menu_keyboard(
+                        search.id,
+                        settings.selected_language or settings.selected_language
+                    ))
     # await callback_query.message.answer('Вернуться назад?', reply_markup=None)  # TODO add back byttton
 
 
@@ -63,10 +67,19 @@ async def delete_search(
         settings: UserSettingsDTO,
         search_service: SearchService = Provide[SearchServiceContainer.search_service],
 ):
-    await search_service.delete_search(callback_data.search_id)
+    print('search_delete')
+    try:
+        await search_service.delete_search(callback_data.search_id)
+    except NoResultFound as e:
+        await callback_query.message.answer(
+            text=get_searches_lang(
+                settings.selected_language or settings.selected_language,
+                'no_resource_found'
+            )
+        )
     await callback_query.message.delete()
-    await callback_query.answer(
-        get_searches_lang(
+    await callback_query.message.answer(
+        text=get_searches_lang(
             settings.selected_language or settings.selected_language,
             'resource_deleted')
     )
@@ -128,7 +141,7 @@ class AddSearch:
         await state.clear()
         await message.answer(get_searches_lang(
             settings.selected_language or settings.selected_language,
-            'resource_added'
+            'resource_created'
         ))
 
 
@@ -141,7 +154,7 @@ class ChangeSearch:
             state: FSMContext,
             settings: UserSettingsDTO,
     ):
-        await state.set_state(FSMSearchDeleteState.url)
+        await state.set_state(FSMSearchChangeState.url)
         await state.update_data(search_id=callback_data.search_id)
         await callback_query.message.answer(get_searches_lang(
             settings.selected_language or settings.selected_language,
@@ -149,7 +162,7 @@ class ChangeSearch:
         ))
 
     @staticmethod
-    @searches_router.message(FSMSearchDeleteState.url)
+    @searches_router.message(FSMSearchChangeState.url)
     @inject
     async def change_search(
             message: types.Message,
@@ -169,7 +182,7 @@ class ChangeSearch:
                 await state.clear()
                 await message.answer(get_searches_lang(
                     settings.selected_language or settings.selected_language,
-                    'resource_changed'
+                    'resource_updated'
                 ))
         except ResourceError as e:
             await message.answer(get_searches_lang(
