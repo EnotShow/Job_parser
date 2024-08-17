@@ -70,6 +70,7 @@ def get_searches_lang(lang: str, part: str):
             'resource_deleted': 'Поисковый запрос успешно удален',
             'unsupported_resource': 'Данный ресурс не поддерживается! Попробуйте еще раз.',
             'no_resources': 'Вы пока не создали ни одного поискового запроса',
+            'no_resource_found': 'Такого запроса не найденно!',
         },
         'pl': {
             'searches_manu': 'Co chcesz zrobic?',
@@ -81,6 +82,7 @@ def get_searches_lang(lang: str, part: str):
             'resource_deleted': 'Wyszukiwarka została usunięta pomyslnie',
             'unsupported_resource': 'Dany zasob nie jest wspierany! Sproboj ponownie.',
             'no_resources': 'Nie utworzyles jeszcze zadnego wyszukiwarki',
+            'no_resources_found': 'Nie znaleziono takiego zapytania!',
         },
         'en': {
             'searches_manu': 'What do you want to do?',
@@ -92,6 +94,7 @@ def get_searches_lang(lang: str, part: str):
             'resource_deleted': 'Search query deleted successfully',
             'unsupported_resource': 'This resource is not supported! Try again.',
             'no_resources': 'You have not created any search queries yet',
+            'no_resources_found': 'No such query found!',
         }
     }
     return translate[lang][part]

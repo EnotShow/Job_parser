@@ -9,17 +9,17 @@ from starlette.status import HTTP_400_BAD_REQUEST
 from core.shared.permissions.permission_decorator import permission_required
 from core.shared.permissions.permissions import IsService
 from src.api.messangers.bots_containers.notification_container import NotificationServiceContainer
-from src.api.messangers.dtos.notification_dto import NotificationDTO
+from src.api.messangers.dtos.notification_dto import MessangerNotificationDTO
 from src.api.messangers.bots_services.notification_service import NotificationService
 
-router = APIRouter(prefix="/notification", tags=["Notifications"])
+router = APIRouter(prefix="/notifications", tags=["Notifications"])
 
 
 @router.post("/notify", status_code=status.HTTP_200_OK)
 @permission_required([IsService])
 @inject
 async def send_notifications(
-        data: NotificationDTO,
+        data: MessangerNotificationDTO,
         request: Request,
         notification_service: NotificationService = Depends(Provide[NotificationServiceContainer.notification_service]),
 ):
@@ -33,7 +33,7 @@ async def send_notifications(
 @permission_required([IsService])
 @inject
 async def send_multiple_notifications(
-        data: List[NotificationDTO],
+        data: List[MessangerNotificationDTO],
         request: Request,
         notification_service: NotificationService = Depends(Provide[NotificationServiceContainer.notification_service]),
 ):

@@ -85,12 +85,10 @@ async def get_applications_if_exists(
         limit: int = 10,
         page: int = 1,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
-) -> PaginationDTO[ApplicationDTO]:
+) -> List[ApplicationDTO]:
     try:
         return await application_service.get_applications_if_exists(
             data if isinstance(data, list) else [data],
-            limit=limit,
-            page=page
         )
     except NoRowsFoundError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="No rows found")
