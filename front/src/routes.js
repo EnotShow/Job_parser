@@ -15,6 +15,7 @@ const Profile = React.lazy(() => import('./views/profile/Profile'));
 const Settings = React.lazy(() => import('./views/settings/Settings'));
 
 const Login = React.lazy(() => import('./views/pages/login/Login'));
+const LoginByHash = React.lazy(() => import('./views/pages/login/LoginByHash'));
 const Register = React.lazy(() => import('./views/pages/register/Register'));
 const NotFound = React.lazy(() => import('./views/pages/page404/Page404'));
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'));
@@ -39,6 +40,7 @@ const ROUTES = {
   SETTINGS: "/settings",
 
   LOGIN: "/login",
+  LOGIN_BY_HASH: "/login/:hash",
   REGISTER: "/register",
   NOT_FOUND: "/404",
   SERVER_ERROR: "/500",

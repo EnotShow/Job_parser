@@ -78,7 +78,7 @@ async def change_user_password(
 
 @router.get("/login/{_hash}", status_code=status.HTTP_200_OK)
 @inject
-async def get_me(
+async def login_by_auth_hash(
         user_service: AuthService = Depends(Provide[AuthServiceContainer.auth_service]),
         _hash: str = None,
 ):

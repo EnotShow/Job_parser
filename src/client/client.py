@@ -68,3 +68,15 @@ class JobParserClient(BaseClient):
     async def auth_as_service(self, api_token: str):
         self.session.headers["X-Api-Key"] = api_token
         self.refresh_token = None
+
+    async def auth_by_hash(self, _hash: str):
+        tokens = await self.session.get(
+            f"{self.base_url}/auth/login/{_hash}",
+        )
+        if tokens.status_code != 200:
+            raise Exception
+
+        self.session.headers["Authorization"] = f"Bearer {tokens.json()['access_token']}"
+        self.refresh_token = tokens.json()["refresh_token"]
+
+        return tokens

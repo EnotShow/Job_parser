@@ -84,6 +84,24 @@ class JobParserClient extends BaseClient {
             throw error;
         }
     }
+
+    async authByHash(_hash) {
+        try {
+            const response = await this.client.get(`/auth/login/${_hash}`);
+            if (response.status !== 200) {
+                throw new Error('Authentication by hash failed');
+            }
+
+            const { access_token, refresh_token } = response.data;
+            this.client.defaults.headers['Authorization'] = `Bearer ${access_token}`;
+            this.refreshToken = refresh_token;
+
+            return response.data;
+        } catch (error) {
+            console.error('Error authenticating by hash:', error);
+            throw error;
+        }
+    }
 }
 
 let jobParserClient = new JobParserClient(

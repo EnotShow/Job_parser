@@ -1,5 +1,3 @@
-from typing import Annotated
-
 from core.shared.errors import ResourceError
 from src.parsers import base_urls
 
