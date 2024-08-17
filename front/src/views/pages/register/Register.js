@@ -1,6 +1,7 @@
 import React from 'react'
 import {
   CButton,
+  CButtonGroup,
   CCard,
   CCardBody,
   CCol,
@@ -12,11 +13,11 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
-import {useNavigate} from "react-router-dom";
-import jobParserClient from "src/client/Client";
-import {setCookie} from "src/helpers/_auth";
-import UserRegisterDTO from "src/client/DTOs/UserRegisterDTO";
+import { cilLockLocked, cibTelegram, cibGoogle, cibMessenger } from '@coreui/icons'
+import { useNavigate } from "react-router-dom"
+import jobParserClient from "src/client/Client"
+import { setCookie } from "src/helpers/_auth"
+import UserRegisterDTO from "src/client/DTOs/UserRegisterDTO"
 
 const Register = () => {
   const [email, setEmail] = React.useState('')
@@ -52,10 +53,9 @@ const Register = () => {
       password,
       "en",
       0
-    ).toJSON();
+    ).toJSON()
 
     try {
-
       const response = await jobParserClient.register(formDetails)
 
       if (response) {
@@ -66,7 +66,40 @@ const Register = () => {
         setError(response.details || 'Unexpected error occurred')
       }
     } catch (e) {
-      setError(e.response?.message || 'Login failed')
+      setError(e.response?.message || 'Registration failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleRegisterMethod = async (method) => {
+    setLoading(true)
+    try {
+      let response
+      switch (method) {
+        case 'telegram':
+          response = await jobParserClient.registerByTelegram()
+          break
+        case 'google':
+          response = await jobParserClient.registerByGoogle()
+          break
+        case 'messenger':
+          response = await jobParserClient.registerByMessenger()
+          break
+        default:
+          setError('Unsupported registration method')
+          setLoading(false)
+          return
+      }
+      if (response) {
+        setCookie('accessToken', response.access_token, 1)
+        setCookie('refreshToken', response.refresh_token, 1)
+        navigate('/')
+      } else {
+        setError(response.details || 'Unexpected error occurred')
+      }
+    } catch (e) {
+      setError(e.response?.message || 'Registration failed')
     } finally {
       setLoading(false)
     }
@@ -117,11 +150,39 @@ const Register = () => {
                   </CInputGroup>
                   <div className="d-grid">
                     <CButton color="primary" className="px-4" disabled={loading} type="submit">
-                          {loading ? 'Loading...' : 'Create account'}
+                      {loading ? 'Loading...' : 'Create account'}
                     </CButton>
                   </div>
-                    {error && <p className="text-danger mt-2">{error}</p>}
+                  {error && <p className="text-danger mt-2">{error}</p>}
                 </CForm>
+                <div className="d-flex justify-content-center mt-3">
+                  <CButtonGroup>
+                    <CButton
+                      color="info"
+                      className="px-4"
+                      disabled={loading}
+                      onClick={() => handleRegisterMethod('telegram')}
+                    >
+                      <CIcon icon={cibTelegram} size="lg" />
+                    </CButton>
+                    <CButton
+                      color="danger"
+                      className="px-4"
+                      disabled={loading}
+                      onClick={() => handleRegisterMethod('google')}
+                    >
+                      <CIcon icon={cibGoogle} size="lg" />
+                    </CButton>
+                    <CButton
+                      color="primary"
+                      className="px-4"
+                      disabled={loading}
+                      onClick={() => handleRegisterMethod('messenger')}
+                    >
+                      <CIcon icon={cibMessenger} size="lg" />
+                    </CButton>
+                  </CButtonGroup>
+                </div>
               </CCardBody>
             </CCard>
           </CCol>
