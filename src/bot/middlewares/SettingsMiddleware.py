@@ -16,6 +16,9 @@ class SettingsMiddleware(BaseMiddleware):
             data: Dict[str, Any],
             user_service: UserService = Provide[UserServiceContainer.user_service],
     ) -> Any:
-        settings = await user_service.get_user_settings(event.from_user.id)
+        try:
+            settings = await user_service.get_user_settings_telegram(event.from_user.id)
+        except Exception as e:
+            settings = None
         data['settings'] = settings if settings else None
         return await handler(event, data)

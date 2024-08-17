@@ -15,15 +15,18 @@ class OlxParser:
         jobs = soup.div.find_all(class_='jobs-ad-card')
         result = []
         for i in jobs:
-            title, url = i.get_text(separator='\n'), self.base_url + i.a['href']
-            description = await self._parse_details(url)
-            job = ApplicationCreateDTO(
-                title=title,
-                url=url,
-                description=description,
-                owner_id=owner_id
-            )
-            result.append(job)
+            try:
+                title, url = i.get_text(separator='\n'), self.base_url + i.a['href']
+                description = await self._parse_details(url)
+                job = ApplicationCreateDTO(
+                    title=title,
+                    url=url,
+                    description=description,
+                    owner_id=owner_id
+                )
+                result.append(job)
+            except AttributeError:
+                pass
         return result
 
     async def _parse_details(self, url: str):

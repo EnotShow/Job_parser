@@ -1,4 +1,6 @@
 from aiogram import Bot, Dispatcher, types
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from core.config.bot import settings_bot
@@ -8,7 +10,11 @@ WEBHOOK_URL = settings_bot.webhook_url + WEBHOOK_PATH
 
 storage = MemoryStorage()
 
-bot = Bot(token=settings_bot.token, skip_updates=True)
+bot = Bot(
+    token=settings_bot.token,
+    skip_updates=True,
+    default=DefaultBotProperties(parse_mode=ParseMode.HTML),
+)
 dp = Dispatcher(storage=storage)
 
 

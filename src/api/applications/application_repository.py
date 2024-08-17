@@ -58,7 +58,7 @@ class ApplicationRepository(BaseRepository):
         except Exception as e:
             raise Exception(str(e))
 
-    async def get_filtered_multiple_applications(self, filters: List[ApplicationFilterDTO], *, limit: int = 10, page: int = 1):
+    async def get_filtered_multiple_applications(self, filters: List[ApplicationFilterDTO]):
         def recursive_or_conditions(filters: List[ApplicationFilterDTO]):
             if len(filters) == 1:
                 or_condition = and_(Application.url == filters[0].url, Application.owner_id == filters[0].owner_id)
@@ -68,9 +68,8 @@ class ApplicationRepository(BaseRepository):
                 filters.pop()
                 return or_(or_condition, recursive_or_conditions(filters))
 
-        offset = (page - 1) * limit
         or_conditions = recursive_or_conditions(filters)
-        stmt = select(self.model).where(or_conditions).limit(limit).offset(offset)
+        stmt = select(self.model).where(or_conditions)
         try:
             result = await self._uow.session.execute(stmt)
             rows = result.scalars().all()

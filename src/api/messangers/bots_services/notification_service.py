@@ -5,7 +5,7 @@ from fastapi import Depends
 
 from core.shared.enums import SocialNetworkEnum
 from src.api.messangers.bots_containers.telegram_container import TelegramServiceContainer
-from src.api.messangers.dtos.notification_dto import NotificationDTO
+from src.api.messangers.dtos.notification_dto import MessangerNotificationDTO
 from src.api.messangers.bots_services.telegram_service import TelegramService
 
 
@@ -14,7 +14,7 @@ class NotificationService:
     @inject
     async def send_notification(
             self,
-            dto: NotificationDTO,
+            dto: MessangerNotificationDTO,
             telegram_service: TelegramService = Depends(Provide[TelegramServiceContainer.telegram_service])
     ):
         match dto.notification.social_network:
@@ -26,7 +26,7 @@ class NotificationService:
     @inject
     async def send_multiple_notifications(
             self,
-            dtos: List[NotificationDTO],
+            dtos: List[MessangerNotificationDTO],
             telegram_service: TelegramService = Depends(Provide[TelegramServiceContainer.telegram_service])
     ):
         await telegram_service.send_multiple_notifications(dtos)

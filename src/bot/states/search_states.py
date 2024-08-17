@@ -6,5 +6,5 @@ class FSMSearchAddState(StatesGroup):
     title = State()
 
 
-class FSMSearchDeleteState(StatesGroup):
+class FSMSearchChangeState(StatesGroup):
     url = State()

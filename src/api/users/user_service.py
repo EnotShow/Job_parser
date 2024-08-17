@@ -50,7 +50,8 @@ class UserService(BaseService):
             repository = UserRepository(uow)
             try:
                 user_filter = UserFilterDTO(telegram_id=telegram_id)
-                return await repository.get_filtered(user_filter)
+                r = await repository.get_filtered(user_filter)
+                return r[0]
             except Exception as e:
                 raise NoRowsFoundError(f"User with telegram id {telegram_id} not found")
 
@@ -117,6 +118,14 @@ class UserService(BaseService):
             repository = UserRepository(uow)
             try:
                 return await repository.get_user_settings(user_id)
+            except Exception as e:
+                raise e
+
+    async def get_user_settings_telegram(self, user_id: int) -> UserDTO:
+        async with self.uow as uow:
+            repository = UserRepository(uow)
+            try:
+                return await repository.get_user_settings_telegram(user_id)
             except Exception as e:
                 raise e
 

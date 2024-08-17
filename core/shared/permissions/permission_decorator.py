@@ -8,7 +8,7 @@ from core.shared.permissions.BasePermission import BasePermission
 T = TypeVar('T', bound=BasePermission)
 
 
-def permission_required(permissions: List[BasePermission]):
+def permission_required(permissions: List[T]) -> Callable:
 
     def decorator(f: Callable):
 
