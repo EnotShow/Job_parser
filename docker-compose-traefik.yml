@@ -46,7 +46,7 @@ services:
         condition: service_healthy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.flower.rule=Host(`${FRONTEND_HOST}`)"
+      - "traefik.http.routers.flower.rule=Host(`${FLOWER_HOST}`)"
       - "traefik.http.routers.flower.entrypoints=websecure"
       - "traefik.http.routers.flower.tls.certresolver=myresolver"
       - "traefik.http.services.flower.loadbalancer.server.port=5555"
