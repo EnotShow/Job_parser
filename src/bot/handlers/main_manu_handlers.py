@@ -1,13 +1,12 @@
 import ast
-import json
 
 from aiogram import types, Router
 from aiogram.filters import CommandStart, CommandObject
-from aiogram.utils.markdown import hlink
 from aiogram.utils.payload import decode_payload
 from dependency_injector.wiring import inject, Provide
 
 from core.config.bot import settings_bot
+from core.shared.errors import AlreadyExistError
 from src.api.applications.application_service import ApplicationService
 from src.api.applications.containers.application_service_container import ApplicationServiceContainer
 from src.api.auth.containers.auth_service_container import AuthServiceContainer
@@ -40,15 +39,24 @@ async def start_bot(
 
     if settings is None:
         ref = None
-        if payload and payload['ref'] and payload['ref'].isdigit():
+        if payload and payload.get('ref') and payload['ref'].isdigit():
             ref = int(payload['ref'])
 
-        await user_service.create_user_from_telegram(message, ref)
+        # Check if payload exists and if both 'connect' and 'user_id' are present connect messanger to a user account
+        if payload and payload.get('connect') and payload.get('user_id'):
+            try:
+                await user_service.connect_user_telegram(payload['user_id'], message.from_user.id, ref)
+            except AlreadyExistError as e:
+                await message.answer(
+                    get_main_manu_lang(message.from_user.language_code, 'already_connected', message)
+                )
+        else:
+            await user_service.create_user_from_telegram(message, ref)
 
-    if settings and payload and payload['login']:
+    if settings and payload and payload.get('login'):
         return await site_login(message, settings)
 
-    elif payload and payload['login']:
+    elif payload and payload.get('login'):
         await site_login(message, settings)
 
     await main_manu(message, settings)

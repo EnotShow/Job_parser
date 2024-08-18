@@ -18,7 +18,6 @@ import { useNavigate } from "react-router-dom"
 import jobParserClient from "src/client/Client"
 import {getCookies, setCookie} from "src/helpers/_auth"
 import UserRegisterDTO from "src/client/DTOs/UserRegisterDTO"
-import AppSettings from "src/AppSettings";
 
 const Register = () => {
   const [email, setEmail] = React.useState('')
@@ -28,13 +27,12 @@ const Register = () => {
   const [loading, setLoading] = React.useState(false)
 
   const [refer, setRefer] = React.useState(null)
-  const [telegramURL, setTelegramURL] = React.useState('')
 
   const navigate = useNavigate()
 
   useEffect(() => {
     const getRefer = async () => {
-      const cookies = await getCookies()
+      const cookies = getCookies()
       if (cookies.refer) {
         setRefer(cookies.refer)
       }
@@ -42,19 +40,16 @@ const Register = () => {
     getRefer()
   }, []);
 
-  useEffect(() => {
-    const getTelegramURL = async () => {
+  const getTelegramURL = async () => {
       const data = {
           ref: refer || 0,
           login: null
       }
       const response = await jobParserClient.telegram.generatePayload(data)
       if (response) {
-        setTelegramURL(response.start_link)
+        return response.start_link
       }
     }
-    getTelegramURL()
-  }, []);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -106,14 +101,15 @@ const Register = () => {
       let response
       switch (method) {
         case 'telegram':
+          const telegramURL = await getTelegramURL()
           window.open(telegramURL, '_blank')
           break
-        case 'google':
-          response = await jobParserClient.registerByGoogle()
-          break
-        case 'messenger':
-          response = await jobParserClient.registerByMessenger()
-          break
+        // case 'google':
+        //   response = await jobParserClient.registerByGoogle()
+        //   break
+        // case 'messenger':
+        //   response = await jobParserClient.registerByMessenger()
+        //   break
         default:
           setError('Unsupported registration method')
           setLoading(false)

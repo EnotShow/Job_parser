@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 
-from src.api.messangers.controllers.user_notify_controller import router as notification_router
-from src.api.messangers.controllers.telegram_controller import router as telegram_router
+from src.api.messangers.bots_controllers.user_notify_controller import router as notification_router
+from src.api.messangers.bots_controllers.telegram_controller import router as telegram_router
 
 
 def get_messangers_router():

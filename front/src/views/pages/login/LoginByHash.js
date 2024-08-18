@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import jobParserClient from "src/client/Client";
 import { setCookie } from "src/helpers/_auth";
+import {CAlert, CSpinner} from "@coreui/react";
 
 const LoginByHash = () => {
   const { hash: _hash } = useParams();
@@ -35,8 +36,12 @@ const LoginByHash = () => {
     authenticate();
   }, [_hash, navigate]);
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (loading) return <CSpinner color="primary" variant="grow" />;
+  if (error) return (
+  <CAlert color="danger">
+    Error: {error}
+  </CAlert>
+);
 
 };
 

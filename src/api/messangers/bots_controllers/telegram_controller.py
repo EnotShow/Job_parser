@@ -12,11 +12,23 @@ router = APIRouter(prefix="/telegram", tags=["Telegram"])
 
 @router.post("/generate_payload", status_code=status.HTTP_200_OK)
 @inject
-async def send_notifications(
+async def generate_payload(
         data: TelegramPayloadDTO,
         telegram_service: TelegramService = Depends(Provide[TelegramServiceContainer.telegram_service])
 ):
     try:
         return await telegram_service.encode_payload(data)
+    except Exception as e:
+        raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'Unexpected error'})
+
+
+@router.post("/connect_account", status_code=status.HTTP_200_OK)
+@inject
+async def send_payload(
+        data: TelegramPayloadDTO,
+        telegram_service: TelegramService = Depends(Provide[TelegramServiceContainer.telegram_service])
+):
+    try:
+        return await telegram_service.send_payload(data)
     except Exception as e:
         raise HTTPException(HTTP_400_BAD_REQUEST, {'data': 'Unexpected error'})

@@ -81,7 +81,7 @@ class UserService(BaseService):
             except (IntegrityError, UniqueViolationError) as e:
                 raise AlreadyExistError(f"User with this email already exists")
 
-    async def create_user_from_telegram(self, message: types.Message, ref: str = None) -> UserDTO:
+    async def create_user_from_telegram(self, message: types.Message, ref: int = None) -> UserDTO:
         user_data = UserCreateDTO(
             email=None,
             password=None,
@@ -95,6 +95,23 @@ class UserService(BaseService):
         async with self.uow as uow:
             repository = UserRepository(uow)
             return await repository.create(user_data)
+
+    async def connect_user_telegram(self, user_id: int, telegram_id: int, refer_id: int = None) -> UserDTO:
+        async with self.uow as uow:
+            repository = UserRepository(uow)
+            try:
+                user = await repository.get_single(user_id)
+                if user.telegram_id:
+                    raise AlreadyExistError(f"User with this telegram_id already exists")
+                try:
+                    update_dto = UserUpdateDTO(**user.dict())
+                    update_dto.telegram_id = telegram_id
+                    update_dto.refer_id = refer_id or 0
+                    return await repository.update(update_dto)
+                except Exception as e:
+                    print(e)
+            except AlreadyExistError as e:
+                raise e
 
     async def update_user(self, user: UserUpdateDTO, user_id: int) -> UserDTO:
         async with self.uow as uow:

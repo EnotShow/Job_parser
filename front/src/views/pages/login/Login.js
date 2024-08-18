@@ -19,31 +19,25 @@ import { cilLockLocked, cilUser, cibTelegram, cibGoogle, cibMessenger } from '@c
 import { setCookie } from 'src/helpers/_auth'
 import jobParserClient from "src/client/Client";
 import UserLoginDTO from "src/client/DTOs/UserLoginDTO";
-import settings from "src/views/settings/Settings";
-import AppSettings from "src/AppSettings";
 
 const Login = () => {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
-  const [telegramURL, setTelegramURL] = React.useState('')
 
   const navigate = useNavigate()
 
-  useEffect(() => {
-    const getTelegramURL = async () => {
+  const getTelegramURL = async () => {
       const data = {
           ref: null,
           login: true
       }
       const response = await jobParserClient.telegram.generatePayload(data)
       if (response) {
-          setTelegramURL(response.start_link)
+          return response.start_link
       }
     }
-    getTelegramURL()
-  }, []);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -68,7 +62,6 @@ const Login = () => {
 
     try {
       const response = await jobParserClient.authAsUser(formDetails)
-
       if (response) {
         setCookie('accessToken', response.access_token, 1)
         setCookie('refreshToken', response.refresh_token, 1)
@@ -89,14 +82,15 @@ const Login = () => {
       let response
       switch (method) {
         case 'telegram':
+          const telegramURL = await getTelegramURL()
           window.open(telegramURL, '_blank')
           break
-        case 'google':
-          response = await jobParserClient.authByGoogle()
-          break
-        case 'messenger':
-          response = await jobParserClient.authByMessenger()
-          break
+        // case 'google':
+        //   response = await jobParserClient.authByGoogle()
+        //   break
+        // case 'messenger':
+        //   response = await jobParserClient.authByMessenger()
+        //   break
         default:
           setError('Unsupported login method')
           setLoading(false)
@@ -123,7 +117,7 @@ const Login = () => {
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
                       <CFormInput
-                        placeholder="Username"
+                        placeholder="Email"
                         autoComplete="username"
                         onChange={(e) => setEmail(e.target.value)}
                         value={email}

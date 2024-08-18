@@ -41,5 +41,9 @@ class TelegramService:
             await self.send_notification(notification_dto)
 
     async def encode_payload(self, payload_dto: TelegramPayloadDTO) -> dict:
-        start_link = await create_start_link(self._bot, f"{payload_dto.model_dump()}", encode=True)
+        start_link = await create_start_link(
+            bot=self._bot,
+            payload=f"{payload_dto.model_dump(exclude_none=True)}",
+            encode=True
+        )
         return {"start_link": start_link}

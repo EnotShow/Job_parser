@@ -64,6 +64,7 @@ class AuthService(BaseService):
             auth_hash = await self._auth_hash_repository.get(_hash)
             if auth_hash:
                 user = await self._user_service.get_user(auth_hash.user_id)
+                await self._auth_hash_repository.delete(_hash)
                 return await self._jwt_service.create_tokens(user)
         except NotFoundError:
             raise NotFoundError("Auth hash not found")

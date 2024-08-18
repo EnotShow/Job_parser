@@ -10,6 +10,7 @@ def get_main_manu_lang(lang: str, part: str, message: types.Message):
             'language_select': 'Выберите язык',
             'settings_changed': 'Настройки изменены!',
             'auth': 'Для авторизации перейдите по ссылке ниже:',
+            'already_connected': 'Этот пользователь уже связан с другой учётной записью!'
         },
         'pl': {
             'command_start': f'Czesc, {message.from_user.full_name}, co chcesz zrobic dzisiaj?',
@@ -18,6 +19,7 @@ def get_main_manu_lang(lang: str, part: str, message: types.Message):
             'language_select': 'Wybierz jezyk',
             'settings_changed': 'Ustawienia zmienione!',
             'auth': 'Aby zalogowac, przejdz do linku:',
+            'already_connected': 'Uzytkownik jest juz podlaczony do innego konta!'
         },
         'en': {
             'command_start': f'Hi, {message.from_user.full_name}, what can I help you with today?',
@@ -26,6 +28,7 @@ def get_main_manu_lang(lang: str, part: str, message: types.Message):
             'language_select': 'Select language',
             'settings_changed': 'Settings changed!',
             'auth': 'To log in, go to the link:',
+            'already_connected': 'This user is already connected to another account!'
         },
     }
     return translate[lang][part]
