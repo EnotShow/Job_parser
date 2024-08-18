@@ -5,6 +5,7 @@ import UserClient from "src/client/UserClient";
 import ApplicationClient from "src/client/ApplicationClient";
 import SearchClient from "src/client/SearchClient";
 import BaseClient from "src/client/BaseClient";
+import TelegramClient from "src/client/TelegramClient";
 
 class JobParserClient extends BaseClient {
     constructor(base_url) {
@@ -21,6 +22,7 @@ class JobParserClient extends BaseClient {
         this.users = new UserClient(this);
         this.applications = new ApplicationClient(this);
         this.searches = new SearchClient(this);
+        this.telegram = new TelegramClient(this);
     }
 
     async authAsUser(data) {
@@ -83,6 +85,25 @@ class JobParserClient extends BaseClient {
             console.error('Error registering user:', error);
             throw error;
         }
+    }
+
+    async authByHash(_hash) {
+        try {
+            const response = await this.client.get(`/auth/login/${_hash}`);
+            if (response.status !== 200) {
+                throw new Error('Authentication by hash failed');
+            }
+
+            const { access_token, refresh_token } = response.data;
+            this.client.defaults.headers['Authorization'] = `Bearer ${access_token}`;
+            this.refreshToken = refresh_token;
+
+            return response.data;
+        } catch (error) {
+            console.error('Error authenticating by hash:', error);
+            throw error;
+        }
+
     }
 }
 

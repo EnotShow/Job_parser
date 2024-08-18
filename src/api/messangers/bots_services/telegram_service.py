@@ -1,9 +1,11 @@
 from typing import List
 
 from aiogram.types import InlineKeyboardMarkup
+from aiogram.utils.deep_linking import create_start_link
 
 from bot_create import bot
 from src.api.messangers.dtos.notification_dto import MessangerNotificationDTO
+from src.api.messangers.dtos.telegram_dto import TelegramPayloadDTO
 from src.bot.handlers.base_handlers import send_notification
 from src.bot.keyboards.reply_keyboard_buttons import ReplyCallbackButtons
 
@@ -37,3 +39,11 @@ class TelegramService:
     async def send_multiple_notifications(self, notifications_dto: List[MessangerNotificationDTO]):
         for notification_dto in notifications_dto:
             await self.send_notification(notification_dto)
+
+    async def encode_payload(self, payload_dto: TelegramPayloadDTO) -> dict:
+        start_link = await create_start_link(
+            bot=self._bot,
+            payload=f"{payload_dto.model_dump(exclude_none=True)}",
+            encode=True
+        )
+        return {"start_link": start_link}

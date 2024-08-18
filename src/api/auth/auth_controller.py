@@ -75,6 +75,18 @@ async def change_user_password(
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail=str(e))
 
+
+@router.get("/login/{_hash}", status_code=status.HTTP_200_OK)
+@inject
+async def login_by_auth_hash(
+        user_service: AuthService = Depends(Provide[AuthServiceContainer.auth_service]),
+        _hash: str = None,
+):
+    try:
+        return await user_service.auth_by_auth_hash(_hash)
+    except Exception as ex:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Error fetching user: {str(ex)}")
+
 # @router.get("/logout", status_code=status.HTTP_200_OK)
 # @permission_required([IsAuthenticated])
 # @inject

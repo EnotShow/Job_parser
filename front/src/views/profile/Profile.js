@@ -11,6 +11,7 @@ import {
 } from '@coreui/react';
 import { cibMessenger, cibTelegram, cibWhatsapp } from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
+import { getCookies } from 'src/helpers/_auth';
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -18,13 +19,13 @@ const Profile = () => {
     first_name: '',
     last_name: '',
     email: '',
+    telegram_id: null, // Assuming telegram_id is needed for the Telegram connection status
   });
 
-  // Fetch profile data from the server when the component mounts
   useEffect(() => {
     const fetchProfileData = async () => {
       try {
-        const response = await jobParserClient.users.getMe(); // Assume this API fetches the user's profile
+        const response = await jobParserClient.users.getMe();
         setProfileData((prevData) => ({
           ...prevData,
           ...response, // Merge response data with current state
@@ -46,16 +47,60 @@ const Profile = () => {
     }));
   };
 
-  // Handler for form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await jobParserClient.users.updateMe(profileData); // Assume this API updates the user's profile
-      console.log('Profile data submitted:', profileData);
+      await jobParserClient.users.updateMe(profileData);
+      window.location.reload();
     } catch (error) {
       console.error('Error submitting profile data:', error);
     }
   };
+
+  const getRefer = async () => {
+    const cookies = getCookies();
+    if (cookies.refer) {
+      return cookies.refer;
+    }
+  };
+
+  const handleTelegramConnect = async () => {
+    try {
+      const refer = await getRefer();
+      const data = {
+        ref: refer || 0,
+        connect: true,
+        user_id: profileData.id,
+      };
+      const response = await jobParserClient.telegram.generatePayload(data);
+      if (response) {
+        window.open(response.start_link, '_blank');
+        if (window.opener) {
+          window.opener.location.reload();
+        }
+      }
+    } catch (error) {
+      console.error('Error connecting to Telegram:', error);
+    }
+  };
+
+  // const handleWhatsAppConnect = async () => {
+  //   try {
+  //     // Add your logic to connect to WhatsApp here
+  //     console.log('Connecting to WhatsApp...');
+  //   } catch (error) {
+  //     console.error('Error connecting to WhatsApp:', error);
+  //   }
+  // };
+
+  // const handleMessengerConnect = async () => {
+  //   try {
+  //     // Add your logic to connect to Messenger here
+  //     console.log('Connecting to Messenger...');
+  //   } catch (error) {
+  //     console.error('Error connecting to Messenger:', error);
+  //   }
+  // };
 
   return (
     <>
@@ -111,7 +156,11 @@ const Profile = () => {
                       <h5>Telegram</h5>
                     </CCol>
                     <CCol xs="auto">
-                      <CButton color="primary">Connect</CButton>
+                      {profileData.telegram_id ? (
+                        <CButton color="success" disabled>Connected</CButton>
+                      ) : (
+                        <CButton color="primary" onClick={handleTelegramConnect}>Connect</CButton>
+                      )}
                     </CCol>
                   </CRow>
                 </CCol>
@@ -124,7 +173,7 @@ const Profile = () => {
                       <h5>WhatsApp</h5>
                     </CCol>
                     <CCol xs="auto">
-                      <CButton color="primary">Connect</CButton>
+                      <CButton color="primary" disabled>Coming soon</CButton>
                     </CCol>
                   </CRow>
                 </CCol>
@@ -137,7 +186,7 @@ const Profile = () => {
                       <h5>Messenger</h5>
                     </CCol>
                     <CCol xs="auto">
-                      <CButton color="success" disabled>Connected</CButton>
+                      <CButton color="primary" disabled>Coming soon</CButton>
                     </CCol>
                   </CRow>
                 </CCol>

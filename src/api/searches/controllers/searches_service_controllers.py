@@ -2,7 +2,6 @@ from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, APIRouter, HTTPException
 from starlette import status
 from starlette.requests import Request
-from starlette.status import HTTP_400_BAD_REQUEST
 
 from core.shared.errors import NoRowsFoundError
 from core.shared.permissions.permission_decorator import permission_required

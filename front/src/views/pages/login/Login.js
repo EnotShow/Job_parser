@@ -1,7 +1,8 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   CButton,
+  CButtonGroup,
   CCard,
   CCardBody,
   CCardGroup,
@@ -14,7 +15,7 @@ import {
   CRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilLockLocked, cilUser } from '@coreui/icons'
+import { cilLockLocked, cilUser, cibTelegram, cibGoogle, cibMessenger } from '@coreui/icons'
 import { setCookie } from 'src/helpers/_auth'
 import jobParserClient from "src/client/Client";
 import UserLoginDTO from "src/client/DTOs/UserLoginDTO";
@@ -26,6 +27,17 @@ const Login = () => {
   const [loading, setLoading] = React.useState(false)
 
   const navigate = useNavigate()
+
+  const getTelegramURL = async () => {
+      const data = {
+          ref: null,
+          login: true
+      }
+      const response = await jobParserClient.telegram.generatePayload(data)
+      if (response) {
+          return response.start_link
+      }
+    }
 
   const validateForm = () => {
     if (!email || !password) {
@@ -49,9 +61,7 @@ const Login = () => {
     ).toJSON();
 
     try {
-
       const response = await jobParserClient.authAsUser(formDetails)
-
       if (response) {
         setCookie('accessToken', response.access_token, 1)
         setCookie('refreshToken', response.refresh_token, 1)
@@ -61,6 +71,31 @@ const Login = () => {
       }
     } catch (e) {
       setError(e.response?.message || 'Login failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleLoginMethod = async (method) => {
+    setLoading(true)
+    try {
+      let response
+      switch (method) {
+        case 'telegram':
+          const telegramURL = await getTelegramURL()
+          window.open(telegramURL, '_blank')
+          break
+        // case 'google':
+        //   response = await jobParserClient.authByGoogle()
+        //   break
+        // case 'messenger':
+        //   response = await jobParserClient.authByMessenger()
+        //   break
+        default:
+          setError('Unsupported login method')
+          setLoading(false)
+          return
+      }
     } finally {
       setLoading(false)
     }
@@ -82,7 +117,7 @@ const Login = () => {
                         <CIcon icon={cilUser} />
                       </CInputGroupText>
                       <CFormInput
-                        placeholder="Username"
+                        placeholder="Email"
                         autoComplete="username"
                         onChange={(e) => setEmail(e.target.value)}
                         value={email}
@@ -106,11 +141,41 @@ const Login = () => {
                           {loading ? 'Loading...' : 'Login'}
                         </CButton>
                       </CCol>
-                        {error && <p className="text-danger mt-2">{error}</p>}
+                      {error && <p className="text-danger mt-2">{error}</p>}
                       <CCol xs={6} className="text-right">
                         <CButton color="link" className="px-0">
                           Forgot password?
                         </CButton>
+                      </CCol>
+                    </CRow>
+                    <CRow className="mt-3">
+                      <CCol xs={12} className="d-flex justify-content-center">
+                        <CButtonGroup>
+                          <CButton
+                            color="info"
+                            className="px-4"
+                            disabled={loading}
+                            onClick={() => handleLoginMethod('telegram')}
+                          >
+                            <CIcon icon={cibTelegram} size="lg" />
+                          </CButton>
+                          <CButton
+                            color="danger"
+                            className="px-4"
+                            disabled={loading}
+                            onClick={() => handleLoginMethod('google')}
+                          >
+                            <CIcon icon={cibGoogle} size="lg" />
+                          </CButton>
+                          <CButton
+                            color="primary"
+                            className="px-4"
+                            disabled={loading}
+                            onClick={() => handleLoginMethod('messenger')}
+                          >
+                            <CIcon icon={cibMessenger} size="lg" />
+                          </CButton>
+                        </CButtonGroup>
                       </CCol>
                     </CRow>
                   </CForm>

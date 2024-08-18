@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Optional
 
 from core.shared.base_dto import BaseDTO
 from src.api.users.user_dto import UserShortDTO
@@ -51,3 +52,8 @@ class TokenDTO(BaseDTO):
 class AuthDTO(BaseDTO):
     email: AccessTokenDTO
     password: RefreshTokenDTO
+
+
+class AuthHashDTO(BaseDTO):
+    pk: Optional[str] = None
+    user_id: Optional[int]

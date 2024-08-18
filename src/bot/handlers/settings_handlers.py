@@ -43,9 +43,9 @@ class ChangeLanguage:
             user_service: UserService = Provide[UserServiceContainer.user_service],
     ):
         await user_service.update_user(UserUpdateDTO(
-            id=settings.id,
+            id=settings.user_id,
             selected_language=callback_data.language_option
-        ), settings.id)
+        ), settings.user_id)
         settings.selected_language = callback_data.language_option
         await callback_query.message.delete()
         await callback_query.message.answer(
@@ -69,7 +69,7 @@ async def change_pausing(
         settings: UserSettingsDTO,
         user_service: UserService = Provide[UserServiceContainer.user_service],
 ):
-    await user_service.update_user(UserUpdateDTO(id=settings.id, paused=not settings.paused), settings.id)
+    await user_service.update_user(UserUpdateDTO(id=settings.user_id, paused=not settings.paused), settings.user_id)
     await callback_query.message.edit_text(
         text=get_main_manu_lang(settings.language_code, 'settings_menu', callback_query.message),
         reply_markup=get_settings_menu_keyboard(settings)

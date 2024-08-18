@@ -4,6 +4,7 @@ import sys
 from contextlib import asynccontextmanager
 
 import uvicorn
+from aredis_om import Migrator
 from fastapi import FastAPI
 from sqladmin import Admin
 from starlette.middleware.cors import CORSMiddleware
@@ -27,6 +28,9 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    m = Migrator()
+    await m.run()
+
     print('Bot is starting...')
     if development_settings.background_tasks:
         print('Background tasks are running...')
