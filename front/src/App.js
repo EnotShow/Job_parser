@@ -6,6 +6,7 @@ import { CSpinner, useColorModes } from '@coreui/react'
 import './scss/style.scss'
 import ProtectedRoute from "src/helpers/ProtectedRouter";
 import {ROUTES} from "src/routes";
+import LoginByHash from "src/views/pages/login/LoginByHash";
 
 // Containers
 const DefaultLayout = React.lazy(() => import('./layout/DefaultLayout'))
@@ -44,7 +45,9 @@ const App = () => {
         }
       >
         <Routes>
+          <Route exact path={ROUTES.LOGIN_BY_HASH} name="Login By Hash" element={<LoginByHash />} />
           <Route exact path={ROUTES.LOGIN} name="Login Page" element={<Login />} />
+
           <Route exact path={ROUTES.REGISTER} name="Register Page" element={<Register />} />
           <Route exact path={ROUTES.NOT_FOUND} name="Page 404" element={<Page404 />} />
           <Route exact path={ROUTES.SERVER_ERROR} name="Page 500" element={<Page500 />} />

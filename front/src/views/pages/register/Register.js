@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import {
   CButton,
   CButtonGroup,
@@ -16,8 +16,9 @@ import CIcon from '@coreui/icons-react'
 import { cilLockLocked, cibTelegram, cibGoogle, cibMessenger } from '@coreui/icons'
 import { useNavigate } from "react-router-dom"
 import jobParserClient from "src/client/Client"
-import { setCookie } from "src/helpers/_auth"
+import {getCookies, setCookie} from "src/helpers/_auth"
 import UserRegisterDTO from "src/client/DTOs/UserRegisterDTO"
+import AppSettings from "src/AppSettings";
 
 const Register = () => {
   const [email, setEmail] = React.useState('')
@@ -26,7 +27,34 @@ const Register = () => {
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
 
+  const [refer, setRefer] = React.useState(null)
+  const [telegramURL, setTelegramURL] = React.useState('')
+
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const getRefer = async () => {
+      const cookies = await getCookies()
+      if (cookies.refer) {
+        setRefer(cookies.refer)
+      }
+    }
+    getRefer()
+  }, []);
+
+  useEffect(() => {
+    const getTelegramURL = async () => {
+      const data = {
+          ref: refer || 0,
+          login: null
+      }
+      const response = await jobParserClient.telegram.generatePayload(data)
+      if (response) {
+        setTelegramURL(response.start_link)
+      }
+    }
+    getTelegramURL()
+  }, []);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -78,7 +106,7 @@ const Register = () => {
       let response
       switch (method) {
         case 'telegram':
-          response = await jobParserClient.registerByTelegram()
+          window.open(telegramURL, '_blank')
           break
         case 'google':
           response = await jobParserClient.registerByGoogle()
@@ -91,15 +119,6 @@ const Register = () => {
           setLoading(false)
           return
       }
-      if (response) {
-        setCookie('accessToken', response.access_token, 1)
-        setCookie('refreshToken', response.refresh_token, 1)
-        navigate('/')
-      } else {
-        setError(response.details || 'Unexpected error occurred')
-      }
-    } catch (e) {
-      setError(e.response?.message || 'Registration failed')
     } finally {
       setLoading(false)
     }

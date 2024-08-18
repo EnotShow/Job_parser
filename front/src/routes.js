@@ -34,6 +34,8 @@ const ROUTES = {
   SEARCH_CREATE: "/searches/create",
 
   APPLICATIONS: "/applications",
+  APPLICATIONS_LIST: "/applications/all-applications",
+  APPLICATIONS_SELF_LIST: "/applications/my-applications",
   APPLICATION_DETAILS: "/applications/:id",
 
   PROFILE: "/profile",
@@ -59,14 +61,15 @@ const routeConfig = [
   { path: ROUTES.SEARCH_CREATE, name: 'Create Search', element: SearchCreate, protected: true },
 
   // applications
-  { path: `${ROUTES.APPLICATIONS}/my-applications`, name: 'User Applications', element: Applications, protected: true },
-  { path: `${ROUTES.APPLICATIONS}/all-applications`, name: 'Applications', element: Applications, protected: true },
+  { path: ROUTES.APPLICATIONS_SELF_LIST, name: 'User Applications', element: Applications, protected: true },
+  { path: ROUTES.APPLICATIONS_LIST, name: 'Applications', element: Applications, protected: true },
   { path: ROUTES.APPLICATION_DETAILS, name: 'Get Application', element: ApplicationDetails, protected: true },
 
   { path: ROUTES.PROFILE, name: 'Profile', element: Profile, protected: true },
   { path: ROUTES.SETTINGS, name: 'Settings', element: Settings, protected: true },
 
   { path: ROUTES.LOGIN, name: 'Login', element: Login },
+  { path: ROUTES.LOGIN_BY_HASH, name: 'LoginByHash', element: LoginByHash },
   { path: ROUTES.REGISTER, name: 'Register', element: Register },
   { path: ROUTES.NOT_FOUND, name: 'Page404', element: NotFound },
   { path: ROUTES.SERVER_ERROR, name: 'Page500', element: Page500 },

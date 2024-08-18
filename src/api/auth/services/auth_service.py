@@ -56,7 +56,7 @@ class AuthService(BaseService):
             raise AlreadyExistError("User with this email already exists")
 
     async def generate_login_hash(self, user_id: int) -> AuthHashDTO:
-        _hash = await self._auth_hash_repository.create(AuthHashDTO(user_id=user_id))
+        _hash = await self._auth_hash_repository.create(AuthHashDTO(user_id=user_id), expire=10 * 60)
         return _hash
 
     async def auth_by_auth_hash(self, _hash: str) -> TokenDTO:

@@ -6,6 +6,7 @@ from src.client.ApplicationClient import ApplicationClient
 from src.client.BaseClient import BaseClient
 from src.client.NotificationClient import NotificationsClient
 from src.client.SearchClient import SearchClient
+from src.client.TelegramClient import TelegramClient
 from src.client.UserClient import UserClient
 
 
@@ -19,6 +20,7 @@ class JobParserClient(BaseClient):
         self.applications = ApplicationClient(self)
         self.searches = SearchClient(self)
         self.notifications = NotificationsClient(self)
+        self.telegram = TelegramClient(self)
 
     async def auth_as_user(self, data: UserLoginDTO):
         tokens = await self.session.post(

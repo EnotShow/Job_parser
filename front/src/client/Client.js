@@ -5,6 +5,7 @@ import UserClient from "src/client/UserClient";
 import ApplicationClient from "src/client/ApplicationClient";
 import SearchClient from "src/client/SearchClient";
 import BaseClient from "src/client/BaseClient";
+import TelegramClient from "src/client/TelegramClient";
 
 class JobParserClient extends BaseClient {
     constructor(base_url) {
@@ -21,6 +22,7 @@ class JobParserClient extends BaseClient {
         this.users = new UserClient(this);
         this.applications = new ApplicationClient(this);
         this.searches = new SearchClient(this);
+        this.telegram = new TelegramClient(this);
     }
 
     async authAsUser(data) {
@@ -101,6 +103,7 @@ class JobParserClient extends BaseClient {
             console.error('Error authenticating by hash:', error);
             throw error;
         }
+
     }
 }
 

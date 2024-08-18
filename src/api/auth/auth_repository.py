@@ -8,7 +8,7 @@ from src.api.auth.auth_dto import AuthHashDTO
 class AuthHashRepository(CacheRepository):
     model = AuthHash
 
-    async def create(self, dto: AuthHashDTO, expire: Optional[int] = None) -> AuthHashDTO:
+    async def create(self, dto: AuthHashDTO, expire: int) -> AuthHashDTO:
         instance = self.model(user_id=dto.user_id)
         await instance.expire(expire)
         await instance.save()
@@ -16,7 +16,7 @@ class AuthHashRepository(CacheRepository):
         return dto
 
     async def get(self, pk) -> AuthHashDTO | None:
-        instance = await self.model.get(self.model.pk == pk)
+        instance = await self.model.get(pk)
         if instance is None:
             return None
         return AuthHashDTO(pk=instance.pk, user_id=instance.user_id)

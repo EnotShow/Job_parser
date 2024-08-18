@@ -64,7 +64,7 @@ class UserCreateDTO(BaseDTO):
 
 
 class UserSettingsDTO(BaseDTO):
-    id: int
+    user_id: int
     language_code: Optional[str]
     selected_language: Optional[str]
     paused: bool

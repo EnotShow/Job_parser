@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   CButton,
@@ -19,14 +19,31 @@ import { cilLockLocked, cilUser, cibTelegram, cibGoogle, cibMessenger } from '@c
 import { setCookie } from 'src/helpers/_auth'
 import jobParserClient from "src/client/Client";
 import UserLoginDTO from "src/client/DTOs/UserLoginDTO";
+import settings from "src/views/settings/Settings";
+import AppSettings from "src/AppSettings";
 
 const Login = () => {
   const [email, setEmail] = React.useState('')
   const [password, setPassword] = React.useState('')
   const [error, setError] = React.useState('')
   const [loading, setLoading] = React.useState(false)
+  const [telegramURL, setTelegramURL] = React.useState('')
 
   const navigate = useNavigate()
+
+  useEffect(() => {
+    const getTelegramURL = async () => {
+      const data = {
+          ref: null,
+          login: true
+      }
+      const response = await jobParserClient.telegram.generatePayload(data)
+      if (response) {
+          setTelegramURL(response.start_link)
+      }
+    }
+    getTelegramURL()
+  }, []);
 
   const validateForm = () => {
     if (!email || !password) {
@@ -72,7 +89,7 @@ const Login = () => {
       let response
       switch (method) {
         case 'telegram':
-          response = await jobParserClient.authByTelegram()
+          window.open(telegramURL, '_blank')
           break
         case 'google':
           response = await jobParserClient.authByGoogle()
@@ -85,15 +102,6 @@ const Login = () => {
           setLoading(false)
           return
       }
-      if (response) {
-        setCookie('accessToken', response.access_token, 1)
-        setCookie('refreshToken', response.refresh_token, 1)
-        navigate('/')
-      } else {
-        setError(response.details || 'Unexpected error occurred')
-      }
-    } catch (e) {
-      setError(e.response?.message || 'Login failed')
     } finally {
       setLoading(false)
     }

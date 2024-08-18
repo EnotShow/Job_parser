@@ -79,8 +79,9 @@ class ApplicationClient(BaseClient):
 
         self.service = ApplicationServiceClient(self)
 
-    async def get_all_applications(self, *, limit: int = None, page: int = None, return_response: bool = False) -> \
-    Union[List[ApplicationDTO], Response]:
+    async def get_all_applications(
+            self, *, limit: int = None, page: int = None, return_response: bool = False
+) -> Union[List[ApplicationDTO], Response]:
         url = self._add_pagination(f"{self.base_url}/", limit, page)
         response = await self.session.get(url)
         if return_response:
@@ -103,7 +104,7 @@ class ApplicationClient(BaseClient):
         return [ApplicationDTO(**application) for application in response.json()['items']]
 
     async def update_application(self, data: ApplicationDTO, application_id: int, *, return_response: bool = False) -> \
-    Union[ApplicationDTO, Response]:
+            Union[ApplicationDTO, Response]:
         response = await self.session.put(f"{self.base_url}/{application_id}", json=data.dict())
         if return_response:
             return response

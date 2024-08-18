@@ -28,6 +28,9 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    m = Migrator()
+    await m.run()
+
     print('Bot is starting...')
     if development_settings.background_tasks:
         print('Background tasks are running...')
@@ -73,12 +76,6 @@ app = get_application()
 @app.post(WEBHOOK_PATH, include_in_schema=False)
 async def bot_webhook(update: dict):
     await bot_update(update)
-
-
-@app.on_event("startup")
-async def on_startup():
-    m = Migrator()
-    await m.run()
 
 
 # Register admin
