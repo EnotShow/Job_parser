@@ -90,10 +90,10 @@ class SearchService(BaseService):
             user_repository = UserRepository(uow)
             try:
                 if dto.owner_id == user_id:
-                    user = await user_repository.get_user_settings(user_id)
-                    search_dto = SearchFilterDTO(owner_id=user.id)
+                    user_settings = await user_repository.get_user_settings(user_id)
+                    search_dto = SearchFilterDTO(owner_id=user_settings.user_id)
                     searches_count = await repository.get_count(search_dto)
-                    if searches_count >= user.links_limit:
+                    if searches_count >= user_settings.links_limit:
                         raise Exception("User links limit reached")
                     search_obj = SearchCreateDTO(**dto.model_dump())
                     return await repository.create(search_obj)
