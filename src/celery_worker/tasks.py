@@ -16,10 +16,14 @@ from src.parsers.helper import get_parser
 
 
 @celery_app.task(bind=True, autoretry_for=(TaskError,), retry_kwargs={'max_retries': 2})
-def add_parsing_job(searches: [List[SearchFilterDTO], dict], *args, **kwargs):
-    return print(*args, **kwargs)
-    if isinstance(searches[0], dict):
-        searches = [SearchFilterDTO(**search) for search in searches]
+def add_parsing_job(self, searches: [List[SearchFilterDTO], dict]):
+    if isinstance(searches, list):
+        if isinstance(searches[0], dict):
+            searches = [SearchFilterDTO(**search) for search in searches]
+    elif isinstance(searches, dict):
+        searches = [SearchFilterDTO(**searches)]
+    else:
+        raise TaskError(f"Unexpected type of searches: {type(searches)}")
     asyncio.run(parsing_job(searches))
 
 
