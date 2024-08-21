@@ -119,6 +119,8 @@ class UserRepository(BaseRepository):
         try:
             result = await self._uow.session.execute(stmt)
             row = result.scalars().first()
+            raw_data = row.__dict__
+            raw_data['user_id'] = raw_data['id']
             return UserSettingsDTO(**row.__dict__)
         except (NoResultFound, AttributeError) as e:
             raise Exception(f"User with id {user_id} not found")

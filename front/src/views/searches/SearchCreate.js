@@ -18,7 +18,6 @@ const SearchCreate = () => {
   const [searchDetails, setSearchDetails] = useState({
     title: '',
     url: '',
-    created_at: '',
     owner_id: '',
   });
   const [userId, setUserId] = useState('');
@@ -75,17 +74,6 @@ const SearchCreate = () => {
                     type="text"
                     id="url"
                     value={searchDetails.url}
-                    onChange={handleChange}
-                  />
-                </CCol>
-              </CRow>
-              <CRow className="mb-3">
-                <CFormLabel htmlFor="created_at" className="col-sm-2 col-form-label">Created At</CFormLabel>
-                <CCol sm={10}>
-                  <CFormInput
-                    type="text"
-                    id="created_at"
-                    value={searchDetails.created_at}
                     onChange={handleChange}
                   />
                 </CCol>

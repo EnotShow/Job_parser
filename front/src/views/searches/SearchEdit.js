@@ -22,7 +22,6 @@ const SearchEdit = () => {
   const [searchDetails, setSearchDetails] = useState({
     title: '',
     url: '',
-    created_at: ''
   });
 
   useEffect(() => {
