@@ -3,6 +3,7 @@ from typing import TypeVar, List
 
 from dependency_injector.wiring import inject, Provide
 
+from core.config.proj_settings import development_settings
 from core.shared.base_dto import BaseDTO
 from src.api.searches.containers.search_service_container import SearchServiceContainer
 from src.api.searches.searchings_service import SearchService
@@ -17,14 +18,18 @@ async def processing(
 ):
     while True:
         try:
-            def to_celery_primitive(objects: List[T]) -> List[T]:
+
+            def to_celery_primitive(objects: List[T]) -> List[dict]:
                 return [obj.model_dump() for obj in objects]
 
             searches = await searching_service.get_all_searches()
             searches = to_celery_primitive(searches.items)
+
+            batch = []
             for i in range(0, len(searches), 100):
                 batch = searches[i:i + 100]
-                add_parsing_job.apply_async((batch,))
+            add_parsing_job.apply_async((batch,))
+
         except Exception as e:
             print(e)
-        await asyncio.sleep(1)
+        await asyncio.sleep(60 * development_settings.parsing_delay)
