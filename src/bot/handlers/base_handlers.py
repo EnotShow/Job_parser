@@ -32,7 +32,7 @@ def new_offer(title, url, search_title, lang):
 def offer_title(title, url, search_title, lang):
     translate = {
         'ru': f"{title}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}",
-        'pl': f"{title}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}",
+        'pl': f"{title}\n{hlink('Plik', url)}\nZapyt: {hbold(search_title)}",
         'en': f"{title}\n{hlink('Link', url)}\nSearch: {hbold(search_title)}",
     }
     return translate[lang]
@@ -41,7 +41,7 @@ def offer_title(title, url, search_title, lang):
 def offer_description(description, url, search_title, lang):
     translate = {
         'ru': f"{description}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}",
-        'pl': f"{description}\n{hlink('Ссылка', url)}\nЗапрос: {hbold(search_title)}",
+        'pl': f"{description}\n{hlink('Plik', url)}\nZapyt: {hbold(search_title)}",
         'en': f"{description}\n{hlink('Link', url)}\nSearch: {hbold(search_title)}",
     }
     return translate[lang]
