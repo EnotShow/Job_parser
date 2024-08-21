@@ -4,7 +4,7 @@ from core.config.db import settings_broker
 celery_app = Celery(
     __name__,
     broker=settings_broker.broker_url,
-    backend='redis://',
+    backend=settings_broker.broker_url,
 )
 
 celery_app.autodiscover_tasks(packages=["src.celery_worker.tasks"])
