@@ -5,6 +5,7 @@ from src.api.auth.auth_controller import router as auth_router
 from src.api.messangers.messangers_routers import get_messangers_router
 from src.api.searches.searchings_routers import get_searching_router
 from src.api.users.user_router import get_users_router
+from src.api.smart_editor.smart_routers import get_smart_router
 
 
 def get_apps_router():
@@ -14,5 +15,6 @@ def get_apps_router():
     router.include_router(get_messangers_router())
     router.include_router(get_searching_router())
     router.include_router(get_users_router())
+    router.include_router(get_smart_router())
 
     return router
