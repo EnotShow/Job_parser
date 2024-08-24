@@ -10,3 +10,5 @@ async def get_parser(url: str):
         return PracujParser()
     elif url.startswith(PracaParser.base_url):
         return PracaParser
+
+
