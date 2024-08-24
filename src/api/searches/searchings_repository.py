@@ -8,13 +8,19 @@ from core.shared.base_repository import BaseRepository
 from core.shared.errors import NoRowsFoundError
 from src.api.searches.search_dto import SearchCreateDTO, SearchDTO, SearchFilterDTO, SearchUpdateDTO
 from src.api.searches.search_model import Search
+from src.api.users.user_repository import UserRepository
 
 
 class SearchRepository(BaseRepository):
     model = Search
 
-    def __init__(self, uow: UnitOfWork):
+    def __init__(
+            self,
+            uow: UnitOfWork
+    ):
         self._uow = uow
+        self._user_repository = UserRepository(uow)
+        self._search_repository = SearchRepository(uow)
 
     async def get(self, limit: int = 10, page: int = 1) -> list[SearchDTO]:
         offset = (page - 1) * limit
@@ -56,6 +62,10 @@ class SearchRepository(BaseRepository):
 
     async def create(self, dto: SearchCreateDTO):
         instance = self.model(**dto.model_dump())
+        user_settings = await self._user_repository.get_user_settings(dto.user_id)
+        searches_count = await self._search_repository.get_count(SearchFilterDTO(user_id=dto.user_id))
+        if searches_count >= user_settings.links_limit:
+            raise Exception("User links limit reached")
         self._uow.session.add(instance)
         try:
             await self._uow.session.flush()
@@ -63,6 +73,38 @@ class SearchRepository(BaseRepository):
             await self._uow.session.refresh(instance)
             return self._get_dto(instance)
         except IntegrityError as e:
+            raise Exception(str(e))
+
+    async def create_multiple(self, dtos: List[SearchCreateDTO]) -> List[SearchDTO]:
+        created_instances = []
+        users_data = {}
+        # Check that all users have enough slots for links
+        for dto in dtos:
+            if not users_data.get(dto.user_id):
+                user_settings = await self._user_repository.get_user_settings(dto.user_id)
+                searches_count = await self._search_repository.get_count(SearchFilterDTO(user_id=dto.user_id))
+                if searches_count >= user_settings.links_limit:
+                    raise Exception(f"User links limit reached for user id: {dto.owner_id}")
+                users_data[dto.user_id] = user_settings.links_limit
+
+            # if user data links limit at least bigger than one
+            if users_data[dto.user_id] - 1:
+                users_data[dto.user_id] -= 1
+            else:
+                raise Exception(f"User links limit reached for user id: {dto.owner_id}")
+
+        for dto in dtos:
+            instance = self.model(**dto.model_dump())
+            self._uow.session.add(instance)
+            created_instances.append(instance)
+        try:
+            await self._uow.session.flush()
+            await self._uow.commit()
+            for instance in created_instances:
+                await self._uow.session.refresh(instance)
+            return [self._get_dto(instance) for instance in created_instances]
+        except IntegrityError as e:
+            await self._uow.rollback()
             raise Exception(str(e))
 
     async def update(self, dto: SearchUpdateDTO) -> SearchDTO:

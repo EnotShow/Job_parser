@@ -1,4 +1,4 @@
-from src.parsers.olx_pl import OlxParser
+from src.parsers.olx_pl.job_parser_olx_pl import OlxParser
 from src.parsers.praca_pl import PracaParser
 from src.parsers.pracuj_pl import PracujParser
 

@@ -1,14 +1,11 @@
 import asyncio
-from typing import TypeVar, List
 
 from dependency_injector.wiring import inject, Provide
 
-from core.shared.base_dto import BaseDTO
 from src.api.searches.containers.search_service_container import SearchServiceContainer
 from src.api.searches.searchings_service import SearchService
-from src.celery_worker.tasks import add_parsing_job
-
-T = TypeVar("T", bound=BaseDTO)
+from src.celery_worker.helpers import convert_to_celery_primitive
+from src.celery_worker.tasks.link_parser import add_parsing_job
 
 
 @inject
@@ -17,11 +14,8 @@ async def processing(
 ):
     while True:
         try:
-            def to_celery_primitive(objects: List[T]) -> List[T]:
-                return [obj.model_dump() for obj in objects]
-
             searches = await searching_service.get_all_searches()
-            searches = to_celery_primitive(searches.items)
+            searches = convert_to_celery_primitive(searches.items)
             for i in range(0, len(searches), 100):
                 batch = searches[i:i + 100]
                 add_parsing_job.apply_async((batch,))

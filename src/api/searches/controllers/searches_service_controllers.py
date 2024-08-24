@@ -57,6 +57,20 @@ async def create_search(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 
+@router.post("/create_multiple", status_code=status.HTTP_201_CREATED)
+@permission_required([IsService])
+@inject
+async def create_multiple_searches(
+        data: list[SearchCreateDTO],
+        request: Request,
+        search_service: SearchService = Depends(Provide[SearchServiceContainer.search_service]),
+):
+    try:
+        return await search_service.create_multiple_searches(data)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
 @router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
 @permission_required([IsService])
 @inject

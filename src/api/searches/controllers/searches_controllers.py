@@ -57,6 +57,24 @@ async def create_user_search(
         raise HTTPException(status.HTTP_400_BAD_REQUEST, {'data': 'No rows found'})
 
 
+@router.post("/create_multiple", status_code=status.HTTP_201_CREATED)
+@permission_required([IsAuthenticated])
+@inject
+async def create_multiple_searches(
+        data: list[SearchCreateDTO],
+        request: Request,
+        search_service: SearchService = Depends(Provide[SearchServiceContainer.search_service]),
+):
+    try:
+        # Check if user id matches
+        for search in data:
+            if search.user_id != request.state.token.user.id:
+                raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="User id does not match")
+        return await search_service.create_multiple_searches(data)
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
 @router.delete("/{search_id}", status_code=status.HTTP_200_OK)
 @permission_required([IsAuthenticated])
 @inject

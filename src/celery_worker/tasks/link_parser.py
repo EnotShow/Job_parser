@@ -12,7 +12,7 @@ from src.api.searches.search_dto import SearchFilterDTO
 from src.bot.handlers.base_handlers import new_offer
 from src.celery_worker.celery import celery_app
 from src.client.client import JobParserClient
-from src.parsers.helper import get_parser
+from src.parsers.helpers.get_parser import get_parser
 
 
 @celery_app.task(bind=True, autoretry_for=(TaskError,), retry_kwargs={'max_retries': 2})

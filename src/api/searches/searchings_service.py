@@ -1,3 +1,5 @@
+from typing import List
+
 from dependency_injector.wiring import inject, Provide
 
 from core.db.uow import UnitOfWork
@@ -53,7 +55,6 @@ class SearchService(BaseService):
             except NoRowsFoundError:
                 raise NoRowsFoundError(f"Search {search_id} not found")
 
-    @inject
     async def get_telegram_user_searches(
             self,
             telegram_id: int,
@@ -81,6 +82,14 @@ class SearchService(BaseService):
             except Exception as e:
                 raise e
 
+    async def create_multiple_searches(self, dtos: List[SearchCreateDTO]) -> List[SearchDTO]:
+        async with self.uow as uow:
+            repository = SearchRepository(uow)
+            try:
+                return await repository.create_multiple(dtos)
+            except Exception as e:
+                raise e
+
     async def create_user_search(
             self, dto: SearchCreateDTO,
             user_id: int,
@@ -102,7 +111,6 @@ class SearchService(BaseService):
             except Exception as e:
                 raise e
 
-    @inject
     async def crete_search_from_telegram(
             self,
             data: dict,

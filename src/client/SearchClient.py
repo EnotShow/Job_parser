@@ -29,6 +29,12 @@ class SearchesServiceClient(BaseClient):
             return response
         return SearchDTO(**response.json())
 
+    async def create_searches(self, data: List[SearchDTO], *, return_response: bool = False) -> Union[List[SearchDTO], Response]:
+        response = await self.session.post(f"{self.base_url}/create_multiple", json=[item.dict() for item in data])
+        if return_response:
+            return response
+        return [SearchDTO(**search) for search in response.json()]
+
     async def update_search(self, data: SearchDTO, search_id: int, *, return_response: bool = False) -> Union[SearchDTO, Response]:
         response = await self.session.put(f"{self.base_url}/{search_id}", json=data.dict())
         if return_response:
@@ -67,6 +73,12 @@ class SearchClient(BaseClient):
         if return_response:
             return response
         return SearchDTO(**response.json())
+
+    async def create_searches(self, data: List[SearchDTO], *, return_response: bool = False) -> Union[List[SearchDTO], Response]:
+        response = await self.session.post(f"{self.base_url}/create_multiple", json=[item.dict() for item in data])
+        if return_response:
+            return response
+        return [SearchDTO(**search) for search in response.json()]
 
     async def update_search(self, data: SearchDTO, search_id: int, *, return_response: bool = False) -> Union[SearchDTO, Response]:
         response = await self.session.put(f"{self.base_url}/{search_id}", json=data.dict())

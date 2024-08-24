@@ -1,51 +1,16 @@
-import asyncio
-import time
 from typing import Any
 
-import requests
-from bs4 import BeautifulSoup
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
-from src.api.applications.application_dto import ApplicationCreateDTO
 from src.api.smart_editor.smart_dto import SmartEditorParamsDTO
-from src.parsers.link_generators import DynamicLinkGenerator
-
-
-class OlxParser:
-    base_url = 'https://www.olx.pl'
-
-    async def parse_offers(self, url: str, owner_id: int):
-        html = requests.get(url).text
-        soup = BeautifulSoup(html, "html.parser")
-        jobs = soup.div.find_all(class_='jobs-ad-card')
-        result = []
-        for i in jobs:
-            try:
-                title, url = i.get_text(separator='\n'), self.base_url + i.a['href']
-                description = await self._parse_details(url)
-                job = ApplicationCreateDTO(
-                    title=title,
-                    url=url,
-                    description=description,
-                    owner_id=owner_id
-                )
-                result.append(job)
-            except AttributeError:
-                pass
-        return result
-
-    async def _parse_details(self, url: str):
-        html = requests.get(url).text
-        soup = BeautifulSoup(html, "html.parser")
-        description = soup.find(class_='css-14ie0im').get_text()
-        return description
+from src.parsers.helpers.link_generators import DynamicLinkGenerator
 
 
 class OlxDynamicLinkGenerator(DynamicLinkGenerator):
     base_url = "https://www.olx.pl/praca/"
-    _filter = "?search%5Border%5D=created_at:desc"
+    _filter = "?search%5Border%5D=created_at:desc"  # start from new filter
 
     def generate_link(self, params_dto: SmartEditorParamsDTO) -> Any | None:
         try:
