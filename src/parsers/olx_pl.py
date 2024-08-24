@@ -47,7 +47,7 @@ class OlxDynamicLinkGenerator(DynamicLinkGenerator):
     base_url = "https://www.olx.pl/praca/"
     _filter = "?search%5Border%5D=created_at:desc"
 
-    def generate_link(self) -> Any | None:
+    def generate_link(self, params_dto: SmartEditorParamsDTO) -> Any | None:
         try:
             self.driver.get(self.base_url)
 
@@ -62,7 +62,7 @@ class OlxDynamicLinkGenerator(DynamicLinkGenerator):
                 EC.presence_of_element_located((By.ID, "location-input"))
             )
             location_input = self.driver.find_element(By.ID, "location-input")
-            location_input.send_keys("Warszawa")
+            location_input.send_keys(params_dto.location)
 
             # Wait for location suggestion and select the first suggestion
             WebDriverWait(self.driver, 10).until(
@@ -77,7 +77,7 @@ class OlxDynamicLinkGenerator(DynamicLinkGenerator):
 
             # Fill in the search query
             search_input = self.driver.find_element(By.CSS_SELECTOR, "input[data-testid='search-input']")
-            search_input.send_keys("Linux")
+            search_input.send_keys(params_dto.kwords)
 
             # Save the current link before search
             current_link = self.driver.current_url
