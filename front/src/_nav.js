@@ -115,6 +115,12 @@ const _nav = [
         name: 'Search Edit',
         to: '/searches/{search_id}/edit',
         icon: <CIcon icon={cilPencil} customClassName="nav-icon" />
+      },
+      {
+        component: CNavItem,
+        name: 'Smart Editor',
+        to: '/smart-editor',
+        icon: <CIcon icon={cilPencil} customClassName="nav-icon" />
       }
     ],
   },

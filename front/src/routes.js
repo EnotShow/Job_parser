@@ -8,6 +8,8 @@ const Searches = React.lazy(() => import('./views/searches/Searches'));
 const SearchDetails = React.lazy(() => import('./views/searches/SearchDetails'));
 const SearchEdit = React.lazy(() => import('./views/searches/SearchEdit'));
 
+const SmartEditor = React.lazy(() => import('./views/smart_editor/SmartEditor'));
+
 const Applications = React.lazy(() => import('./views/applications/Applications'));
 const ApplicationDetails = React.lazy(() => import('./views/applications/ApplicationDetails'));
 
@@ -20,8 +22,6 @@ const Register = React.lazy(() => import('./views/pages/register/Register'));
 const NotFound = React.lazy(() => import('./views/pages/page404/Page404'));
 const Page500 = React.lazy(() => import('./views/pages/page500/Page500'));
 
-const Test = React.lazy(() => import('./views/tests/Test'));
-
 const ROUTES = {
   HOME: "/",
 
@@ -32,6 +32,8 @@ const ROUTES = {
   SEARCH_DETAILS: "/searches/:id",
   SEARCH_EDIT: "/searches/:id/edit",
   SEARCH_CREATE: "/searches/create",
+
+  SMART_EDITOR: "/smart-editor",
 
   APPLICATIONS: "/applications",
   APPLICATIONS_LIST: "/applications/all-applications",
@@ -60,6 +62,9 @@ const routeConfig = [
   { path: ROUTES.SEARCH_EDIT, name: 'Edit Searches', element: SearchEdit, protected: true },
   { path: ROUTES.SEARCH_CREATE, name: 'Create Search', element: SearchCreate, protected: true },
 
+  // smart editor
+  { path: ROUTES.SMART_EDITOR, name: 'Smart Editor', element: SmartEditor, protected: true },
+
   // applications
   { path: ROUTES.APPLICATIONS_SELF_LIST, name: 'User Applications', element: Applications, protected: true },
   { path: ROUTES.APPLICATIONS_LIST, name: 'Applications', element: Applications, protected: true },
@@ -74,7 +79,6 @@ const routeConfig = [
   { path: ROUTES.NOT_FOUND, name: 'Page404', element: NotFound },
   { path: ROUTES.SERVER_ERROR, name: 'Page500', element: Page500 },
 
-  { path: '/test', name: 'Test', element: Test },
 ];
 
 export { ROUTES, routeConfig as default };
