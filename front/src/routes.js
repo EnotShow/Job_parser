@@ -13,6 +13,7 @@ const ApplicationDetails = React.lazy(() => import('./views/applications/Applica
 
 const Profile = React.lazy(() => import('./views/profile/Profile'));
 const Settings = React.lazy(() => import('./views/settings/Settings'));
+const Subscriptions = React.lazy(() => import('./views/subscriptions/Subscriptions'));
 const Notifications = React.lazy(() => import('./views/notifications/Notifications'));
 
 const Login = React.lazy(() => import('./views/pages/login/Login'));
@@ -41,6 +42,7 @@ const ROUTES = {
 
   PROFILE: "/profile",
   SETTINGS: "/settings",
+  SUBSCRIPTIONS: "/subscriptions",
   NOTIFICATIONS: "/notifications",
 
   LOGIN: "/login",
@@ -69,6 +71,7 @@ const routeConfig = [
 
   { path: ROUTES.PROFILE, name: 'Profile', element: Profile, protected: true },
   { path: ROUTES.SETTINGS, name: 'Settings', element: Settings, protected: true },
+  { path: ROUTES.SUBSCRIPTIONS, name: 'Subscriptions', element: Subscriptions, protected: true },
   { path: ROUTES.NOTIFICATIONS, name: 'Notifications', element: Notifications, protected: true },
 
   { path: ROUTES.LOGIN, name: 'Login', element: Login },
