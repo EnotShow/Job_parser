@@ -13,6 +13,7 @@ const ApplicationDetails = React.lazy(() => import('./views/applications/Applica
 
 const Profile = React.lazy(() => import('./views/profile/Profile'));
 const Settings = React.lazy(() => import('./views/settings/Settings'));
+const Subscriptions = React.lazy(() => import('./views/subscriptions/Subscriptions'));
 
 const Login = React.lazy(() => import('./views/pages/login/Login'));
 const LoginByHash = React.lazy(() => import('./views/pages/login/LoginByHash'));
@@ -40,6 +41,7 @@ const ROUTES = {
 
   PROFILE: "/profile",
   SETTINGS: "/settings",
+  SUBSCRIPTIONS: "/subscriptions",
 
   LOGIN: "/login",
   LOGIN_BY_HASH: "/login/:hash",
@@ -67,6 +69,7 @@ const routeConfig = [
 
   { path: ROUTES.PROFILE, name: 'Profile', element: Profile, protected: true },
   { path: ROUTES.SETTINGS, name: 'Settings', element: Settings, protected: true },
+  { path: ROUTES.SUBSCRIPTIONS, name: 'Subscriptions', element: Subscriptions, protected: true },
 
   { path: ROUTES.LOGIN, name: 'Login', element: Login },
   { path: ROUTES.LOGIN_BY_HASH, name: 'LoginByHash', element: LoginByHash },

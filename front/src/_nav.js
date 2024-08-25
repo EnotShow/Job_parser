@@ -79,6 +79,12 @@ const _nav = [
     name: 'Temporary',
   },
   {
+    component: CNavItem,
+    name: 'Subscriptions',
+    to: '/subscriptions',
+    icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+  },
+  {
     component: CNavGroup,
     name: 'Temporary Applications',
     to: '/applications',
