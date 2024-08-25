@@ -1,5 +1,4 @@
 import React from 'react'
-import classNames from 'classnames'
 import {
   CCard,
   CCardBody,
@@ -7,69 +6,109 @@ import {
   CCardHeader,
   CCol,
   CRow,
-  CProgress,
   CButton,
   CButtonGroup,
-  CFormLabel,
   CInputGroup,
   CFormInput,
-  CInputGroupText,
+  CInputGroupText, CProgress,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import {
-  cilBriefcase,
-  cilCheckCircle,
-  cilPeople,
-  cilCloudDownload,
-} from '@coreui/icons'
+import { cilBriefcase, cilCheckCircle, cilPeople, cilCloudDownload } from '@coreui/icons'
 import MainChart from 'src/views/dashboard/MainChart'
 import WidgetsBrand from 'src/views/widgets/WidgetsBrand'
+import {getStyle} from "@coreui/utils";
+import classNames from "classnames";
+
+const random = (min, max) => {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+};
 
 const Dashboard = () => {
-  const jobMetrics = [
-    { title: 'Jobs Parsed', value: '12,345', change: '+12.5%', icon: cilBriefcase, color: 'info' },
-    { title: 'Jobs Applied', value: '3,678', change: '+5.2%', icon: cilCheckCircle, color: 'success' },
-    { title: 'Referrals', value: '789', change: '-2.1%', icon: cilPeople, color: 'warning' },
-  ]
+  // Job Metrics Data
+  const jobMetrics = {
+    jobsParsed: { title: 'Jobs Parsed', value: 12345, change: '+12.5%', icon: cilBriefcase, color: 'info' },
+    jobsApplied: { title: 'Jobs Applied', value: 3678, change: '+5.2%', icon: cilCheckCircle, color: 'success' },
+    referrals: { title: 'Referrals', value: 789, change: '-2.1%', icon: cilPeople, color: 'warning' },
+  };
 
-  const overallStatistics = {
-    totalJobsParsed: 12345,
-    totalJobsApplied: 3678,
-    totalReferrals: 789,
-  }
-
-  const progressExample = [
-    { title: 'Jobs Parsed', value: '12,345 Jobs', percent: 40, color: 'info' },
-    { title: 'Jobs Applied', value: '3,678 Jobs', percent: 20, color: 'success' },
-    { title: 'Referrals', value: '789 Users', percent: 60, color: 'warning' },
-  ]
+  // Chart Data
+  const chartData = {
+    labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+    datasets: [
+      {
+        label: 'My First dataset',
+        backgroundColor: `rgba(${getStyle('--cui-info-rgb')}, .1)`,
+        borderColor: getStyle('--cui-info'),
+        pointHoverBackgroundColor: getStyle('--cui-info'),
+        borderWidth: 2,
+        data: [
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+        ],
+        fill: true,
+      },
+      {
+        label: 'My Second dataset',
+        backgroundColor: 'transparent',
+        borderColor: getStyle('--cui-success'),
+        pointHoverBackgroundColor: getStyle('--cui-success'),
+        borderWidth: 2,
+        data: [
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+          random(50, 200),
+        ],
+      },
+      {
+        label: 'My Third dataset',
+        backgroundColor: 'transparent',
+        borderColor: getStyle('--cui-danger'),
+        pointHoverBackgroundColor: getStyle('--cui-danger'),
+        borderWidth: 1,
+        borderDash: [8, 5],
+        data: [65, 65, 65, 65, 65, 65, 65],
+      },
+    ],
+  };
 
   return (
     <>
       <CRow>
-        {jobMetrics.map((metric, index) => (
-          <CCol sm={4} key={index}>
-            <CCard
-              className={`text-white bg-${metric.color} mb-4`}
-              style={{ height: '150px' }}
-            >
-              <CCardBody className="pb-0">
-                <center>
-                  <div className="text-value-lg" style={{ fontSize: '1.5rem' }}>
-                    {metric.value}
-                  </div>
-                  <div className="small">
-                    <span>{metric.change}</span> compared to last month
-                  </div>
-                </center>
-              </CCardBody>
-              <CCardFooter className="text-center">
-                <CIcon icon={metric.icon} size="sm" />
-                <div>{metric.title}</div>
-              </CCardFooter>
-            </CCard>
-          </CCol>
-        ))}
+        {Object.keys(jobMetrics).map((key, index) => {
+          const metric = jobMetrics[key];
+          return (
+            <CCol sm={4} key={index}>
+              <CCard
+                className={`text-white bg-${metric.color} mb-4`}
+                style={{ height: '150px' }}
+              >
+                <CCardBody className="pb-0">
+                  <center>
+                    <div className="text-value-lg" style={{ fontSize: '1.5rem' }}>
+                      {metric.value.toLocaleString()}
+                    </div>
+                    <div className="small">
+                      <span>{metric.change}</span> compared to last month
+                    </div>
+                  </center>
+                </CCardBody>
+                <CCardFooter className="text-center">
+                  <CIcon icon={metric.icon} size="sm" />
+                  <div>{metric.title}</div>
+                </CCardFooter>
+              </CCard>
+            </CCol>
+          );
+        })}
       </CRow>
 
       <CCard className="mb-4">
@@ -99,27 +138,27 @@ const Dashboard = () => {
               </CButtonGroup>
             </CCol>
           </CRow>
-          <MainChart />
+          <MainChart data={chartData} /> {/* Pass chartData to MainChart */}
         </CCardBody>
         <CCardFooter>
-          <CRow
-            md={{ cols: 3 }}
-            className="mb-2 text-center"
-          >
-            {progressExample.map((item, index, items) => (
-              <CCol
-                className={classNames({
-                  'd-none d-xl-block': index + 1 === items.length,
-                })}
-                key={index}
-              >
-                <div className="text-body-secondary">{item.title}</div>
-                <div className="fw-semibold text-truncate">
-                  {item.value} ({item.percent}%)
-                </div>
-                <CProgress thin className="mt-2" color={item.color} value={item.percent} />
-              </CCol>
-            ))}
+          <CRow md={{ cols: 3 }} className="mb-2 text-center">
+            {Object.keys(jobMetrics).map((key, index) => {
+              const metric = jobMetrics[key];
+              return (
+                <CCol
+                  key={index}
+                  className={classNames({
+                    'd-none d-xl-block': key === 'someOtherMetricToHide',
+                  })}
+                >
+                  <div className="text-body-secondary">{metric.title}</div>
+                  <div className="fw-semibold text-truncate">
+                    {metric.value.toLocaleString()}
+                  </div>
+                  <CProgress thin className="mt-2" color={metric.color} value={100} />
+                </CCol>
+              );
+            })}
           </CRow>
         </CCardFooter>
       </CCard>
@@ -148,26 +187,26 @@ const Dashboard = () => {
             <CCol sm={4}>
               <div className="border-start border-start-4 border-start-info py-1 px-3 mb-3">
                 <div className="text-body-secondary text-truncate small">Total Jobs Parsed</div>
-                <div className="fs-5 fw-semibold">{overallStatistics.totalJobsParsed}</div>
+                <div className="fs-5 fw-semibold">{jobMetrics.jobsParsed.value.toLocaleString()}</div>
               </div>
             </CCol>
             <CCol sm={4}>
               <div className="border-start border-start-4 border-start-success py-1 px-3 mb-3">
                 <div className="text-body-secondary text-truncate small">Total Jobs Applied</div>
-                <div className="fs-5 fw-semibold">{overallStatistics.totalJobsApplied}</div>
+                <div className="fs-5 fw-semibold">{jobMetrics.jobsApplied.value.toLocaleString()}</div>
               </div>
             </CCol>
             <CCol sm={4}>
               <div className="border-start border-start-4 border-start-warning py-1 px-3 mb-3">
                 <div className="text-body-secondary text-truncate small">Total Referrals</div>
-                <div className="fs-5 fw-semibold">{overallStatistics.totalReferrals}</div>
+                <div className="fs-5 fw-semibold">{jobMetrics.referrals.value.toLocaleString()}</div>
               </div>
             </CCol>
           </CRow>
         </CCardBody>
       </CCard>
     </>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;
