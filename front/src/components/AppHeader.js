@@ -1,6 +1,6 @@
-import React, { useEffect, useRef } from 'react'
-import { NavLink } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
+import React, { useState, useEffect, useRef } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   CContainer,
   CDropdown,
@@ -13,8 +13,9 @@ import {
   CNavLink,
   CNavItem,
   useColorModes,
-} from '@coreui/react'
-import CIcon from '@coreui/icons-react'
+  CBadge,
+} from '@coreui/react';
+import CIcon from '@coreui/icons-react';
 import {
   cilBell,
   cilContrast,
@@ -23,26 +24,40 @@ import {
   cilMenu,
   cilMoon,
   cilSun,
-} from '@coreui/icons'
+} from '@coreui/icons';
 
-import { AppBreadcrumb } from './index'
-import { AppHeaderDropdown } from './header/index'
-import {formatRoute} from "react-router-named-routes/lib";
-import {ROUTES} from "src/routes";
+import { AppBreadcrumb } from './index';
+import { AppHeaderDropdown } from './header/index';
+import { formatRoute } from "react-router-named-routes/lib";
+import { ROUTES } from "src/routes";
 
 const AppHeader = () => {
-  const headerRef = useRef()
-  const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme')
+  const headerRef = useRef();
+  const { colorMode, setColorMode } = useColorModes('coreui-free-react-admin-template-theme');
+  const dispatch = useDispatch();
+  const sidebarShow = useSelector((state) => state.sidebarShow);
 
-  const dispatch = useDispatch()
-  const sidebarShow = useSelector((state) => state.sidebarShow)
+  const [unreadNotifications, setUnreadNotifications] = useState([
+    { id: 1, type: 'success', title: 'New Comment', message: 'You have a new comment on your post.', time: '5 mins ago' },
+    { id: 2, type: 'warning', title: 'New Like', message: 'Someone liked your post.', time: '10 mins ago' },
+    { id: 3, type: 'danger', title: 'New Follower', message: 'You have a new follower.', time: '15 mins ago' },
+    // Add more notifications as needed
+  ]);
 
   useEffect(() => {
     document.addEventListener('scroll', () => {
       headerRef.current &&
-        headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0)
-    })
-  }, [])
+        headerRef.current.classList.toggle('shadow-sm', document.documentElement.scrollTop > 0);
+    });
+  }, []);
+
+  const borderClasses = {
+    success: 'border-success',
+    warning: 'border-warning',
+    danger: 'border-danger',
+    info: 'border-info',
+    primary: 'border-primary',
+  };
 
   return (
     <CHeader position="sticky" className="mb-4 p-0" ref={headerRef}>
@@ -72,9 +87,36 @@ const AppHeader = () => {
         </CHeaderNav>
         <CHeaderNav className="ms-auto">
           <CNavItem>
-            <CNavLink href="#">
-              <CIcon icon={cilBell} size="lg" />
-            </CNavLink>
+            <CDropdown variant="nav-item" placement="bottom-end">
+              <CDropdownToggle caret={false}>
+                <CIcon icon={cilBell} size="lg" />
+                {unreadNotifications.length > 0 && (
+                  <CBadge color="danger" shape="rounded-pill">
+                    {unreadNotifications.length}
+                  </CBadge>
+                )}
+              </CDropdownToggle>
+              <CDropdownMenu>
+                {unreadNotifications.length === 0 ? (
+                  <CDropdownItem disabled>No new notifications</CDropdownItem>
+                ) : (
+                  unreadNotifications.map((notification) => (
+                    <CDropdownItem
+                      key={notification.id}
+                      className={`border ${borderClasses[notification.type]} mb-2`}
+                      style={{ transition: 'border-color 0.3s ease' }}
+                      onMouseEnter={(e) => e.currentTarget.classList.add('shadow-sm')}
+                      onMouseLeave={(e) => e.currentTarget.classList.remove('shadow-sm')}
+                    >
+                      <strong>{notification.title}</strong>
+                      <div className="small text-muted">{notification.message}</div>
+                      <div className="small text-muted">{notification.time}</div>
+                    </CDropdownItem>
+                  ))
+                )}
+                <CDropdownItem to={formatRoute(ROUTES.NOTIFICATIONS)} as={NavLink}>See all notifications</CDropdownItem>
+              </CDropdownMenu>
+            </CDropdown>
           </CNavItem>
         </CHeaderNav>
         <CHeaderNav>
@@ -131,7 +173,7 @@ const AppHeader = () => {
         <AppBreadcrumb />
       </CContainer>
     </CHeader>
-  )
-}
+  );
+};
 
-export default AppHeader
+export default AppHeader;
