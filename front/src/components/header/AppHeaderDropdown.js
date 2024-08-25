@@ -58,7 +58,7 @@ const AppHeaderDropdown = () => {
           <CIcon icon={cilSettings} className="me-2" />
           Settings
         </CDropdownItem>
-        <CDropdownItem href="#">
+        <CDropdownItem to={formatRoute(ROUTES.SUBSCRIPTIONS)} as={NavLink}>
           <CIcon icon={cilCreditCard} className="me-2" />
           Subscription
         </CDropdownItem>
