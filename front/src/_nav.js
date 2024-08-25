@@ -6,7 +6,7 @@ import {
   cilPencil,
   cilNotes,
   cilSpeedometer,
-  cilStar, cilCreditCard,
+  cilStar, cilCreditCard, cilBell,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 
@@ -90,6 +90,12 @@ const _nav = [
     to: '/applications',
     icon: <CIcon icon={cilNotes} customClassName="nav-icon" />,
     items: [
+      {
+        component: CNavItem,
+        name: 'Notifications',
+        to: '/notifications',
+        icon: <CIcon icon={cilBell} customClassName="nav-icon" />,
+      },
       {
         component: CNavItem,
         name: 'Application Details',
