@@ -53,7 +53,7 @@ const ApplicationDetails = () => {
           <CCard className="mb-4">
             <CCardBody>
               <center><h1>Application Details</h1></center>
-              <CForm className="row g-3">
+              <CForm className="row mb-3">
                 <CRow className="mb-3">
                   <CFormLabel htmlFor="staticTitle" className="col-sm-2 col-form-label">Title</CFormLabel>
                   <CCol sm={10}>

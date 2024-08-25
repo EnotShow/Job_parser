@@ -55,7 +55,7 @@ const SearchCreate = () => {
         <CCard className="mb-4">
           <CCardBody>
             <center><h1>Create New Search</h1></center>
-            <CForm className="row g-3">
+            <CForm className="row mb-3">
               <CRow className="mb-3">
                 <CFormLabel htmlFor="title" className="col-sm-2 col-form-label">Title</CFormLabel>
                 <CCol sm={10}>

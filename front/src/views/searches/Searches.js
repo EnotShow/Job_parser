@@ -62,7 +62,7 @@ const Searches = () => {
     return data.map((item) => ({
       id: item.id,
       title: item.title,
-      url: truncateUrl(item.url), // Truncate URL here
+      url: truncateUrl(item.url),
       created_at: item.created_at,
       actions: (
         <CButtonGroup>
@@ -109,6 +109,23 @@ const Searches = () => {
   return (
     <>
       <DeleteModal model="search" visible={visible} setVisible={setVisible} onDelete={handleDelete} />
+
+      {/* Smart Editor Card */}
+      <CRow className="mb-4">
+        <CCol xs={12}>
+          <CCard>
+            <CCardBody className="d-flex justify-content-between align-items-center">
+              <div>
+                <h5>You can automate adding requests using Smart Editor</h5>
+                <p>Click the button below to start automating your requests.</p>
+              </div>
+              <CButton color="primary" onClick={() => navigate(ROUTES.SMART_EDITOR)}>
+                Go to Smart Editor
+              </CButton>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      </CRow>
 
       <CRow>
         <CCol xs={12}>
