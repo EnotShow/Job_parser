@@ -36,7 +36,7 @@ const Dashboard = () => {
     labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
     datasets: [
       {
-        label: 'My First dataset',
+        label: 'Jobs Parsed',
         backgroundColor: `rgba(${getStyle('--cui-info-rgb')}, .1)`,
         borderColor: getStyle('--cui-info'),
         pointHoverBackgroundColor: getStyle('--cui-info'),
@@ -53,7 +53,7 @@ const Dashboard = () => {
         fill: true,
       },
       {
-        label: 'My Second dataset',
+        label: 'Jobs Applied',
         backgroundColor: 'transparent',
         borderColor: getStyle('--cui-success'),
         pointHoverBackgroundColor: getStyle('--cui-success'),
@@ -69,10 +69,10 @@ const Dashboard = () => {
         ],
       },
       {
-        label: 'My Third dataset',
+        label: 'Referrals',
         backgroundColor: 'transparent',
-        borderColor: getStyle('--cui-danger'),
-        pointHoverBackgroundColor: getStyle('--cui-danger'),
+        borderColor: getStyle('--cui-warning'),
+        pointHoverBackgroundColor: getStyle('--cui-warning'),
         borderWidth: 1,
         borderDash: [8, 5],
         data: [65, 65, 65, 65, 65, 65, 65],
