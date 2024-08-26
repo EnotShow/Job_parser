@@ -1,5 +1,6 @@
 import asyncio
 
+from pyvirtualdisplay import Display
 from celery.exceptions import TaskError
 
 from core.config.proj_settings import development_settings
@@ -14,7 +15,8 @@ from src.parsers.helpers.get_link_generator import get_link_generator
 def add_create_smart_link_job(smart_dto: [SmartEditorParamsDTO, dict]):
     if isinstance(smart_dto, dict):
         smart_dto = SmartEditorParamsDTO(**smart_dto)
-    asyncio.run(create_smart_links(smart_dto))
+    with Display(backend="xvfb", size=(1680, 1050)) as disp:
+        asyncio.run(create_smart_links(smart_dto))
 
 
 async def create_smart_links(smart_dto: SmartEditorParamsDTO):
