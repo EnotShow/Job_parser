@@ -1,10 +1,49 @@
-import asyncio
-
 from playwright.async_api import TimeoutError as PlaywrightTimeoutError
 
 from src.api.smart_editor.smart_dto import SmartEditorParamsDTO
-from src.parsers.enums import ServiceEnum
 from src.parsers.helpers.link_generators import DynamicLinkGenerator
+
+"""
+Example of usage:
+
+async def main():
+    param_dto = SmartEditorParamsDTO(
+        kwords="python developer",
+        location="Warszawa",
+        salary="1000-2000",
+        services=[ServiceEnum.OLX_PL],
+        owner_id=1,
+        links_limit=25,
+    )
+
+    generator = PracaDynamicLinkGenerator()
+
+    try:
+        await generator.init_browser()
+        result = await generator.generator_execute(param_dto)
+        print(result)
+        param_dto.kwords = "java developer"
+        result = await generator.generator_execute(param_dto)
+        print(result)
+        param_dto.kwords = "javascript developer"
+        result = await generator.generator_execute(param_dto)
+        print(result)
+        param_dto.kwords = "kotlin developer"
+        result = await generator.generator_execute(param_dto)
+        print(result)
+        param_dto.kwords = "Django developer"
+        result = await generator.generator_execute(param_dto)
+        print(result)
+    finally:
+        await generator.close_browser()
+
+
+if __name__ == '__main__':
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        print(f"Exception in main: {e}")
+"""
 
 
 class PracaDynamicLinkGenerator(DynamicLinkGenerator):
@@ -43,42 +82,3 @@ class PracaDynamicLinkGenerator(DynamicLinkGenerator):
         except Exception as e:
             print(f"An error occurred: {e}")
             return None
-
-
-# async def main():
-#     param_dto = SmartEditorParamsDTO(
-#         kwords="python developer",
-#         location="Warszawa",
-#         salary="1000-2000",
-#         services=[ServiceEnum.OLX_PL],
-#         owner_id=1,
-#         links_limit=25,
-#     )
-#
-#     generator = PracaDynamicLinkGenerator()
-#
-#     try:
-#         await generator.init_browser()
-#         result = await generator.generator_execute(param_dto)
-#         print(result)
-#         param_dto.kwords = "java developer"
-#         result = await generator.generator_execute(param_dto)
-#         print(result)
-#         param_dto.kwords = "javascript developer"
-#         result = await generator.generator_execute(param_dto)
-#         print(result)
-#         param_dto.kwords = "kotlin developer"
-#         result = await generator.generator_execute(param_dto)
-#         print(result)
-#         param_dto.kwords = "Django developer"
-#         result = await generator.generator_execute(param_dto)
-#         print(result)
-#     finally:
-#         await generator.close_browser()
-#
-#
-# if __name__ == '__main__':
-#     try:
-#         asyncio.run(main())
-#     except Exception as e:
-#         print(f"Exception in main: {e}")
