@@ -1,62 +1,96 @@
-from typing import Any
-
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.support.wait import WebDriverWait
+import asyncio
+from playwright.async_api import async_playwright, TimeoutError as PlaywrightTimeoutError
 
 from src.api.smart_editor.smart_dto import SmartEditorParamsDTO
+from src.parsers.enums import ServiceEnum
 from src.parsers.helpers.link_generators import DynamicLinkGenerator
 
 
 class OlxDynamicLinkGenerator(DynamicLinkGenerator):
     base_url = "https://www.olx.pl/praca/"
-    _filter = "?search%5Border%5D=created_at:desc"  # start from new filter
+    _filter = "?search%5Border%5D=created_at:desc"
 
-    def generate_link(self, params_dto: SmartEditorParamsDTO) -> Any | None:
+    async def generate_link(self, params_dto: SmartEditorParamsDTO) -> str | None:
         try:
-            self.driver.get(self.base_url)
+            # Navigate to the base URL
+            await self.page.goto(self.base_url)
 
             # Accept cookies if the banner is present
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.ID, "onetrust-accept-btn-handler"))
-            )
-            self.driver.find_element(By.ID, "onetrust-accept-btn-handler").click()
+            try:
+                accept_button = await self.page.wait_for_selector("#onetrust-accept-btn-handler", timeout=10000)
+                await accept_button.click()
+            except PlaywrightTimeoutError:
+                print("No cookie banner appeared")
 
             # Fill in the location
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.ID, "location-input"))
-            )
-            location_input = self.driver.find_element(By.ID, "location-input")
-            location_input.send_keys(params_dto.location)
+            location_input = await self.page.wait_for_selector("#location-input", timeout=10000)
+            await location_input.fill(params_dto.location)
 
             # Wait for location suggestion and select the first suggestion
-            WebDriverWait(self.driver, 10).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "div[data-testid='suggestion-list']"))
-            )
-            first_suggestion = self.driver.find_element(By.CSS_SELECTOR, "li[data-testid='suggestion-item']")
-            first_suggestion.click()
+            first_suggestion = await self.page.wait_for_selector("li[data-testid='suggestion-item']", timeout=10000)
 
-            WebDriverWait(self.driver, 10).until(
-                EC.element_to_be_clickable((By.CSS_SELECTOR, "button[data-testid='search-submit']"))
-            )
+            # Wait for navigation to start and complete after clicking the suggestion
+            async with self.page.expect_navigation(wait_until="load"):
+                await first_suggestion.click()
 
             # Fill in the search query
-            search_input = self.driver.find_element(By.CSS_SELECTOR, "input[data-testid='search-input']")
-            search_input.send_keys(params_dto.kwords)
+            search_input = await self.page.wait_for_selector("input[data-testid='search-input']", timeout=10000)
+            await search_input.fill(params_dto.kwords)
 
             # Save the current link before search
-            current_link = self.driver.current_url
+            current_link = self.page.url
 
-            submit_button = self.driver.find_element(By.CSS_SELECTOR, "button[data-testid='search-submit']")
-            submit_button.click()
+            # Submit the search
+            submit_button = await self.page.wait_for_selector("button[data-testid='search-submit']", timeout=10000)
+
+            # Wait for navigation to start and complete after submitting the search
+            async with self.page.expect_navigation(wait_until="load"):
+                await submit_button.click()
 
             # Wait for the URL to change after the search is submitted
-            WebDriverWait(self.driver, 10).until(
-                EC.url_changes(current_link)
-            )
+            await self.page.wait_for_url(lambda url: url != current_link, timeout=10000)
 
-            return self.driver.current_url + self._filter
+            # Return the final URL with the filter applied
+            return self.page.url + self._filter
 
         except Exception as e:
             print(f"An error occurred: {e}")
             return None
+
+# async def main():
+#     param_dto = SmartEditorParamsDTO(
+#         kwords="python developer",
+#         location="Warszawa",
+#         salary="1000-2000",
+#         services=[ServiceEnum.OLX_PL],
+#         owner_id=1,
+#         links_limit=25,
+#     )
+#
+#     generator = OlxDynamicLinkGenerator()
+#
+#     try:
+#         await generator.init_browser()
+#         result = await generator.generator_execute(param_dto)
+#         print(result)
+#         param_dto.kwords = "java developer"
+#         result = await generator.generator_execute(param_dto)
+#         print(result)
+#         param_dto.kwords = "javascript developer"
+#         result = await generator.generator_execute(param_dto)
+#         print(result)
+#         param_dto.kwords = "kotlin developer"
+#         result = await generator.generator_execute(param_dto)
+#         print(result)
+#         param_dto.kwords = "Django developer"
+#         result = await generator.generator_execute(param_dto)
+#         print(result)
+#     finally:
+#         await generator.close_browser()
+#
+#
+# if __name__ == '__main__':
+#     try:
+#         asyncio.run(main())
+#     except Exception as e:
+#         print(f"Exception in main: {e}")

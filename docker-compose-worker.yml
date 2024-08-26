@@ -14,4 +14,4 @@ services:
       - .:/app
     env_file:
       - .env
-    command: "celery -A src.celery_worker worker --loglevel=INFO"
+    command: "playwright install chrome && celery -A src.celery_worker worker --loglevel=INFO"

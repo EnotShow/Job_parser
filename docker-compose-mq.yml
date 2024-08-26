@@ -45,7 +45,7 @@ services:
     depends_on:
       redis:
         condition: service_healthy
-    command: "celery -A src.celery_worker worker --loglevel=INFO"
+    command: "playwright install chrome && celery -A src.celery_worker worker --loglevel=INFO"
 
 volumes:
   redis_data:

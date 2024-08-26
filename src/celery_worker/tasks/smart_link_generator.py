@@ -27,7 +27,9 @@ async def create_smart_links(smart_dto: SmartEditorParamsDTO):
     for service in smart_dto.services:
         if links_limit:
             link_generator = await get_link_generator(service)
-            link = await link_generator.generate_link(smart_dto)
+            link_generator.init_browser()
+            link = await link_generator.generator_execute(smart_dto)
+            link_generator.close_browser()
             searches_to_create.append(
                 SearchCreateDTO(title=smart_dto.kwords, url=link, owner_id=smart_dto.owner_id)
             )

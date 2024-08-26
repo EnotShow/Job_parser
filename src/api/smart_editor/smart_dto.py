@@ -10,4 +10,4 @@ class SmartEditorParamsDTO(BaseDTO):
     salary: str
     services: List[ServiceEnum]
     owner_id: int
-    links_limit: List[str]
+    links_limit: int
