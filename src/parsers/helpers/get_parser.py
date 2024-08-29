@@ -1,6 +1,6 @@
 from src.parsers.olx_pl.job_parser_olx_pl import OlxParser
-from src.parsers.praca_pl import PracaParser
-from src.parsers.pracuj_pl import PracujParser
+from src.parsers.praca_pl.job_parser_praca_pl import PracaParser
+from src.parsers.pracuj_pl.job_parser_pracuj_pl import PracujParser
 
 
 async def get_parser(url: str):

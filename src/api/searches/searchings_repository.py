@@ -77,21 +77,25 @@ class SearchRepository(BaseRepository):
 
     async def create_multiple(self, dtos: List[SearchCreateDTO]) -> List[SearchDTO]:
         created_instances = []
-        users_data = {}
-        # Check that all users have enough slots for links
-        for dto in dtos:
-            if not users_data.get(dto.user_id):
-                user_settings = await self._user_repository.get_user_settings(dto.user_id)
-                searches_count = await self._search_repository.get_count(SearchFilterDTO(user_id=dto.user_id))
-                if searches_count >= user_settings.links_limit:
-                    raise Exception(f"User links limit reached for user id: {dto.owner_id}")
-                users_data[dto.user_id] = user_settings.links_limit
 
-            # if user data links limit at least bigger than one
-            if users_data[dto.user_id] - 1:
-                users_data[dto.user_id] -= 1
-            else:
-                raise Exception(f"User links limit reached for user id: {dto.owner_id}")
+        async def validate_user_slots(dtos: List[SearchCreateDTO]):
+            users_data = {}
+            # Check that all users have enough slots for links
+            for dto in dtos:
+                if not users_data.get(dto.user_id):
+                    user_settings = await self._user_repository.get_user_settings(dto.user_id)
+                    searches_count = await self._search_repository.get_count(SearchFilterDTO(user_id=dto.user_id))
+                    if searches_count >= user_settings.links_limit:
+                        raise Exception(f"User links limit reached for user id: {dto.owner_id}")
+                    users_data[dto.user_id] = user_settings.links_limit
+
+                # if user data links limit at least bigger than one
+                if users_data[dto.user_id] - 1:
+                    users_data[dto.user_id] -= 1
+                else:
+                    raise Exception(f"User links limit reached for user id: {dto.owner_id}")
+
+        await validate_user_slots(dtos)
 
         for dto in dtos:
             instance = self.model(**dto.model_dump())
