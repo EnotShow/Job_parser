@@ -59,26 +59,31 @@ const Searches = () => {
   }, [currentPage, navigate]);
 
   const generateItems = (data) => {
-    return data.map((item) => ({
-      id: item.id,
-      title: item.title,
-      url: truncateUrl(item.url), // Truncate URL here
-      created_at: item.created_at,
-      actions: (
-        <CButtonGroup>
-          <CButton color="primary" onClick={() => navigate(formatRoute(ROUTES.SEARCH_DETAILS, { id: item.id }))}>
-            Details
-          </CButton>
-          <CButton color="primary" onClick={() => navigate(formatRoute(ROUTES.SEARCH_EDIT, { id: item.id }))}>
-            Edit
-          </CButton>
-          <CButton color="danger" onClick={() => { setItemDelete(item.id); setVisible(true); }}>
-            Delete
-          </CButton>
-        </CButtonGroup>
-      ),
-      _cellProps: { id: { scope: 'row' } },
-    }));
+    let index = currentPage === 1 ? 1 : (currentPage - 1) * paginationLimit + 1;
+    return data.map((item) => {
+      const row = {
+        id: index,
+        title: item.title,
+        url: truncateUrl(item.url), // Truncate URL here
+        created_at: item.created_at,
+        actions: (
+          <CButtonGroup>
+            <CButton color="primary" onClick={() => navigate(formatRoute(ROUTES.SEARCH_DETAILS, { id: item.id }))}>
+              Details
+            </CButton>
+            <CButton color="primary" onClick={() => navigate(formatRoute(ROUTES.SEARCH_EDIT, { id: item.id }))}>
+              Edit
+            </CButton>
+            <CButton color="danger" onClick={() => { setItemDelete(item.id); setVisible(true); }}>
+              Delete
+            </CButton>
+          </CButtonGroup>
+        ),
+        _cellProps: { id: { scope: 'row' } },
+      };
+      index += 1;
+      return row;
+    });
   };
 
   const handleDelete = async () => {

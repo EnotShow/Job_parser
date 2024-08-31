@@ -65,6 +65,8 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 )
                 to_add.append(model)
 
+        if not to_add:
+            continue
         try:
             creates = await client.applications.service.create_multiple_applications(to_add)
         except Exception:
@@ -90,10 +92,10 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 )
                 notifications.append(notification)
 
-        # try:
-        #     if len(notifications) > 0:
-        await client.notifications.send_multiple_notifications(notifications)
-        # except Exception as e:
-        #     raise TaskError(f"Failed to send notifications: {e}")
+        try:
+            if len(notifications) > 0:
+                await client.notifications.send_multiple_notifications(notifications)
+        except Exception as e:
+            raise TaskError(f"Failed to send notifications: {e}")
 
     return True
