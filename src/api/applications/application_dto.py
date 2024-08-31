@@ -25,7 +25,7 @@ class ApplicationDTO(BaseDTO):
 
     @property
     def short_url(self) -> Url:
-        return f"{settings.base_url}/applications/{self.short_id}"
+        return f"{settings.base_url}/applications/apply/{self.short_id}"
 
 
 class ApplicationFullDTO(BaseDTO):
@@ -42,7 +42,8 @@ class ApplicationFullDTO(BaseDTO):
 
     @property
     def short_url(self) -> Url:
-        return f"{settings.base_url}/applications/{self.short_id}"
+        return f"{settings.base_url}/applications/apply/{self.short_id}"
+
 
 class ApplicationFilterDTO(BaseDTO):
     id: Optional[int] = None

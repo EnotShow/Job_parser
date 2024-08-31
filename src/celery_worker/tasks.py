@@ -18,19 +18,22 @@ from src.parsers.helper import get_parser
 @celery_app.task(bind=True, autoretry_for=(TaskError,), retry_kwargs={'max_retries': 2})
 def add_parsing_job(self, searches: [List[SearchFilterDTO], dict]):
     if isinstance(searches, list):
-        if isinstance(searches[0], dict):
+        if isinstance(len(searches) > 0 and searches[0], dict):
             searches = [SearchFilterDTO(**search) for search in searches]
+        else:
+            return None
     elif isinstance(searches, dict):
         searches = [SearchFilterDTO(**searches)]
     else:
         raise TaskError(f"Unexpected type of searches: {type(searches)}")
-    asyncio.run(parsing_job(searches))
+    return asyncio.run(parsing_job(searches))
 
 
 async def parsing_job(searches: [List[SearchFilterDTO], dict]):
     client = JobParserClient()
     await client.auth_as_service(development_settings.service_api_token)
 
+    # Parse all searches
     for search in searches:
         parser = await get_parser(search.url)
         result = await parser.parse_offers(search.url, search.owner_id)
@@ -38,6 +41,8 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
         for job in result:
             to_search.append(ApplicationFilterDTO(**job.model_dump(exclude_none=True)))
 
+        # Search for existing jobs in database
+        find = None
         try:
             find = await client.applications.service.get_applications_if_exists(to_search)
         except NoRowsFoundError:
@@ -45,7 +50,10 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
         except Exception as e:
             raise TaskError(f"Unexpected error when searching for jobs; {e}")
 
-        existing_urls = [f.url for f in find]
+        # Add new jobs to database
+        existing_urls = []
+        if find:
+            existing_urls = [f.url for f in find]
         to_add = []
         for job in result[::-1]:
             if job.url not in existing_urls:
@@ -61,27 +69,31 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
             creates = await client.applications.service.create_multiple_applications(to_add)
         except Exception:
             raise TaskError(f"Failed to add jobs to database")
-        notifications = []
 
+        # Send notifications
+        notifications = []
         for job in creates:
-            notification = MessangerNotificationDTO(
-                owner_id=job.owner_id,
-                message=new_offer(
+            if job.owner.telegram_id:
+                notification = MessangerNotificationDTO(
+                    owner_id=job.owner_id,
+                    message=new_offer(
                         job.title,
                         job.short_url,
                         search.title,
                         job.owner.selected_language
                     ),
-                social_network=SocialNetworkEnum.telegram,
-                social_network_id=job.owner.telegram_id,
-                search_title=search.title,
-                application_id=job.id,
-                language=job.owner.selected_language
-            )
-            notifications.append(notification)
-        try:
-            await client.notifications.send_multiple_notifications(notifications)
-        except Exception as e:
-            raise TaskError(f"Failed to send notifications")
+                    social_network=SocialNetworkEnum.telegram,
+                    social_network_id=job.owner.telegram_id,
+                    search_title=search.title,
+                    application_id=job.id,
+                    language=job.owner.selected_language
+                )
+                notifications.append(notification)
 
-        return True
+        # try:
+        #     if len(notifications) > 0:
+        await client.notifications.send_multiple_notifications(notifications)
+        # except Exception as e:
+        #     raise TaskError(f"Failed to send notifications: {e}")
+
+    return True

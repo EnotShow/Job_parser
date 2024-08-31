@@ -68,7 +68,11 @@ class ApplicationServiceClient(BaseClient):
         )
         if return_response:
             return response
-        return [ApplicationDTO(**application) for application in response.json()]
+        response_json = response.json()
+        try:
+            return [ApplicationDTO(**application) for application in response_json] if response_json else []
+        except Exception as e:
+            raise Exception(f"Some Exception OCCURED: {e}\ndata:\n {response_json}")
 
 
 class ApplicationClient(BaseClient):
@@ -81,7 +85,7 @@ class ApplicationClient(BaseClient):
 
     async def get_all_applications(
             self, *, limit: int = None, page: int = None, return_response: bool = False
-) -> Union[List[ApplicationDTO], Response]:
+    ) -> Union[List[ApplicationDTO], Response]:
         url = self._add_pagination(f"{self.base_url}/", limit, page)
         response = await self.session.get(url)
         if return_response:
