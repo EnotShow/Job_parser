@@ -13,7 +13,7 @@ from src.client.UserClient import UserClient
 class JobParserClient(BaseClient):
     def __init__(self, base_url: str = settings.base_url):
         self.base_url = base_url
-        self.session = httpx.AsyncClient()
+        self.session = httpx.AsyncClient(timeout=30.0)
         self.refresh_token = None
 
         self.users = UserClient(self)

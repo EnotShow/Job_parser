@@ -51,6 +51,7 @@ class ApplicationFilterDTO(BaseDTO):
     description: Optional[str] = None
     url: Optional[AnyUrl] = None
     owner_id: Optional[int] = None
+    short_id: Optional[UUID] = None
 
 
 class ApplicationUpdateDTO(BaseDTO):
