@@ -30,6 +30,11 @@ def add_parsing_job(self, searches: [List[SearchFilterDTO], dict]):
 
 
 async def parsing_job(searches: [List[SearchFilterDTO], dict]):
+    result = {}
+
+    def make_res(url, owner_id, step, error):
+        result.append({'url': {'owner_id': owner_id, 'step': step, 'error': str(error)}})
+
     client = JobParserClient()
     await client.auth_as_service(development_settings.service_api_token)
 
@@ -49,6 +54,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
             except NoRowsFoundError:
                 pass
             except Exception as e:
+                make_res(search.url, search.owner_id, 1, e)
                 raise TaskError(f"Unexpected error when searching for jobs; {e}")
 
             # Add new jobs to database
@@ -70,7 +76,8 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 continue
             try:
                 creates = await client.applications.service.create_multiple_applications(to_add)
-            except Exception:
+            except Exception as e:
+                make_res(search.url, search.owner_id, 2, str(e))
                 raise TaskError(f"Failed to add jobs to database")
 
             # Send notifications
@@ -97,9 +104,11 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 if len(notifications) > 0:
                     await client.notifications.send_multiple_notifications(notifications)
             except Exception as e:
+                make_res(search.url, search.owner_id, 3, str(e))
                 raise TaskError(f"Failed to send notifications: {e}")
 
         except Exception as e:
             continue
 
-    return True
+        make_res(search.url, search.owner_id, 0, str(None))
+    return result
