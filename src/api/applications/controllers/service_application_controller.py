@@ -102,6 +102,8 @@ async def create_multiple_applications(
         request: Request,
         application_service: ApplicationService = Depends(Provide[ApplicationServiceContainer.application_service]),
 ) -> List[ApplicationFullDTO]:
+    if not data:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Invalid data provided. Data: {data}")
     try:
         return await application_service.create_multiple_applications(
             data if isinstance(data, list) else [data]
