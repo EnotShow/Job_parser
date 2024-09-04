@@ -10,7 +10,8 @@ class OlxParser:
     base_url = 'https://www.olx.pl'
 
     async def parse_offers(self, url: str, owner_id: int):
-        html = requests.get(url).text
+        r = requests.get(url)
+        html = r.text
         soup = BeautifulSoup(html, "html.parser")
         jobs = soup.div.find_all(class_='jobs-ad-card')
         result = []
@@ -27,7 +28,7 @@ class OlxParser:
                 result.append(job)
             except AttributeError:
                 pass
-        return result
+        return result if result else r.text
 
     async def _parse_details(self, url: str):
         html = requests.get(url).text

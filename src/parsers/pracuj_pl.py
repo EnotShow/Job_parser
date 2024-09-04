@@ -9,7 +9,8 @@ class PracujParser:
 
     async def parse_offers(self, url: str, owner_id: int):
         result = []
-        html = requests.get(url).text
+        r = requests.get(url)
+        html = r.text
         soup = BeautifulSoup(html, "html.parser")
         offers_section = soup.find('div', {'data-test': 'section-offers'})
         if offers_section:
@@ -23,7 +24,7 @@ class PracujParser:
                     owner_id=owner_id
                 )
                 result.append(job)
-        return result
+        return result if result else r.text
 
     async def _parse_details(self, url: str):
         def extract_section_text(soup, section_name):

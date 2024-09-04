@@ -43,6 +43,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
         try:
             parser = await get_parser(search.url)
             result = await parser.parse_offers(search.url, search.owner_id)
+            return str(result)
             to_search = []
             for job in result:
                 to_search.append(ApplicationFilterDTO(**job.model_dump(exclude_none=True)))

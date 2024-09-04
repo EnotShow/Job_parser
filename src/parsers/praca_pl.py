@@ -9,7 +9,8 @@ class PracaParser:
 
     async def parse_offers(self, url: str, owner_id: int):
         result = []
-        html = requests.get(url).text
+        r = requests.get(url)
+        html = r.text
         soup = BeautifulSoup(html, "html.parser")
 
         offers_section = soup.find('div', {'class': 'app-content__body app-content__body--default'})
@@ -36,4 +37,4 @@ class PracaParser:
 
                 result.append(job)
 
-        return result
+        return result if result else r.text
