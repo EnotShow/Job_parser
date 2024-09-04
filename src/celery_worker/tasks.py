@@ -33,7 +33,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
     result = {}
 
     def make_res(url, owner_id, step, error):
-        result.append({'url': {'owner_id': owner_id, 'step': step, 'error': str(error)}})
+        result.append({url: {'owner_id': owner_id, 'step': step, 'error': str(error)}})
 
     client = JobParserClient()
     await client.auth_as_service(development_settings.service_api_token)
@@ -54,7 +54,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
             except NoRowsFoundError:
                 pass
             except Exception as e:
-                make_res(search.url, search.owner_id, 1, e)
+                make_res(search.url, search.owner_id, 1, e, additionals={'to_search': str(to_search)})
                 raise TaskError(f"Unexpected error when searching for jobs; {e}")
 
             # Add new jobs to database
