@@ -32,8 +32,8 @@ def add_parsing_job(self, searches: [List[SearchFilterDTO], dict]):
 async def parsing_job(searches: [List[SearchFilterDTO], dict]):
     result = {}
 
-    def make_res(url, owner_id, step, error):
-        result.append({url: {'owner_id': owner_id, 'step': step, 'error': str(error)}})
+    def make_res(url, owner_id, step, error, additional=None):
+        result.append({url: {'owner_id': owner_id, 'step': step, 'error': str(error), 'additional': additional}})
 
     client = JobParserClient()
     await client.auth_as_service(development_settings.service_api_token)
@@ -54,7 +54,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
             except NoRowsFoundError:
                 pass
             except Exception as e:
-                make_res(search.url, search.owner_id, 1, e, additionals={'to_search': str(to_search)})
+                make_res(search.url, search.owner_id, 1, e, additional={'to_search': str(to_search)})
                 raise TaskError(f"Unexpected error when searching for jobs; {e}")
 
             # Add new jobs to database
@@ -77,7 +77,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
             try:
                 creates = await client.applications.service.create_multiple_applications(to_add)
             except Exception as e:
-                make_res(search.url, search.owner_id, 2, str(e))
+                make_res(search.url, search.owner_id, 2, str(e), additional={'to_add': str(to_add)})
                 raise TaskError(f"Failed to add jobs to database")
 
             # Send notifications
@@ -104,7 +104,7 @@ async def parsing_job(searches: [List[SearchFilterDTO], dict]):
                 if len(notifications) > 0:
                     await client.notifications.send_multiple_notifications(notifications)
             except Exception as e:
-                make_res(search.url, search.owner_id, 3, str(e))
+                make_res(search.url, search.owner_id, 3, str(e), additional={'notifications': str(notifications)})
                 raise TaskError(f"Failed to send notifications: {e}")
 
         except Exception as e:
