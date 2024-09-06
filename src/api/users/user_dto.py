@@ -1,6 +1,8 @@
 from datetime import datetime
 from typing import Optional
 
+from pydantic import EmailStr
+
 from core.shared.base_dto import BaseDTO
 
 
@@ -8,7 +10,7 @@ class UserDTO(BaseDTO):
     id: int
     first_name: Optional[str]
     last_name: Optional[str]
-    email: Optional[str]
+    email: Optional[EmailStr]
     telegram_id: Optional[int]
     language_code: Optional[str]
     selected_language: Optional[str]
@@ -17,14 +19,14 @@ class UserDTO(BaseDTO):
 
 class UserShortDTO(BaseDTO):
     id: int
-    email: Optional[str]
+    email: Optional[EmailStr]
 
 
 class UserFilterDTO(BaseDTO):
     id: Optional[int] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     telegram_id: Optional[int] = None
     language_code: Optional[int] = None
     created_at: Optional[datetime] = None
@@ -35,7 +37,7 @@ class UserUpdateDTO(BaseDTO):
     id: int
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     telegram_id: Optional[int] = None
     password: Optional[str] = None
     language_code: Optional[str] = None
@@ -56,7 +58,7 @@ class UserSelfUpdateDTO(BaseDTO):
 class UserCreateDTO(BaseDTO):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
-    email: Optional[str] = None
+    email: Optional[EmailStr] = None
     telegram_id: Optional[int] = None
     password: Optional[str] = None
     language_code: Optional[str] = None

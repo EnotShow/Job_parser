@@ -7,13 +7,18 @@ celery_app = Celery(
     backend=settings_broker.broker_url,
 )
 
-celery_app.autodiscover_tasks(packages=["src.celery_worker.tasks"])
+celery_app.autodiscover_tasks(
+    packages=[
+        "src.celery_worker",
+        "src.celery_worker.email_worker",
+    ]
+)
 
 celery_app.conf.update(
-    task_serializer='json',
-    accept_content=['json'],
-    result_serializer='json',
-    timezone='UTC',
+    task_serializer="json",
+    accept_content=["json"],
+    result_serializer="json",
+    timezone="UTC",
     enable_utc=True,
     autodiscover_tasks=True,
 )
