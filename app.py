@@ -1,6 +1,5 @@
 import asyncio
 import logging
-import sys
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -12,9 +11,9 @@ from starlette.middleware.cors import CORSMiddleware
 from bot_create import dp, WEBHOOK_PATH, bot_update, set_webhook, delete_webhook
 from core.config.proj_settings import settings, development_settings
 from core.db.db_helper import db_helper
-from core.scripts.command_list import execute_command
 from src.admin.admin_routers import add_admin_views
 from src.api.middleware.LimitPaginationMiddleware import LimitPaginationMiddleware
+from src.cli import cli
 from src.containers_builder import build_containers
 
 from src.api.middleware.TokenAuthMiddleware import TokenAuthMiddleware
@@ -95,8 +94,6 @@ register_middlewares(dp)
 register_bot_routes(dp)
 
 if __name__ == "__main__":
-    execute_command(sys.argv)
-
     logging.basicConfig(
         level=logging.INFO,
         format=u'%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s',
