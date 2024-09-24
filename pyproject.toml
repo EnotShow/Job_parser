@@ -29,6 +29,7 @@ selenium = "^4.23.1"
 webdriver-manager = "^4.0.2"
 pyvirtualdisplay = "^3.0"
 redis-om = "0.3.0"
+click = "^8.1.7"
 
 pytest = "^8.3.2"
 pytest-asyncio = "^0.23.8"
