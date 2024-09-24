@@ -28,6 +28,7 @@ class User(Base):
     applications: Mapped[list["Application"]] = relationship("Application", back_populates="owner")
     searches: Mapped[list["Search"]] = relationship("Search", back_populates="owner")
     payments: Mapped[list["Payment"]] = relationship("Payment", back_populates="owner")
+    is_admin: Mapped[bool] = mapped_column(Boolean, default=False)
 
     def __repr__(self) -> str:
         return f"User(id={self.id!r}, username={self.email!r})"

@@ -30,6 +30,7 @@ class JwtService:
         payload = AccessTokenPayloadDTO(
             token_type="access",
             user=UserShortDTO(id=dto.id, email=dto.email),
+            is_admin=dto.is_admin,
             exp=expire,
             iat=datetime.utcnow(),
 
@@ -39,7 +40,7 @@ class JwtService:
 
     async def generate_refresh_token(self, dto: UserDTO) -> RefreshTokenDTO:
         expire = datetime.utcnow() + timedelta(seconds=self.config.REFRESH_TOKEN_LIFETIME)
-        payload = payload = RefreshTokenPayloadDTO(
+        payload = RefreshTokenPayloadDTO(
             token_type="refresh",
             user=UserShortDTO(id=dto.id, email=dto.email),
             exp=expire,

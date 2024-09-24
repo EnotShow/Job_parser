@@ -6,6 +6,7 @@ from starlette.requests import Request
 from core.config.jwt import settings_bot
 from src.api.auth.containers.auth_service_container import AuthServiceContainer
 from src.api.auth.services.auth_service import AuthService
+from src.api.auth.services.jwt_service import JwtService, jwt_service
 
 
 class AdminAuth(AuthenticationBackend):
@@ -31,6 +32,7 @@ class AdminAuth(AuthenticationBackend):
             self,
             request: Request,
             auth_service: AuthService = Provide[AuthServiceContainer.auth_service],
+            jwt_service: JwtService = jwt_service,
     ) -> bool:
         token = request.session.get("token")
 
@@ -45,7 +47,10 @@ class AdminAuth(AuthenticationBackend):
             except (ExpiredSignatureError, PyJWTError, InvalidSignatureError):
                 request.session.clear()
                 return False
-        return True
+
+        token_data = await jwt_service.decode_token(token)
+        if token_data.is_admin:
+            return True
 
 
 authentication_backend = AdminAuth(secret_key=settings_bot.SECRET_KEY)

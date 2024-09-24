@@ -15,6 +15,7 @@ class UserRegisterDTO(BaseDTO):
     password: str
     language_code: str
     refer_id: int = 0
+    is_admin: bool = False
 
 
 class ChangePasswordDTO(BaseDTO):
@@ -33,6 +34,7 @@ class RefreshTokenDTO(BaseDTO):
 class AccessTokenPayloadDTO(BaseDTO):
     token_type: str
     user: UserShortDTO
+    is_admin: bool
     exp: datetime
     iat: datetime
 
