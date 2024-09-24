@@ -11,9 +11,9 @@ from starlette.middleware.cors import CORSMiddleware
 from bot_create import dp, WEBHOOK_PATH, bot_update, set_webhook, delete_webhook
 from core.config.proj_settings import settings, development_settings
 from core.db.db_helper import db_helper
+from src.admin.admin_auth import authentication_backend
 from src.admin.admin_routers import add_admin_views
 from src.api.middleware.LimitPaginationMiddleware import LimitPaginationMiddleware
-from src.cli import cli
 from src.containers_builder import build_containers
 
 from src.api.middleware.TokenAuthMiddleware import TokenAuthMiddleware
@@ -82,7 +82,7 @@ admin = Admin(
     app,
     engine=db_helper.engine,
     session_maker=db_helper.session_factory,
-    # authentication_backend=authentication_backend,
+    authentication_backend=authentication_backend,
 )
 
 add_admin_views(admin)
