@@ -41,6 +41,7 @@ async def add_user(auth_service: AuthService = Provide[AuthServiceContainer.auth
 
 @click.command(name="create-admin")
 def add_user_async():
+    """Create admin user"""
     build_containers()
 
     run_command_async(add_user())

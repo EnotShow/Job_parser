@@ -2,7 +2,6 @@ import click
 
 from src.cli.add_user import add_user_async
 from src.cli.runserver import runserver
-from src.containers_builder import build_containers
 
 
 @click.group()
